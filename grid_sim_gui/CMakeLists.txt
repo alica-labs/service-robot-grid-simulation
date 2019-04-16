@@ -20,6 +20,7 @@ include_directories(
   ${SFML_INCLUDE_DIR}
 )
 
+
 ############# The library, the actual simulator can use
 
 add_library(${PROJECT_NAME}
@@ -40,4 +41,21 @@ target_link_libraries(${PROJECT_NAME}_standalone
   ${SFML_LIBRARIES}
   ${SFML_DEPENDENCIES}
 )
+
+# copy the resource (e.g. texture files)
+file(GLOB ResourceFiles ${CMAKE_SOURCE_DIR}/textures/*.png)
+add_custom_target(copy ALL
+  DEPENDS
+        ${ResourceFiles}
+)
+foreach(ResourceFile ${ResourceFiles})
+  get_filename_component(file ${ResourceFile} NAME)
+  add_custom_command(TARGET copy
+    PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E
+    copy ${ResourceFile} $<TARGET_FILE_DIR:grid_sim_gui_standalone>/textures/${file}
+    COMMAND ${CMAKE_COMMAND} -E
+    make_directory $<TARGET_FILE_DIR:grid_sim_gui_standalone>/textures/
+  )
+endforeach()
 
