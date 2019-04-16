@@ -1,53 +1,105 @@
 #include "Simulator.h"
 
-#include <SFML/Graphics.hpp>
-
 #include <unistd.h>
 #include <limits.h>
 #include <iostream>
+#include <signal.h>
+#include <thread>
 
-std::string get_selfpath() {
-    char buff[PATH_MAX];
-    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
-    if (len != -1) {
-        buff[len] = '\0';
-        std::string exePath = std::string(buff);
+#define SIM_DEBUG
 
-        return exePath.substr(0, exePath.find_last_of("/"));
+namespace grid_sim {
+    bool Simulator::running = false;
+
+    Simulator::Simulator() {
+        this->initTestWorld();
     }
-    /* handle error condition */
+
+    Simulator::~Simulator() {
+        delete this->world;
+        delete this->gui;
+    }
+
+    void Simulator::initTestWorld() {
+        this->world = new World();
+        for (u_int32_t i = 0; i < 10; i++) {
+            for (u_int32_t j = 0; j < 5; j++) {
+                this->world->setCell(i,j, Type::Floor);
+            }
+            for (u_int32_t j = 5; j < 10; j++) {
+                this->world->setCell(i,j, Type::Wall);
+            }
+        }
+    }
+
+    void Simulator::start() {
+        if (!Simulator::running) {
+            Simulator::running = true;
+            this->mainThread = new std::thread(&Simulator::run, this);
+        }
+    }
+
+    void Simulator::run() {
+        this->gui = new GUI();
+        while (Simulator::running) {
+#ifdef SIM_DEBUG
+            auto start = std::chrono::system_clock::now();
+            std::cout << "[Simulator] Iteration started..." << std::endl;
+#endif
+            this->gui->draw(this->world);
+#ifdef SIM_DEBUG
+            auto timePassed = std::chrono::system_clock::now() - start;
+            std::chrono::microseconds microsecondsPassed = std::chrono::duration_cast<std::chrono::microseconds>(timePassed);
+            std::cout << "[Simulator] ... took " << microsecondsPassed.count() << " microsecs" << std::endl;
+#endif
+        }
+    }
+
+    std::string Simulator::get_selfpath() {
+        char buff[PATH_MAX];
+        ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
+        if (len != -1) {
+            buff[len] = '\0';
+            std::string exePath = std::string(buff);
+
+            return exePath.substr(0, exePath.find_last_of("/"));
+        }
+        /* handle error condition */
+    }
+
+    bool Simulator::isRunning() {
+        return running;
+    }
+
+    /**
+     * This is for handling Strg + C, although no ROS communication was running.
+     * @param sig
+     */
+    void Simulator::simSigintHandler(int sig)
+    {
+        std::cout << "Simulator: Caught SIGINT! Terminating ..." << std::endl;
+        running = false;
+    }
 }
+
+
+
 
 int main(int argc, char *argv[])
 {
-    sf::RenderWindow window(sf::VideoMode(120, 120), "Grid Simulator GUI");
+    grid_sim::Simulator* simulator = new grid_sim::Simulator();
 
-    sf::Texture texture;
-    std::string executabelPath = get_selfpath();
-    std::cout << "[GridSimGUI] executabelPath: " << executabelPath << std::endl;
-    if (!texture.loadFromFile(executabelPath + "/textures/test_texture.png", sf::IntRect(30, 30, 60, 60))) {
-        std::cerr << "[GridSimGUI] Coudn't load the texture!" << std::endl;
+    signal(SIGINT, grid_sim::Simulator::simSigintHandler);
+
+    simulator->start();
+
+    while (simulator->isRunning()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
-    texture.setSmooth(true);
-    texture.setRepeated(true);
 
-    sf::Sprite sprite;
-    sprite.setTexture(texture);
-
-
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        window.clear();
-        window.draw(sprite);
-        window.display();
-    }
+    delete simulator;
 
     return 0;
 }
+
+

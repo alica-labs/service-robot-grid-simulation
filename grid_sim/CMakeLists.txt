@@ -8,6 +8,8 @@ add_compile_options(-std=c++11)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(SFML 2.4 COMPONENTS network audio graphics window system REQUIRED)
 
+find_package(Threads)
+
 find_package(catkin REQUIRED)
 catkin_package(
   INCLUDE_DIRS include
@@ -22,11 +24,15 @@ include_directories(
 
 add_executable(${PROJECT_NAME}
   src/Simulator.cpp
+  src/World.cpp
+  src/Cell.cpp
+  src/GUI.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
   ${SFML_LIBRARIES}
   ${SFML_DEPENDENCIES}
+  ${CMAKE_THREAD_LIBS_INIT}
 )
 
 # copy the resource (e.g. texture files)
