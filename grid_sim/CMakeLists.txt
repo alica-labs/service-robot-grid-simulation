@@ -22,6 +22,8 @@ include_directories(
   ${SFML_INCLUDE_DIR}
 )
 
+############### Simulator
+
 add_executable(${PROJECT_NAME}
   src/Simulator.cpp
   src/World.cpp
@@ -33,13 +35,14 @@ target_link_libraries(${PROJECT_NAME}
   ${SFML_LIBRARIES}
   ${SFML_DEPENDENCIES}
   ${CMAKE_THREAD_LIBS_INIT}
+  ${PROJECT_NAME}_msgs
 )
 
 # copy the resource (e.g. texture files)
 file(GLOB ResourceFiles ${CMAKE_SOURCE_DIR}/textures/*.png)
 add_custom_target(copy ALL
   DEPENDS
-        ${ResourceFiles}
+  ${ResourceFiles}
 )
 foreach(ResourceFile ${ResourceFiles})
   get_filename_component(file ${ResourceFile} NAME)
@@ -52,3 +55,16 @@ foreach(ResourceFile ${ResourceFiles})
   )
 endforeach()
 
+############### Sim Messages
+
+find_package(CapnProto REQUIRED)
+set(grid_sim_message_folder "${CMAKE_CURRENT_SOURCE_DIR}/msg")
+file(GLOB_RECURSE grid_sim_msgs ${grid_sim_message_folder} *.capnp)
+set(CAPNPC_SRC_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/msg)
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/grid_sim_msgs")
+set(CAPNPC_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/grid_sim_msgs")
+capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${grid_sim_msgs})
+
+add_library(${PROJECT_NAME}_msgs
+  ${CAPNP_SRCS}
+)
