@@ -77,7 +77,7 @@ namespace grid_sim {
     }
 
     /**
-     * This is for handling Strg + C, although no ROS communication was running.
+     * This is for handling [Ctrl] + [c]
      * @param sig
      */
     void Simulator::simSigintHandler(int sig)
