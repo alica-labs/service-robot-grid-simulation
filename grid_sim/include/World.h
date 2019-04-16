@@ -25,6 +25,7 @@ namespace grid_sim {
          */
         void setCell(u_int32_t x, u_int32_t y, Type type = Type::Floor);
         const std::vector<std::vector<Cell*>>& getGrid() { return this->grid; };
+        u_int32_t getSize();
     private:
         std::vector<std::vector<Cell*>> grid = std::vector<std::vector<Cell*>>();
 

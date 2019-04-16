@@ -42,5 +42,9 @@ namespace grid_sim{
             }
         }
     }
+
+    u_int32_t World::getSize() {
+        return this->grid.size();
+    }
 }
 
