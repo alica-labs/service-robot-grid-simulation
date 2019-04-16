@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(grid_sim_gui)
+project(grid_sim)
 
 add_compile_options(-std=c++11)
 
@@ -11,7 +11,7 @@ find_package(SFML 2.4 COMPONENTS network audio graphics window system REQUIRED)
 find_package(catkin REQUIRED)
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES grid_sim_gui
+  LIBRARIES ${PROJECT_NAME}
   DEPENDS SFML
 )
 
@@ -20,24 +20,11 @@ include_directories(
   ${SFML_INCLUDE_DIR}
 )
 
-
-############# The library, the actual simulator can use
-
-add_library(${PROJECT_NAME}
-  src/GridSimGUI.cpp
+add_executable(${PROJECT_NAME}
+  src/Simulator.cpp
 )
+
 target_link_libraries(${PROJECT_NAME}
-  ${SFML_LIBRARIES}
-  ${SFML_DEPENDENCIES}
-)
-
-############## A stand alone version, for testing purposes
-
-add_executable(${PROJECT_NAME}_standalone
-  src/GridSimGUI.cpp
-)
-
-target_link_libraries(${PROJECT_NAME}_standalone
   ${SFML_LIBRARIES}
   ${SFML_DEPENDENCIES}
 )
@@ -53,9 +40,9 @@ foreach(ResourceFile ${ResourceFiles})
   add_custom_command(TARGET copy
     PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E
-    copy ${ResourceFile} $<TARGET_FILE_DIR:grid_sim_gui_standalone>/textures/${file}
+    copy ${ResourceFile} $<TARGET_FILE_DIR:grid_sim>/textures/${file}
     COMMAND ${CMAKE_COMMAND} -E
-    make_directory $<TARGET_FILE_DIR:grid_sim_gui_standalone>/textures/
+    make_directory $<TARGET_FILE_DIR:grid_sim>/textures/
   )
 endforeach()
 

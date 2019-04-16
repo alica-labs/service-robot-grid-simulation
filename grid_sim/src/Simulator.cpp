@@ -1,4 +1,4 @@
-#include "GridSimGUI.h"
+#include "Simulator.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -10,10 +10,10 @@ std::string get_selfpath() {
     char buff[PATH_MAX];
     ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
     if (len != -1) {
-      buff[len] = '\0';
-      std::string exePath = std::string(buff);
+        buff[len] = '\0';
+        std::string exePath = std::string(buff);
 
-      return exePath.substr(0, exePath.find_last_of("/"));
+        return exePath.substr(0, exePath.find_last_of("/"));
     }
     /* handle error condition */
 }
