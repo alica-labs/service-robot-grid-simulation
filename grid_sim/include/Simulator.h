@@ -9,7 +9,7 @@ namespace std {
 namespace grid_sim {
     class Simulator {
     public:
-        Simulator();
+        Simulator(bool headless = false);
         ~Simulator();
         void initTestWorld();
 
@@ -22,6 +22,7 @@ namespace grid_sim {
         static bool running;
 
     private:
+        bool headless;
         World* world;
         GUI* gui;
         std::thread* mainThread;

@@ -5,13 +5,14 @@
 #include <iostream>
 #include <signal.h>
 #include <thread>
+#include <string>
 
 #define SIM_DEBUG
 
 namespace grid_sim {
     bool Simulator::running = false;
 
-    Simulator::Simulator() {
+    Simulator::Simulator(bool headless) : headless(headless) {
         this->initTestWorld();
     }
 
@@ -40,13 +41,17 @@ namespace grid_sim {
     }
 
     void Simulator::run() {
-        this->gui = new GUI();
+        if (!this->headless) {
+            this->gui = new GUI();
+        }
         while (Simulator::running) {
 #ifdef SIM_DEBUG
             auto start = std::chrono::system_clock::now();
             std::cout << "[Simulator] Iteration started..." << std::endl;
 #endif
-            this->gui->draw(this->world);
+            if (!this->headless) {
+                this->gui->draw(this->world);
+            }
 #ifdef SIM_DEBUG
             auto timePassed = std::chrono::system_clock::now() - start;
             std::chrono::microseconds microsecondsPassed = std::chrono::duration_cast<std::chrono::microseconds>(timePassed);
@@ -87,7 +92,15 @@ namespace grid_sim {
 
 int main(int argc, char *argv[])
 {
-    grid_sim::Simulator* simulator = new grid_sim::Simulator();
+    bool headless = false;
+    if (argc > 1) {
+        if (std::string("--headless").compare(argv[1]) == 0)
+        {
+            headless = true;
+        }
+    }
+
+    grid_sim::Simulator* simulator = new grid_sim::Simulator(headless);
 
     signal(SIGINT, grid_sim::Simulator::simSigintHandler);
 
