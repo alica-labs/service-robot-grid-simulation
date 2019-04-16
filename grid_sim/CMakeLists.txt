@@ -6,20 +6,21 @@ add_compile_options(-std=c++11)
 # SFML (until 2.5 you need an extra FindSFML.cmake aside your project...)
 # https://github.com/SFML/SFML/wiki/Tutorial:-Build-your-SFML-project-with-CMake
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-find_package(SFML 2.4 COMPONENTS network audio graphics window system REQUIRED)
+find_package(SFML 2.4 COMPONENTS graphics window system REQUIRED)
 
 find_package(Threads)
 
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED capnzero)
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
+  LIBRARIES ${PROJECT_NAME} ${PROJECT_NAME}_msgs
   DEPENDS SFML
 )
 
 include_directories(
   include
   ${SFML_INCLUDE_DIR}
+  ${catkin_INCLUDE_DIRS}
 )
 
 ############### Simulator
@@ -36,6 +37,7 @@ target_link_libraries(${PROJECT_NAME}
   ${SFML_DEPENDENCIES}
   ${CMAKE_THREAD_LIBS_INIT}
   ${PROJECT_NAME}_msgs
+  ${catkin_LIBRARIES}
 )
 
 # copy the resource (e.g. texture files)

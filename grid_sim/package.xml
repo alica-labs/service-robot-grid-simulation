@@ -8,6 +8,8 @@
 
   <license>MIT</license>
 
+  <depend>capnzero</depend>
+
   <buildtool_depend>catkin</buildtool_depend>
 
   <export>
