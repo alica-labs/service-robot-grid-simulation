@@ -1,101 +1,106 @@
 #include "Simulator.h"
 
-#include <unistd.h>
-#include <limits.h>
 #include <iostream>
+#include <limits.h>
 #include <signal.h>
-#include <thread>
 #include <string>
+#include <thread>
+#include <unistd.h>
 
 #define SIM_DEBUG
 
-namespace grid_sim {
-    bool Simulator::running = false;
+namespace grid_sim
+{
+bool Simulator::running = false;
 
-    Simulator::Simulator(bool headless) : headless(headless) {
-        this->initTestWorld();
-    }
+Simulator::Simulator(bool headless)
+        : headless(headless)
+{
+    this->initTestWorld();
+}
 
-    Simulator::~Simulator() {
-        delete this->world;
-        delete this->gui;
-    }
+Simulator::~Simulator()
+{
+    delete this->world;
+    delete this->gui;
+}
 
-    void Simulator::initTestWorld() {
-        this->world = new World();
-        for (u_int32_t i = 0; i < 10; i++) {
-            for (u_int32_t j = 0; j < 5; j++) {
-                this->world->setCell(i,j, Type::Floor);
-            }
-            for (u_int32_t j = 5; j < 10; j++) {
-                this->world->setCell(i,j, Type::Wall);
-            }
+void Simulator::initTestWorld()
+{
+    this->world = new World();
+    for (u_int32_t i = 0; i < 10; i++) {
+        for (u_int32_t j = 0; j < 5; j++) {
+            this->world->setCell(i, j, Type::Floor);
         }
-    }
-
-    void Simulator::start() {
-        if (!Simulator::running) {
-            Simulator::running = true;
-            this->mainThread = new std::thread(&Simulator::run, this);
+        for (u_int32_t j = 5; j < 10; j++) {
+            this->world->setCell(i, j, Type::Wall);
         }
-    }
-
-    void Simulator::run() {
-        if (!this->headless) {
-            this->gui = new GUI();
-        }
-        while (Simulator::running) {
-#ifdef SIM_DEBUG
-            auto start = std::chrono::system_clock::now();
-            std::cout << "[Simulator] Iteration started..." << std::endl;
-#endif
-            if (!this->headless) {
-                this->gui->draw(this->world);
-            }
-#ifdef SIM_DEBUG
-            auto timePassed = std::chrono::system_clock::now() - start;
-            std::chrono::microseconds microsecondsPassed = std::chrono::duration_cast<std::chrono::microseconds>(timePassed);
-            std::cout << "[Simulator] ... took " << microsecondsPassed.count() << " microsecs" << std::endl;
-#endif
-        }
-    }
-
-    std::string Simulator::get_selfpath() {
-        char buff[PATH_MAX];
-        ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
-        if (len != -1) {
-            buff[len] = '\0';
-            std::string exePath = std::string(buff);
-
-            return exePath.substr(0, exePath.find_last_of("/"));
-        }
-        /* handle error condition */
-    }
-
-    bool Simulator::isRunning() {
-        return running;
-    }
-
-    /**
-     * This is for handling [Ctrl] + [c]
-     * @param sig
-     */
-    void Simulator::simSigintHandler(int sig)
-    {
-        std::cout << "Simulator: Caught SIGINT! Terminating ..." << std::endl;
-        running = false;
     }
 }
 
+void Simulator::start()
+{
+    if (!Simulator::running) {
+        Simulator::running = true;
+        this->mainThread = new std::thread(&Simulator::run, this);
+    }
+}
 
+void Simulator::run()
+{
+    if (!this->headless) {
+        this->gui = new GUI();
+    }
+    while (Simulator::running) {
+#ifdef SIM_DEBUG
+        auto start = std::chrono::system_clock::now();
+        std::cout << "[Simulator] Iteration started..." << std::endl;
+#endif
+        if (!this->headless) {
+            this->gui->draw(this->world);
+        }
+#ifdef SIM_DEBUG
+        auto timePassed = std::chrono::system_clock::now() - start;
+        std::chrono::microseconds microsecondsPassed = std::chrono::duration_cast<std::chrono::microseconds>(timePassed);
+        std::cout << "[Simulator] ... took " << microsecondsPassed.count() << " microsecs" << std::endl;
+#endif
+    }
+}
 
+std::string Simulator::get_selfpath()
+{
+    char buff[PATH_MAX];
+    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
+    if (len != -1) {
+        buff[len] = '\0';
+        std::string exePath = std::string(buff);
 
-int main(int argc, char *argv[])
+        return exePath.substr(0, exePath.find_last_of("/"));
+    }
+    /* handle error condition */
+}
+
+bool Simulator::isRunning()
+{
+    return running;
+}
+
+/**
+ * This is for handling [Ctrl] + [c]
+ * @param sig
+ */
+void Simulator::simSigintHandler(int sig)
+{
+    std::cout << "Simulator: Caught SIGINT! Terminating ..." << std::endl;
+    running = false;
+}
+} // namespace grid_sim
+
+int main(int argc, char* argv[])
 {
     bool headless = false;
     if (argc > 1) {
-        if (std::string("--headless").compare(argv[1]) == 0)
-        {
+        if (std::string("--headless").compare(argv[1]) == 0) {
             headless = true;
         }
     }
@@ -114,5 +119,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-
