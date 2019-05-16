@@ -23,7 +23,7 @@ namespace grid_sim{
         delete this->texture;
     }
 
-    sf::Sprite GUI::getSprite(Cell* cell, u_int32_t x, u_int32_t y, u_int32_t worldSize) {
+    sf::Sprite GUI::getSprite(Cell* cell, uint32_t x, uint32_t y, uint32_t worldSize) {
         sf::Sprite sprite;
         sprite.setTexture(*this->texture);
         switch(cell->type) {
@@ -61,9 +61,9 @@ namespace grid_sim{
         this->window->clear();
 
         const std::vector<std::vector<Cell*>>& grid = world->getGrid();
-        for(u_int32_t i = 0; i < grid.size(); i++) {
+        for(uint32_t i = 0; i < grid.size(); i++) {
             const std::vector<Cell*>& column = grid[i];
-            for (u_int32_t j = 0; j < column.size(); j++) {
+            for (uint32_t j = 0; j < column.size(); j++) {
                 this->window->draw(getSprite(column[j], i, j, world->getSize()));
             }
         }

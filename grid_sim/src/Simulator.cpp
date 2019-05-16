@@ -28,11 +28,11 @@ Simulator::~Simulator()
 void Simulator::initTestWorld()
 {
     this->world = new World();
-    for (u_int32_t i = 0; i < 10; i++) {
-        for (u_int32_t j = 0; j < 5; j++) {
+    for (uint32_t i = 0; i < 10; i++) {
+        for (uint32_t j = 0; j < 5; j++) {
             this->world->setCell(i, j, Type::Floor);
         }
-        for (u_int32_t j = 5; j < 10; j++) {
+        for (uint32_t j = 5; j < 10; j++) {
             this->world->setCell(i, j, Type::Wall);
         }
     }
@@ -70,7 +70,7 @@ void Simulator::run()
 std::string Simulator::get_selfpath()
 {
     char buff[PATH_MAX];
-    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
+    size_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
     if (len != -1) {
         buff[len] = '\0';
         std::string exePath = std::string(buff);
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 {
     bool headless = false;
     if (argc > 1) {
-        if (std::string("--headless").compare(argv[1]) == 0) {
+        if (std::string("--headless") == argv[1]) {
             headless = true;
         }
     }

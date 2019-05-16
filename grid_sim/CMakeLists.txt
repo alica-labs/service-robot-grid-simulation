@@ -13,7 +13,7 @@ find_package(Threads)
 find_package(catkin REQUIRED capnzero)
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME} ${PROJECT_NAME}_msgs
+  LIBRARIES ${PROJECT_NAME} ${PROJECT_NAME}_msgs ${PROJECT_NAME}_world
   DEPENDS SFML
 )
 
@@ -27,16 +27,15 @@ include_directories(
 
 add_executable(${PROJECT_NAME}
   src/Simulator.cpp
-  src/World.cpp
-  src/Cell.cpp
   src/GUI.cpp
-        include/container/Command.h)
+  include/container/Command.h)
 
 target_link_libraries(${PROJECT_NAME}
   ${SFML_LIBRARIES}
   ${SFML_DEPENDENCIES}
   ${CMAKE_THREAD_LIBS_INIT}
   ${PROJECT_NAME}_msgs
+  ${PROJECT_NAME}_world
   ${catkin_LIBRARIES}
 )
 
@@ -56,6 +55,12 @@ foreach(ResourceFile ${ResourceFiles})
     make_directory $<TARGET_FILE_DIR:grid_sim>/textures/
   )
 endforeach()
+
+add_library(${PROJECT_NAME}_world
+  src/World.cpp
+  src/Cell.cpp
+  src/Coordinate.cpp
+)
 
 ############### Sim Messages
 
