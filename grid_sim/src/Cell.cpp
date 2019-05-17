@@ -1,6 +1,7 @@
 #include "Cell.h"
+#include <iostream>
 
-namespace grid_sim
+namespace srgsim
 {
 Cell::Cell(uint32_t x, uint32_t y)
         : coordinate(x, y)
@@ -9,10 +10,11 @@ Cell::Cell(uint32_t x, uint32_t y)
     this->down = nullptr;
     this->left = nullptr;
     this->right = nullptr;
+    this->type = Type::Unknown;
 
 }
 
-Cell::Cell(const grid_sim::Cell& cell)
+Cell::Cell(const srgsim::Cell& cell)
         : coordinate(cell.coordinate)
 {
     this->room = cell.room;
@@ -21,5 +23,5 @@ Cell::Cell(const grid_sim::Cell& cell)
     this->down = cell.down;
     this->left = cell.left;
     this->right = cell.right;
-}
-} // namespace grid_sim
+ }
+} // namespace srgsim

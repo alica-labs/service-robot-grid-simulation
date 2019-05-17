@@ -28,7 +28,7 @@ include_directories(
 add_executable(${PROJECT_NAME}
   src/Simulator.cpp
   src/GUI.cpp
-  include/container/Command.h)
+)
 
 target_link_libraries(${PROJECT_NAME}
   ${SFML_LIBRARIES}

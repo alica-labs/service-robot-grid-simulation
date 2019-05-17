@@ -32,7 +32,7 @@ CAPNP_DECLARE_ENUM(Action, da8910b893745a9e);
 }  // namespace schemas
 }  // namespace capnp
 
-namespace grid_sim {
+namespace srgsim {
 
 struct Command {
   Command() = delete;
@@ -73,7 +73,7 @@ public:
   inline bool hasSenderId() const;
   inline  ::capnp::List< ::uint8_t>::Reader getSenderId() const;
 
-  inline  ::grid_sim::Command::Action getAction() const;
+  inline  ::srgsim::Command::Action getAction() const;
 
   inline  ::uint32_t getX() const;
 
@@ -115,8 +115,8 @@ public:
   inline void adoptSenderId(::capnp::Orphan< ::capnp::List< ::uint8_t>>&& value);
   inline ::capnp::Orphan< ::capnp::List< ::uint8_t>> disownSenderId();
 
-  inline  ::grid_sim::Command::Action getAction();
-  inline void setAction( ::grid_sim::Command::Action value);
+  inline  ::srgsim::Command::Action getAction();
+  inline void setAction( ::srgsim::Command::Action value);
 
   inline  ::uint32_t getX();
   inline void setX( ::uint32_t value);
@@ -190,17 +190,17 @@ inline ::capnp::Orphan< ::capnp::List< ::uint8_t>> Command::Builder::disownSende
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
 
-inline  ::grid_sim::Command::Action Command::Reader::getAction() const {
-  return _reader.getDataField< ::grid_sim::Command::Action>(
+inline  ::srgsim::Command::Action Command::Reader::getAction() const {
+  return _reader.getDataField< ::srgsim::Command::Action>(
       ::capnp::bounded<0>() * ::capnp::ELEMENTS);
 }
 
-inline  ::grid_sim::Command::Action Command::Builder::getAction() {
-  return _builder.getDataField< ::grid_sim::Command::Action>(
+inline  ::srgsim::Command::Action Command::Builder::getAction() {
+  return _builder.getDataField< ::srgsim::Command::Action>(
       ::capnp::bounded<0>() * ::capnp::ELEMENTS);
 }
-inline void Command::Builder::setAction( ::grid_sim::Command::Action value) {
-  _builder.setDataField< ::grid_sim::Command::Action>(
+inline void Command::Builder::setAction( ::srgsim::Command::Action value) {
+  _builder.setDataField< ::srgsim::Command::Action>(
       ::capnp::bounded<0>() * ::capnp::ELEMENTS, value);
 }
 

@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-namespace grid_sim
+namespace srgsim
 {
 
 class Coordinate
@@ -17,4 +17,5 @@ public:
 };
 
 bool operator==(Coordinate const& first, Coordinate const& second);
-} // namespace grid_sim
+bool operator<(Coordinate const& first, Coordinate const& second);
+} // namespace srgsim

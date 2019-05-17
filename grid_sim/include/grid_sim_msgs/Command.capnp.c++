@@ -174,7 +174,7 @@ CAPNP_DEFINE_ENUM(Action_da8910b893745a9e, da8910b893745a9e);
 
 // =======================================================================================
 
-namespace grid_sim {
+namespace srgsim {
 
 // Command
 constexpr uint16_t Command::_capnpPrivate::dataWordSize;

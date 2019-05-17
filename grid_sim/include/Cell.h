@@ -2,17 +2,18 @@
 
 #include "container/Coordinate.h"
 
+#include "SRGEnums.h"
+
 #include <string>
 
-namespace grid_sim {
+namespace srgsim
+{
+class World;
 
-enum Type{
-    Wall, Floor, Door
-};
-
-class Cell {
+class Cell
+{
 public:
-    Cell(uint32_t x, uint32_t y);
+    friend World;
     virtual ~Cell() = default;
     Cell(const Cell& cell);
 
@@ -23,6 +24,9 @@ public:
     Cell* down;
     Cell* left;
     Cell* right;
+
+private:
+    Cell(uint32_t x, uint32_t y);
 };
 
-}
+} // namespace srgsim

@@ -1,5 +1,5 @@
 using Cxx = import "/capnp/c++.capnp";
-$Cxx.namespace("grid_sim");
+$Cxx.namespace("srgsim");
 
 @0xcbaac9bc054f0dc5;
 

@@ -1,7 +1,9 @@
 #pragma once
+
+#include "container/Command.h"
+
 #include "World.h"
 #include "GUI.h"
-#include "container/Command.h"
 
 #include <queue>
 
@@ -9,7 +11,7 @@ namespace std {
     class thread;
 }
 
-namespace grid_sim {
+namespace srgsim {
     class Simulator {
     public:
         Simulator(bool headless = false);

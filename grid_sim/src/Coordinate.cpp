@@ -1,7 +1,7 @@
 #include "container/Coordinate.h"
 #include <iostream>
 
-namespace grid_sim
+namespace srgsim
 {
 Coordinate::Coordinate(uint32_t x, uint32_t y)
 {
@@ -9,15 +9,25 @@ Coordinate::Coordinate(uint32_t x, uint32_t y)
     this->y = y;
 }
 
-Coordinate::Coordinate(const grid_sim::Coordinate& coordinate)
+Coordinate::Coordinate(const srgsim::Coordinate& coordinate)
 {
     this->x = coordinate.x;
     this->y = coordinate.y;
 }
 bool operator==(Coordinate const& first, Coordinate const& second)
 {
-    std::cout << "Coordinate: == called" << std::endl;
     return first.x == second.x && first.y == second.y;
 }
 
-} // namespace grid_sim
+bool operator<(Coordinate const& first, Coordinate const& second)
+{
+    if (first.x < second.x) {
+        return true;
+    } else if (first.x > second.x) {
+        return false;
+    } else {
+        return (first.y < second.y);
+    }
+}
+
+} // namespace srgsim

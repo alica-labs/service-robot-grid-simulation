@@ -1,12 +1,14 @@
 #include "GUI.h"
 
-#include <Simulator.h>
+#include "Cell.h"
+#include "SRGEnums.h"
+#include "Simulator.h"
 
 #include <iostream>
 
-namespace grid_sim{
+namespace srgsim{
     GUI::GUI() {
-        std::string textureFile = grid_sim::Simulator::get_selfpath()+ "/textures/test_texture.png";
+        std::string textureFile = Simulator::get_selfpath()+ "/textures/test_texture.png";
         std::cout << "[GUI] Info: loading textureFile '" << textureFile << "'" << std::endl;
         this->texture = new sf::Texture();
         if (!this->texture->loadFromFile(textureFile)) {
@@ -23,7 +25,7 @@ namespace grid_sim{
         delete this->texture;
     }
 
-    sf::Sprite GUI::getSprite(Cell* cell, uint32_t x, uint32_t y, uint32_t worldSize) {
+    sf::Sprite GUI::getSprite(Cell* cell) {
         sf::Sprite sprite;
         sprite.setTexture(*this->texture);
         switch(cell->type) {
@@ -36,17 +38,23 @@ namespace grid_sim{
             case Type::Wall:
                 sprite.setTextureRect(sf::IntRect(textureSize, 0, textureSize, textureSize));
                 break;
+            case Type::Unknown:
+                sprite.setTextureRect(sf::IntRect(textureSize, textureSize, textureSize, textureSize));
+                break;
             default:
                 std::cout << "[GUI] Unknown cell type " << cell->type << std::endl;
         }
-        sprite.setScale(scaleFactor, scaleFactor);
-        sprite.setPosition(x*scaledSpriteSize,y*scaledSpriteSize);
+        sprite.setScale(scaleFactorX, scaleFactorY);
+        sprite.setPosition(cell->coordinate.x * scaledSpriteXSize, cell->coordinate.y * scaledSpriteYSize);
         return sprite;
     }
 
     void GUI::draw(World* world) {
-        this->scaledSpriteSize = float (xResolution)/float(world->getSize());
-        this->scaleFactor = scaledSpriteSize/float(textureSize);
+        this->window->setSize({world->getSizeX()* textureSize, world->getSizeY()* textureSize});
+        this->scaledSpriteXSize = float(xResolution) / float(world->getSizeX());
+        this->scaledSpriteYSize = float(yResolution) / float(world->getSizeY());
+        this->scaleFactorX = scaledSpriteXSize/float(textureSize);
+        this->scaleFactorY = scaledSpriteYSize/float(textureSize);
         this->window->setActive(true);
 
         sf::Event event;
@@ -60,14 +68,10 @@ namespace grid_sim{
 
         this->window->clear();
 
-        const std::vector<std::vector<Cell*>>& grid = world->getGrid();
-        for(uint32_t i = 0; i < grid.size(); i++) {
-            const std::vector<Cell*>& column = grid[i];
-            for (uint32_t j = 0; j < column.size(); j++) {
-                this->window->draw(getSprite(column[j], i, j, world->getSize()));
-            }
+        const std::map<Coordinate, Cell*> grid = world->getGrid();
+        for(auto pair : grid) {
+            this->window->draw(getSprite(pair.second));
         }
-
         this->window->display();
     }
 }

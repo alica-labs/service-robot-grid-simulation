@@ -6,10 +6,11 @@
 #include <string>
 #include <thread>
 #include <unistd.h>
+#include <Cell.h>
 
-#define SIM_DEBUG
+//#define SIM_DEBUG
 
-namespace grid_sim
+namespace srgsim
 {
 bool Simulator::running = false;
 
@@ -30,12 +31,37 @@ void Simulator::initTestWorld()
     this->world = new World();
     for (uint32_t i = 0; i < 10; i++) {
         for (uint32_t j = 0; j < 5; j++) {
-            this->world->setCell(i, j, Type::Floor);
+            if(Cell* cell = this->world->addCell(i, j)) {
+                cell->type = Type::Floor;
+            }
+
         }
-        for (uint32_t j = 5; j < 10; j++) {
-            this->world->setCell(i, j, Type::Wall);
+        for (uint32_t j = 5; j < 8; j++) {
+            if(Cell* cell = this->world->addCell(i, j)) {
+                cell->type = Type::Wall;
+            }
         }
     }
+    this->world->addCell(4,0)->type = Type::Unknown;
+    this->world->addCell(5,0)->type = Type::Unknown;
+    this->world->addCell(3,1)->type = Type::Unknown;
+    this->world->addCell(6,1)->type = Type::Unknown;
+    this->world->addCell(3,2)->type = Type::Unknown;
+    this->world->addCell(6,2)->type = Type::Unknown;
+    this->world->addCell(3,3)->type = Type::Unknown;
+    this->world->addCell(6,3)->type = Type::Unknown;
+    this->world->addCell(3,4)->type = Type::Unknown;
+    this->world->addCell(6,4)->type = Type::Unknown;
+    this->world->addCell(3,5)->type = Type::Unknown;
+    this->world->addCell(6,5)->type = Type::Unknown;
+    this->world->addCell(3,6)->type = Type::Unknown;
+    this->world->addCell(6,6)->type = Type::Unknown;
+    this->world->addCell(2,6)->type = Type::Unknown;
+    this->world->addCell(7,6)->type = Type::Unknown;
+    this->world->addCell(1,5)->type = Type::Unknown;
+    this->world->addCell(8,5)->type = Type::Unknown;
+    this->world->addCell(0,6)->type = Type::Unknown;
+    this->world->addCell(9,6)->type = Type::Unknown;
 }
 
 void Simulator::start()
@@ -94,7 +120,7 @@ void Simulator::simSigintHandler(int sig)
     std::cout << "Simulator: Caught SIGINT! Terminating ..." << std::endl;
     running = false;
 }
-} // namespace grid_sim
+} // namespace srgsim
 
 int main(int argc, char* argv[])
 {
@@ -105,9 +131,9 @@ int main(int argc, char* argv[])
         }
     }
 
-    grid_sim::Simulator* simulator = new grid_sim::Simulator(headless);
+    srgsim::Simulator* simulator = new srgsim::Simulator(headless);
 
-    signal(SIGINT, grid_sim::Simulator::simSigintHandler);
+    signal(SIGINT, srgsim::Simulator::simSigintHandler);
 
     simulator->start();
 

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace grid_sim {
+namespace srgsim {
     struct Command {
 
     };
@@ -13,7 +13,7 @@ namespace grid_sim {
 //
 //#include "engine/AgentIDConstPtr.h"
 //
-//namespace grid_sim
+//namespace srgsim
 //{
 //typedef std::tuple<AgentIDConstPtr, std::string, std::string, std::string, std::string, std::string, std::vector<AgentIDConstPtr>> stdAlicaEngineInfo;
 //struct Command

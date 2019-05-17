@@ -1,10 +1,14 @@
 #pragma once
 
-#include "Cell.h"
+#include "container/Coordinate.h"
+
+#include "SRGEnums.h"
+
 #include <stdint.h>
 #include <vector>
+#include <map>
 
-namespace grid_sim
+namespace srgsim
 {
 class Cell;
 
@@ -26,12 +30,13 @@ public:
      * @param y
      * @param type
      */
-    void setCell(uint32_t x, uint32_t y, Type type = Type::Floor);
-    const std::vector<std::vector<Cell*>>& getGrid() { return this->grid; };
-    uint32_t getSize();
+    Cell* addCell(uint32_t x, uint32_t y);
+    const std::map<Coordinate, Cell*>& getGrid();
+
+    Cell* getCell(Coordinate coordinate);
 
 private:
-    std::vector<std::vector<Cell*>> grid = std::vector<std::vector<Cell*>>();
+    //std::vector<std::vector<Cell*>> grid = std::vector<std::vector<Cell*>>();
 
     /**
      * Lets the world grow on demand and
@@ -40,5 +45,22 @@ private:
      * @param y
      */
     void growWorld(uint32_t x, uint32_t y);
+
+    std::map<Coordinate, Cell*> cellGrid;
+
+    /**
+     * Current field length
+     */
+    uint32_t sizeX;
+public:
+    uint32_t getSizeX() const;
+
+    uint32_t getSizeY() const;
+
+private:
+    /**
+     * Current field width
+     */
+    uint32_t sizeY;
 };
-} // namespace grid_sim
+} // namespace srgsim
