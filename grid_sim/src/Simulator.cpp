@@ -1,4 +1,4 @@
-#include "Simulator.h"
+#include "srgsim/Simulator.h"
 
 #include <iostream>
 #include <limits.h>
@@ -6,7 +6,7 @@
 #include <string>
 #include <thread>
 #include <unistd.h>
-#include <Cell.h>
+#include <srgsim/Cell.h>
 
 //#define SIM_DEBUG
 

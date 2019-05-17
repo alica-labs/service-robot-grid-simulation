@@ -13,7 +13,7 @@ find_package(Threads)
 find_package(catkin REQUIRED capnzero)
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME} ${PROJECT_NAME}_msgs ${PROJECT_NAME}_world
+  LIBRARIES ${PROJECT_NAME}_msgs ${PROJECT_NAME}_world
   DEPENDS SFML
 )
 
@@ -56,6 +56,8 @@ foreach(ResourceFile ${ResourceFiles})
   )
 endforeach()
 
+############### World
+
 add_library(${PROJECT_NAME}_world
   src/World.cpp
   src/Cell.cpp
@@ -68,8 +70,8 @@ find_package(CapnProto REQUIRED)
 set(grid_sim_message_folder "${CMAKE_CURRENT_SOURCE_DIR}/msg")
 file(GLOB_RECURSE grid_sim_msgs ${grid_sim_message_folder} *.capnp)
 set(CAPNPC_SRC_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/msg)
-file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/grid_sim_msgs")
-set(CAPNPC_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/grid_sim_msgs")
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/srgsim")
+set(CAPNPC_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/srgsim")
 capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${grid_sim_msgs})
 
 add_library(${PROJECT_NAME}_msgs

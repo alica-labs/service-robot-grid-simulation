@@ -1,6 +1,6 @@
-#include "World.h"
+#include "srgsim/World.h"
 
-#include "Cell.h"
+#include "srgsim/Cell.h"
 
 #include <iostream>
 
