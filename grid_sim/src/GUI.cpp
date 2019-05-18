@@ -1,8 +1,8 @@
-#include "GUI.h"
+#include "srgsim/GUI.h"
 
-#include "Cell.h"
-#include "SRGEnums.h"
-#include "Simulator.h"
+#include "srgsim/Cell.h"
+#include "srgsim/SRGEnums.h"
+#include "srgsim/Simulator.h"
 
 #include <iostream>
 

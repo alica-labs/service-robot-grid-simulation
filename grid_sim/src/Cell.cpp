@@ -1,4 +1,4 @@
-#include "Cell.h"
+#include "srgsim/Cell.h"
 #include <iostream>
 
 namespace srgsim
