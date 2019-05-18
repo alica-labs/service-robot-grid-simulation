@@ -1,6 +1,9 @@
 #include "srgsim/World.h"
 
 #include "srgsim/Cell.h"
+#include "srgsim/Simulator.h"
+
+#include <Tmx.h>
 
 #include <iostream>
 
@@ -8,6 +11,21 @@ namespace srgsim
 {
 World::World()
 {
+    std::string textureFile = Simulator::get_selfpath() + "/textures/Department.tmx";
+    std::cout << textureFile << std::endl;
+    Tmx::Map *map = new Tmx::Map();
+    map->ParseFile(textureFile);
+
+    for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {
+        for (int y = 0; y < map->GetTileLayer(0)->GetHeight(); y++) {
+            std::cout << map->GetTileLayer(0)->GetTile(x,y).gid << std::endl;
+        }
+    }
+
+    std::cout << textureFile << std::endl;
+//    std::cout << map->GetTileset(0)->GetImage()->GetSource() << std::endl;
+   // std::cout << map->GetFilepath() << std::endl;
+
     // always init world with a single floor cell
     this->cellGrid.emplace(Coordinate(0, 0), new Cell(0, 0));
     this->cellGrid.at(Coordinate(0, 0))->type = Type::Floor;

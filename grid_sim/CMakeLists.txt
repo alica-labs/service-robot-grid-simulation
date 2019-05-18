@@ -10,7 +10,10 @@ find_package(SFML 2.4 COMPONENTS graphics window system REQUIRED)
 
 find_package(Threads)
 
+find_package(tmxparser REQUIRED)
+
 find_package(catkin REQUIRED capnzero)
+
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}_msgs ${PROJECT_NAME}_world
@@ -37,10 +40,14 @@ target_link_libraries(${PROJECT_NAME}
   ${PROJECT_NAME}_msgs
   ${PROJECT_NAME}_world
   ${catkin_LIBRARIES}
-)
+        tmxparser)
 
 # copy the resource (e.g. texture files)
-file(GLOB ResourceFiles ${CMAKE_SOURCE_DIR}/textures/*.png)
+file(GLOB ResourceFiles
+  ${CMAKE_SOURCE_DIR}/textures/*.png
+  ${CMAKE_SOURCE_DIR}/textures/*.tmx
+  ${CMAKE_SOURCE_DIR}/textures/*.tsx
+)
 add_custom_target(copy ALL
   DEPENDS
   ${ResourceFiles}
