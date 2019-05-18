@@ -28,6 +28,53 @@ GUI::~GUI()
     delete this->texture;
 }
 
+void GUI::draw(World* world)
+{
+    calculateSpriteSize(world);
+    calculateScale();
+    this->window->setActive(true);
+
+    handleSFMLEvents();
+
+    this->window->clear();
+
+    const std::map<Coordinate, Cell*> grid = world->getGrid();
+    for (auto pair : grid) {
+        this->window->draw(getSprite(pair.second));
+    }
+    this->window->display();
+}
+
+void GUI::handleSFMLEvents() const
+{
+    sf::Event event;
+
+    while (window->pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            window->close();
+        } else if (event.type == sf::Event::Resized) {
+            window->setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+        }
+    }
+}
+
+void GUI::calculateScale()
+{
+    scaleFactor = scaledSpriteSize / float(textureSize);
+}
+
+void GUI::calculateSpriteSize(const World* world)
+{
+    auto sizeX = float(window->getSize().x) / float(world->getSizeX());
+    auto sizeY = float(window->getSize().y) / float(world->getSizeY());
+
+    if (sizeX < sizeY) {
+        scaledSpriteSize = sizeX;
+    } else {
+        scaledSpriteSize = sizeY;
+    }
+}
+
 sf::Sprite GUI::getSprite(Cell* cell)
 {
     sf::Sprite sprite;
@@ -48,52 +95,8 @@ sf::Sprite GUI::getSprite(Cell* cell)
     default:
         std::cout << "[GUI] Unknown cell type " << cell->type << std::endl;
     }
-    sprite.setScale(scaleFactorX, scaleFactorY);
-    sprite.setPosition(cell->coordinate.x * scaledSpriteSizeX, cell->coordinate.y * scaledSpriteSizeY);
+    sprite.setScale(scaleFactor, scaleFactor);
+    sprite.setPosition(cell->coordinate.x * scaledSpriteSize, cell->coordinate.y * scaledSpriteSize);
     return sprite;
-}
-
-void GUI::draw(World* world)
-{
-    if (this->window->getSize().x <= this->window->getSize().y) {
-        std::cout << " x <= y " << this->window->getSize().x << " " << this->window->getSize().y << std::endl;
-        if (world->getSizeX() > world->getSizeY()) {
-            std::cout << "w x < y " << world->getSizeX() << " " << world->getSizeY() << std::endl;
-            this->scaledSpriteSizeX = float(this->window->getSize().x) / float(world->getSizeX());
-            this->scaledSpriteSizeY = scaledSpriteSizeX * float(this->window->getSize().x) / float(this->window->getSize().y);
-        } else {
-            std::cout << "w x > y " << world->getSizeX() << " " << world->getSizeY() << std::endl;
-            this->scaledSpriteSizeX = float(this->window->getSize().x) / float(world->getSizeY());
-            this->scaledSpriteSizeY = scaledSpriteSizeX * float(this->window->getSize().x) / float(this->window->getSize().y);
-        }
-    } else {
-       std::cout << "x > y " << this->window->getSize().x << " " << this->window->getSize().y << std::endl;
-        if (world->getSizeX() > world->getSizeY()) {
-            this->scaledSpriteSizeY = float(this->window->getSize().y) / float(world->getSizeX());
-            this->scaledSpriteSizeX = scaledSpriteSizeY * float(this->window->getSize().y) / float(this->window->getSize().x);
-        } else {
-            this->scaledSpriteSizeY = float(this->window->getSize().y) / float(world->getSizeY());
-            this->scaledSpriteSizeX = scaledSpriteSizeY * float(this->window->getSize().y) / float(this->window->getSize().x);
-        }
-    }
-    this->scaleFactorX = scaledSpriteSizeX / float(textureSize);
-    this->scaleFactorY = scaledSpriteSizeY / float(textureSize);
-    this->window->setActive(true);
-
-    sf::Event event;
-
-    while (this->window->pollEvent(event)) {
-        if (event.type == sf::Event::Closed) {
-            this->window->close();
-        }
-    }
-
-    this->window->clear();
-
-    const std::map<Coordinate, Cell*> grid = world->getGrid();
-    for (auto pair : grid) {
-        this->window->draw(getSprite(pair.second));
-    }
-    this->window->display();
 }
 } // namespace srgsim
