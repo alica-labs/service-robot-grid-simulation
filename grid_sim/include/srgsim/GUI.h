@@ -1,10 +1,12 @@
 #pragma once
 
 #include "World.h"
+#include "srgsim/SRGEnums.h"
 
 #include <SFML/Graphics.hpp>
 
 #include <string>
+#include <unordered_map>
 
 namespace srgsim {
     class GUI {
@@ -22,12 +24,16 @@ namespace srgsim {
         sf::RenderWindow* window;
         sf::Texture* texture;
 
-        sf::Sprite getSprite(Cell* cell);
+        sf::Sprite getSprite(Type type);
 
         void calculateScale();
 
-        void handleSFMLEvents() const;
+        void handleSFMLEvents(const World* world);
 
         void calculateSpriteSize(const World *world);
+
+        sf::Sprite sprites[Type::Last];
+
+        void scaleSprite(const World *world);
     };
 }

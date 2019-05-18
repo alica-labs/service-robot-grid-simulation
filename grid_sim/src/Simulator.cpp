@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <srgsim/Cell.h>
 
-//#define SIM_DEBUG
+#define SIM_DEBUG
 
 namespace srgsim
 {

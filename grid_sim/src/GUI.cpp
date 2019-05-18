@@ -20,6 +20,28 @@ GUI::GUI()
     this->texture->setRepeated(true);
     this->window = new sf::RenderWindow(sf::VideoMode(xResolution, yResolution), "Grid Simulator GUI");
     this->window->setActive(false);
+    for (int i = 0; i != Type::Last; i++) {
+        sf::Sprite sprite;
+        sprite.setTexture(*this->texture);
+        Type type = static_cast<Type>(i);
+        switch (type) {
+        case Type::Floor:
+            sprite.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
+            break;
+        case Type::Door:
+            sprite.setTextureRect(sf::IntRect(0, textureSize, textureSize, textureSize));
+            break;
+        case Type::Wall:
+            sprite.setTextureRect(sf::IntRect(textureSize, 0, textureSize, textureSize));
+            break;
+        case Type::Unknown:
+            sprite.setTextureRect(sf::IntRect(textureSize, textureSize, textureSize, textureSize));
+            break;
+        default:
+            std::cout << "[GUI] Unknown cell type " << type << std::endl;
+        }
+        sprites[type] = sprite;
+    }
 }
 
 GUI::~GUI()
@@ -30,22 +52,21 @@ GUI::~GUI()
 
 void GUI::draw(World* world)
 {
-    calculateSpriteSize(world);
-    calculateScale();
     this->window->setActive(true);
 
-    handleSFMLEvents();
+    handleSFMLEvents(world);
 
     this->window->clear();
 
-    const std::map<Coordinate, Cell*> grid = world->getGrid();
-    for (auto pair : grid) {
-        this->window->draw(getSprite(pair.second));
+    for (auto& pair : world->getGrid()) {
+        sf::Sprite sprite = getSprite(pair.second->type);
+        sprite.setPosition(pair.second->coordinate.x * scaledSpriteSize, pair.second->coordinate.y * scaledSpriteSize);
+        this->window->draw(sprite);
     }
     this->window->display();
 }
 
-void GUI::handleSFMLEvents() const
+void GUI::handleSFMLEvents(const World* world)
 {
     sf::Event event;
 
@@ -54,7 +75,17 @@ void GUI::handleSFMLEvents() const
             window->close();
         } else if (event.type == sf::Event::Resized) {
             window->setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+            scaleSprite(world);
         }
+    }
+}
+
+void GUI::scaleSprite(const World* world)
+{
+    calculateSpriteSize(world);
+    calculateScale();
+    for (auto& sprite : sprites) {
+        sprite.setScale(scaleFactor, scaleFactor);
     }
 }
 
@@ -75,28 +106,8 @@ void GUI::calculateSpriteSize(const World* world)
     }
 }
 
-sf::Sprite GUI::getSprite(Cell* cell)
+sf::Sprite GUI::getSprite(Type type)
 {
-    sf::Sprite sprite;
-    sprite.setTexture(*this->texture);
-    switch (cell->type) {
-    case Type::Floor:
-        sprite.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
-        break;
-    case Type::Door:
-        sprite.setTextureRect(sf::IntRect(0, textureSize, textureSize, textureSize));
-        break;
-    case Type::Wall:
-        sprite.setTextureRect(sf::IntRect(textureSize, 0, textureSize, textureSize));
-        break;
-    case Type::Unknown:
-        sprite.setTextureRect(sf::IntRect(textureSize, textureSize, textureSize, textureSize));
-        break;
-    default:
-        std::cout << "[GUI] Unknown cell type " << cell->type << std::endl;
-    }
-    sprite.setScale(scaleFactor, scaleFactor);
-    sprite.setPosition(cell->coordinate.x * scaledSpriteSize, cell->coordinate.y * scaledSpriteSize);
-    return sprite;
+    return sprites[type];
 }
 } // namespace srgsim
