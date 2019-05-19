@@ -23,5 +23,6 @@ Cell::Cell(const srgsim::Cell& cell)
     this->down = cell.down;
     this->left = cell.left;
     this->right = cell.right;
+    this->objects = cell.objects;
  }
 } // namespace srgsim

@@ -11,6 +11,7 @@
 namespace srgsim
 {
 class Cell;
+class Object;
 
 /**
  * Coordinates are:
@@ -34,6 +35,8 @@ public:
     const std::map<Coordinate, Cell*>& getGrid();
 
     Cell* getCell(Coordinate coordinate);
+    bool placeObject(Object* object, Coordinate coordinate);
+
 
 private:
     //std::vector<std::vector<Cell*>> grid = std::vector<std::vector<Cell*>>();

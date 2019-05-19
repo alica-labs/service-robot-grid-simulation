@@ -1,6 +1,7 @@
 #include "srgsim/World.h"
 
 #include "srgsim/Cell.h"
+#include "srgsim/Object.h"
 #include "srgsim/Simulator.h"
 
 #include <Tmx.h>
@@ -11,7 +12,7 @@ namespace srgsim
 {
 World::World()
 {
-    std::string textureFile = Simulator::get_selfpath() + "/textures/Department.tmx";
+    std::string textureFile = Simulator::getSelfPath() + "/textures/Department.tmx";
     std::cout << textureFile << " " << std::endl;
     Tmx::Map* map = new Tmx::Map();
     map->ParseFile(textureFile);
@@ -123,6 +124,18 @@ Cell* World::getCell(Coordinate coordinate)
         return this->cellGrid.at(coordinate);
     }
     return nullptr;
+}
+
+bool World::placeObject(Object* object, Coordinate coordinate) {
+    auto cellIter = this->cellGrid.find(coordinate);
+    if (cellIter == this->cellGrid.end()) {
+        return false;
+    }
+
+    cellIter->second->objects.push_back(object);
+    object->setCell(cellIter->second);
+
+    return true;
 }
 
 const std::map<Coordinate, Cell*>& World::getGrid()

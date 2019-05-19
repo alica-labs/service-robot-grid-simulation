@@ -1,16 +1,19 @@
 #include "srgsim/GUI.h"
 
 #include "srgsim/Cell.h"
+#include "srgsim/Object.h"
 #include "srgsim/SRGEnums.h"
 #include "srgsim/Simulator.h"
 
 #include <iostream>
 
+//#define GUI_DEBUG
+
 namespace srgsim
 {
 GUI::GUI()
 {
-    std::string textureFile = Simulator::get_selfpath() + "/textures/test_texture.png";
+    std::string textureFile = Simulator::getSelfPath() + "/textures/test_texture.png";
     std::cout << "[GUI] Info: loading textureFile '" << textureFile << "'" << std::endl;
     this->texture = new sf::Texture();
     if (!this->texture->loadFromFile(textureFile)) {
@@ -63,9 +66,20 @@ void GUI::draw(World* world)
     this->window->clear();
 
     for (auto& pair : world->getGrid()) {
+        // background sprite
         sf::Sprite sprite = getSprite(pair.second->type);
         sprite.setPosition(pair.second->coordinate.x * scaledSpriteSize, pair.second->coordinate.y * scaledSpriteSize);
         this->window->draw(sprite);
+
+        // object sprites
+        for(Object* object : pair.second->objects) {
+            sf::Sprite sprite = getSprite(object->getType());
+            sprite.setPosition(object->getCell()->coordinate.x * scaledSpriteSize, object->getCell()->coordinate.y * scaledSpriteSize);
+            this->window->draw(sprite);
+#ifdef GUI_DEBUG
+            std::cout << "GUI: Placing object of Type " << object->getType() << " at (" << object->getCell()->coordinate.x << ", " << object->getCell()->coordinate.y << ")" << std::endl;
+#endif
+        }
     }
     this->window->display();
 }

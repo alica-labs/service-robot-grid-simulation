@@ -9,6 +9,7 @@
   <license>MIT</license>
 
   <depend>capnzero</depend>
+  <depend>agent_id</depend>
 
   <buildtool_depend>catkin</buildtool_depend>
 

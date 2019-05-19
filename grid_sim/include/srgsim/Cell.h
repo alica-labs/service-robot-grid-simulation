@@ -5,10 +5,12 @@
 #include "SRGEnums.h"
 
 #include <string>
+#include <vector>
 
 namespace srgsim
 {
 class World;
+class Object;
 
 class Cell
 {
@@ -24,6 +26,7 @@ public:
     Cell* down;
     Cell* left;
     Cell* right;
+    std::vector<Object*> objects;
 
 private:
     Cell(uint32_t x, uint32_t y);

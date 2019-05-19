@@ -1,9 +1,12 @@
 #pragma once
 
+namespace srgsim
+{
 /**
  * Only add new types BEFORE unknown!
  */
-enum Type{
+enum Type
+{
     Empty, // necessary to correct ids with regard to tmx file
     Default,
     Gras,
@@ -14,5 +17,6 @@ enum Type{
     Robot,
     White,
     Dirt,
-    Last// has to be last
+    Last // has to be last
 };
+} // namespace srgsim

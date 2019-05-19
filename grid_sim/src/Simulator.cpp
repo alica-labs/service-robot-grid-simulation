@@ -1,12 +1,14 @@
 #include "srgsim/Simulator.h"
 
+#include "srgsim/Object.h"
+#include "srgsim/Cell.h"
+
 #include <iostream>
 #include <limits.h>
 #include <signal.h>
 #include <string>
 #include <thread>
 #include <unistd.h>
-#include <srgsim/Cell.h>
 
 //#define SIM_DEBUG
 
@@ -17,56 +19,30 @@ bool Simulator::running = false;
 Simulator::Simulator(bool headless)
         : headless(headless)
 {
-    //this->initTestWorld();
+    // this->initTestWorld();
     this->initWorld();
+
+    // test spawn robot
+    int id = 3;
+    std::vector<uint8_t> idByteVector;
+    for (int i = 0; i < static_cast<int>(sizeof(id)); i++) {
+        idByteVector.push_back(*(((uint8_t*) &id) + i));
+    }
+    this->spawnRobot(new essentials::ID(idByteVector.data(), idByteVector.size()));
 }
 
 Simulator::~Simulator()
 {
+    for (auto& object : objects) {
+        delete object.second;
+    }
     delete this->world;
     delete this->gui;
 }
 
-void Simulator::initWorld() {
-    this->world = new World();
-}
-
-void Simulator::initTestWorld()
+void Simulator::initWorld()
 {
     this->world = new World();
-    for (uint32_t i = 0; i < 10; i++) {
-        for (uint32_t j = 0; j < 5; j++) {
-            if(Cell* cell = this->world->addCell(i, j)) {
-                cell->type = Type::Floor;
-            }
-
-        }
-        for (uint32_t j = 5; j < 8; j++) {
-            if(Cell* cell = this->world->addCell(i, j)) {
-                cell->type = Type::Wall;
-            }
-        }
-    }
-    this->world->addCell(4,0)->type = Type::Unknown;
-    this->world->addCell(5,0)->type = Type::Unknown;
-    this->world->addCell(3,1)->type = Type::Unknown;
-    this->world->addCell(6,1)->type = Type::Unknown;
-    this->world->addCell(3,2)->type = Type::Unknown;
-    this->world->addCell(6,2)->type = Type::Unknown;
-    this->world->addCell(3,3)->type = Type::Unknown;
-    this->world->addCell(6,3)->type = Type::Unknown;
-    this->world->addCell(3,4)->type = Type::Unknown;
-    this->world->addCell(6,4)->type = Type::Unknown;
-    this->world->addCell(3,5)->type = Type::Unknown;
-    this->world->addCell(6,5)->type = Type::Unknown;
-    this->world->addCell(3,6)->type = Type::Unknown;
-    this->world->addCell(6,6)->type = Type::Unknown;
-    this->world->addCell(2,6)->type = Type::Unknown;
-    this->world->addCell(7,6)->type = Type::Unknown;
-    this->world->addCell(1,5)->type = Type::Unknown;
-    this->world->addCell(8,5)->type = Type::Unknown;
-    this->world->addCell(0,6)->type = Type::Unknown;
-    this->world->addCell(9,6)->type = Type::Unknown;
 }
 
 void Simulator::start()
@@ -98,7 +74,7 @@ void Simulator::run()
     }
 }
 
-std::string Simulator::get_selfpath()
+std::string Simulator::getSelfPath()
 {
     char buff[PATH_MAX];
     size_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
@@ -114,6 +90,22 @@ std::string Simulator::get_selfpath()
 bool Simulator::isRunning()
 {
     return running;
+}
+
+void Simulator::spawnRobot(essentials::ID* id) {
+    // create robot
+    Object* object = new Object(Type::Robot);
+    this->objects.emplace(object->getID(), object);
+
+    // search for cell with valid spawn coordinates
+    srand ( time(NULL) );
+    Cell* cell = nullptr;
+    while(!cell || cell->type != Type::Floor) {
+        cell = world->getCell(Coordinate(rand() % world->getSizeX(), rand() % world->getSizeX()));
+    }
+
+    // place robot
+    world->placeObject(object,cell->coordinate);
 }
 
 /**
