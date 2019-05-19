@@ -26,18 +26,22 @@ GUI::GUI()
         Type type = static_cast<Type>(i);
         switch (type) {
         case Type::Wall:
-            sprite.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
+            sprite.setTextureRect(sf::IntRect(textureSize * 2, 0, textureSize, textureSize));
             break;
         case Type::Door:
             sprite.setTextureRect(sf::IntRect(0, textureSize, textureSize, textureSize));
             break;
         case Type::Floor:
-            sprite.setTextureRect(sf::IntRect(textureSize, 0, textureSize, textureSize));
+            sprite.setTextureRect(sf::IntRect(textureSize * 2, textureSize, textureSize, textureSize));
             break;
         case Type::Unknown:
             sprite.setTextureRect(sf::IntRect(textureSize, textureSize, textureSize, textureSize));
             break;
+        case Type::Robot:
+            sprite.setTextureRect(sf::IntRect(0, textureSize * 2, textureSize, textureSize));
+            break;
         default:
+            sprite.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
             std::cout << "[GUI] Unknown cell type " << type << std::endl;
         }
         sprites[type] = sprite;
