@@ -17,6 +17,7 @@ namespace srgsim {
         Simulator(bool headless = false);
         ~Simulator();
         void initTestWorld();
+        void initWorld();
 
         void start();
         void run();

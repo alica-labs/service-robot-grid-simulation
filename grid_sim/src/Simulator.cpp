@@ -17,13 +17,18 @@ bool Simulator::running = false;
 Simulator::Simulator(bool headless)
         : headless(headless)
 {
-    this->initTestWorld();
+    //this->initTestWorld();
+    this->initWorld();
 }
 
 Simulator::~Simulator()
 {
     delete this->world;
     delete this->gui;
+}
+
+void Simulator::initWorld() {
+    this->world = new World();
 }
 
 void Simulator::initTestWorld()

@@ -25,13 +25,13 @@ GUI::GUI()
         sprite.setTexture(*this->texture);
         Type type = static_cast<Type>(i);
         switch (type) {
-        case Type::Floor:
+        case Type::Wall:
             sprite.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
             break;
         case Type::Door:
             sprite.setTextureRect(sf::IntRect(0, textureSize, textureSize, textureSize));
             break;
-        case Type::Wall:
+        case Type::Floor:
             sprite.setTextureRect(sf::IntRect(textureSize, 0, textureSize, textureSize));
             break;
         case Type::Unknown:

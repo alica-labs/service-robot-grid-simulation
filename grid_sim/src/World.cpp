@@ -12,25 +12,14 @@ namespace srgsim
 World::World()
 {
     std::string textureFile = Simulator::get_selfpath() + "/textures/Department.tmx";
-    std::cout << textureFile << std::endl;
-    Tmx::Map *map = new Tmx::Map();
+    std::cout << textureFile << " " << std::endl;
+    Tmx::Map* map = new Tmx::Map();
     map->ParseFile(textureFile);
-
     for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {
         for (int y = 0; y < map->GetTileLayer(0)->GetHeight(); y++) {
-            std::cout << map->GetTileLayer(0)->GetTile(x,y).gid << std::endl;
+            this->addCell(x, y)->type = static_cast<Type>(map->GetTileLayer(0)->GetTile(x, y).gid);
         }
     }
-
-    std::cout << textureFile << std::endl;
-//    std::cout << map->GetTileset(0)->GetImage()->GetSource() << std::endl;
-   // std::cout << map->GetFilepath() << std::endl;
-
-    // always init world with a single floor cell
-    this->cellGrid.emplace(Coordinate(0, 0), new Cell(0, 0));
-    this->cellGrid.at(Coordinate(0, 0))->type = Type::Floor;
-    this->sizeX = 1;
-    this->sizeY = 1;
 }
 
 World::~World()
@@ -42,6 +31,14 @@ World::~World()
 
 Cell* World::addCell(uint32_t x, uint32_t y)
 {
+    if(this->cellGrid.size() == 0) {
+        Cell* cell = new Cell(x, y);
+        this->cellGrid.emplace(Coordinate(x, y), cell);
+        this->sizeX = 1;
+        this->sizeY = 1;
+        return cell;
+    }
+
     if (this->cellGrid.find(Coordinate(x, y)) == this->cellGrid.end()) {
         Cell* cell = new Cell(x, y);
         bool attached = false;
@@ -79,12 +76,12 @@ Cell* World::addCell(uint32_t x, uint32_t y)
                 attached = true;
             }
         }
-        if(attached) {
+        if (attached) {
             this->cellGrid.emplace(Coordinate(x, y), cell);
-            if(x + 1 > this->sizeX) {
-                this->sizeX = x +1;
+            if (x + 1 > this->sizeX) {
+                this->sizeX = x + 1;
             }
-            if(y + 1 > this->sizeY) {
+            if (y + 1 > this->sizeY) {
                 this->sizeY = y + 1;
             }
             return cell;
