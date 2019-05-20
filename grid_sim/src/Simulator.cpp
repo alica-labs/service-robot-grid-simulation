@@ -73,7 +73,7 @@ void Simulator::run()
 #endif
 
         //TODO remove later, just for debug
-        std::cout << "Simulator: moving Robot left" << std::endl;
+        std::cout << "Test: Simulator: moving Robot left" << std::endl;
         unsigned int microseconds = 1000000;
         usleep(microseconds);
         this->moveObject(robotID, Direction::Left);
