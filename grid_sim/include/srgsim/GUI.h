@@ -8,32 +8,32 @@
 #include <string>
 #include <unordered_map>
 
-namespace srgsim {
-    class GUI {
-    public:
-        GUI();
-        ~GUI();
-        void draw(srgsim::World* world);
-    private:
-        uint32_t xResolution = 800;
-        uint32_t yResolution = 800;
-        uint32_t textureSize = 60;
-        float scaleFactor = 0;
-        float scaledSpriteSize = 0;
+namespace srgsim
+{
+class GUI
+{
+public:
+    GUI();
+    ~GUI();
+    void draw(srgsim::World* world);
 
-        sf::RenderWindow* window;
-        sf::Texture* texture;
+private:
+    sf::Sprite getSprite(Type type);
+    void scaleSprite(const World* world);
 
-        sf::Sprite getSprite(Type type);
+    void handleSFMLEvents(const World* world);
+    void calculateScale();
+    void calculateSpriteSize(const World* world);
 
-        void calculateScale();
+    uint32_t xResolution = 800;
+    uint32_t yResolution = 800;
+    uint32_t textureSize = 60;
+    float scaleFactor = 0;
+    float scaledSpriteSize = 0;
 
-        void handleSFMLEvents(const World* world);
+    sf::Sprite sprites[Type::Last];
+    sf::Texture* texture;
+    sf::RenderWindow* window;
 
-        void calculateSpriteSize(const World *world);
-
-        sf::Sprite sprites[Type::Last];
-
-        void scaleSprite(const World *world);
-    };
-}
+};
+} // namespace srgsim

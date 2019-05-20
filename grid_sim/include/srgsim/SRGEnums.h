@@ -19,4 +19,12 @@ enum Type
     Dirt,
     Last // has to be last
 };
+
+enum Direction
+{
+    Left,
+    Up,
+    Down,
+    Right
+};
 } // namespace srgsim

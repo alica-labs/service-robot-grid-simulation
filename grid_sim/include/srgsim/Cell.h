@@ -19,6 +19,10 @@ public:
     virtual ~Cell() = default;
     Cell(const Cell& cell);
 
+    const std::vector<Object *> &getObjects() const;
+    void addObject(Object* object);
+    void removeObject(Object* object);
+
     Type type;
     std::string room;
     Coordinate coordinate;
@@ -26,10 +30,10 @@ public:
     Cell* down;
     Cell* left;
     Cell* right;
-    std::vector<Object*> objects;
 
 private:
     Cell(uint32_t x, uint32_t y);
+    std::vector<Object*> objects;
 };
 
 } // namespace srgsim

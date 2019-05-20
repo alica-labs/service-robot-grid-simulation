@@ -32,7 +32,7 @@ World::~World()
 
 Cell* World::addCell(uint32_t x, uint32_t y)
 {
-    if(this->cellGrid.size() == 0) {
+    if (this->cellGrid.size() == 0) {
         Cell* cell = new Cell(x, y);
         this->cellGrid.emplace(Coordinate(x, y), cell);
         this->sizeX = 1;
@@ -40,59 +40,67 @@ Cell* World::addCell(uint32_t x, uint32_t y)
         return cell;
     }
 
-    if (this->cellGrid.find(Coordinate(x, y)) == this->cellGrid.end()) {
-        Cell* cell = new Cell(x, y);
-        bool attached = false;
-        // Left
-        if (x > 0) {
-            auto it = this->cellGrid.find(Coordinate(x - 1, y));
-            if (it != this->cellGrid.end()) {
-                cell->left = it->second;
-                it->second->right = cell;
-                attached = true;
-            }
-        }
-        // Up
-        auto it = this->cellGrid.find(Coordinate(x, y + 1));
-        if (it != this->cellGrid.end()) {
-            cell->up = it->second;
-            it->second->down = cell;
-            attached = true;
-        }
-        // Right
-        if (x > 0) {
-            auto it = this->cellGrid.find(Coordinate(x + 1, y));
-            if (it != this->cellGrid.end()) {
-                cell->right = it->second;
-                it->second->left = cell;
-                attached = true;
-            }
-        }
-        // Down
-        if (y > 0) {
-            auto it = this->cellGrid.find(Coordinate(x, y - 1));
-            if (it != this->cellGrid.end()) {
-                cell->down = it->second;
-                it->second->up = cell;
-                attached = true;
-            }
-        }
-        if (attached) {
-            this->cellGrid.emplace(Coordinate(x, y), cell);
-            if (x + 1 > this->sizeX) {
-                this->sizeX = x + 1;
-            }
-            if (y + 1 > this->sizeY) {
-                this->sizeY = y + 1;
-            }
-            return cell;
-        } else {
-            delete cell;
-            return nullptr;
-        }
-    } else {
+    if (this->cellGrid.find(Coordinate(x, y)) != this->cellGrid.end()) {
         return this->cellGrid.at(Coordinate(x, y));
     }
+
+    Cell* cell = new Cell(x, y);
+    bool attached = false;
+    // Left
+    if (x > 0) {
+        auto it = this->cellGrid.find(Coordinate(x - 1, y));
+        if (it != this->cellGrid.end()) {
+            cell->left = it->second;
+            it->second->right = cell;
+            attached = true;
+        }
+    }
+    // Up
+    auto it = this->cellGrid.find(Coordinate(x, y + 1));
+    if (it != this->cellGrid.end()) {
+        cell->up = it->second;
+        it->second->down = cell;
+        attached = true;
+    }
+    // Right
+    if (x > 0) {
+        auto it = this->cellGrid.find(Coordinate(x + 1, y));
+        if (it != this->cellGrid.end()) {
+            cell->right = it->second;
+            it->second->left = cell;
+            attached = true;
+        }
+    }
+    // Down
+    if (y > 0) {
+        auto it = this->cellGrid.find(Coordinate(x, y - 1));
+        if (it != this->cellGrid.end()) {
+            cell->down = it->second;
+            it->second->up = cell;
+            attached = true;
+        }
+    }
+    if (attached) {
+        this->cellGrid.emplace(Coordinate(x, y), cell);
+        if (x + 1 > this->sizeX) {
+            this->sizeX = x + 1;
+        }
+        if (y + 1 > this->sizeY) {
+            this->sizeY = y + 1;
+        }
+        return cell;
+    } else {
+        delete cell;
+        return nullptr;
+    }
+}
+
+Cell* World::getCell(Coordinate coordinate)
+{
+    if (this->cellGrid.find(coordinate) != this->cellGrid.end()) {
+        return this->cellGrid.at(coordinate);
+    }
+    return nullptr;
 }
 
 void World::growWorld(uint32_t x, uint32_t y)
@@ -118,15 +126,8 @@ void World::growWorld(uint32_t x, uint32_t y)
     }
 }
 
-Cell* World::getCell(Coordinate coordinate)
+bool World::placeObject(Object* object, Coordinate coordinate)
 {
-    if (this->cellGrid.find(coordinate) != this->cellGrid.end()) {
-        return this->cellGrid.at(coordinate);
-    }
-    return nullptr;
-}
-
-bool World::placeObject(Object* object, Coordinate coordinate) {
     auto cellIter = this->cellGrid.find(coordinate);
     if (cellIter == this->cellGrid.end()) {
         return false;

@@ -1,7 +1,7 @@
 #include "srgsim/Simulator.h"
 
-#include "srgsim/Object.h"
 #include "srgsim/Cell.h"
+#include "srgsim/Object.h"
 
 #include <iostream>
 #include <limits.h>
@@ -21,14 +21,6 @@ Simulator::Simulator(bool headless)
 {
     // this->initTestWorld();
     this->initWorld();
-
-    // test spawn robot
-    int id = 3;
-    std::vector<uint8_t> idByteVector;
-    for (int i = 0; i < static_cast<int>(sizeof(id)); i++) {
-        idByteVector.push_back(*(((uint8_t*) &id) + i));
-    }
-    this->spawnRobot(new essentials::ID(idByteVector.data(), idByteVector.size()));
 }
 
 Simulator::~Simulator()
@@ -55,6 +47,14 @@ void Simulator::start()
 
 void Simulator::run()
 {
+    //TODO remove later, just for debug
+    int id = 3;
+    std::vector<uint8_t> idByteVector;
+    for (int i = 0; i < static_cast<int>(sizeof(id)); i++) {
+        idByteVector.push_back(*(((uint8_t*) &id) + i));
+    }
+    essentials::ID* robotID  = new essentials::ID(idByteVector.data(), idByteVector.size());
+    this->spawnRobot(robotID);
     if (!this->headless) {
         this->gui = new GUI();
     }
@@ -71,6 +71,12 @@ void Simulator::run()
         std::chrono::microseconds microsecondsPassed = std::chrono::duration_cast<std::chrono::microseconds>(timePassed);
         std::cout << "[Simulator] ... took " << microsecondsPassed.count() << " microsecs" << std::endl;
 #endif
+
+        //TODO remove later, just for debug
+        std::cout << "Simulator: moving Robot left" << std::endl;
+        unsigned int microseconds = 1000000;
+        usleep(microseconds);
+        this->moveObject(robotID, Direction::Left);
     }
 }
 
@@ -92,20 +98,63 @@ bool Simulator::isRunning()
     return running;
 }
 
-void Simulator::spawnRobot(essentials::ID* id) {
+/////////////////////////// Interaction /////////////////////////////////////
+
+void Simulator::spawnRobot(essentials::ID* id)
+{
     // create robot
-    Object* object = new Object(Type::Robot);
+    Object* object = new Object(Type::Robot, id);
     this->objects.emplace(object->getID(), object);
 
     // search for cell with valid spawn coordinates
-    srand ( time(NULL) );
+    srand(time(NULL));
     Cell* cell = nullptr;
-    while(!cell || cell->type != Type::Floor) {
+    while (!cell || cell->type != Type::Floor) {
         cell = world->getCell(Coordinate(rand() % world->getSizeX(), rand() % world->getSizeX()));
     }
 
     // place robot
-    world->placeObject(object,cell->coordinate);
+    world->placeObject(object, cell->coordinate);
+}
+
+void Simulator::moveObject(essentials::ID* id, Direction direction)
+{
+    auto iter = objects.find(essentials::IDConstPtr(id));
+    if(iter == objects.end()) {
+        std::cout << "Simulator::moveObject: unknown object ID " << *id  << " requested!" << std::endl;
+        return;
+    }
+    Cell* goalCell = getNeighbourCell(direction, iter->second);
+    if (!goalCell) {
+        return;
+    }
+    if (!isPlacementAllowed(goalCell, iter->second->getType())) {
+        return;
+    }
+    iter->second->getCell()->removeObject(iter->second);
+    goalCell->addObject(iter->second);
+}
+
+Cell* Simulator::getNeighbourCell(const Direction& direction, Object* object)
+{
+    switch (direction) {
+    case Left:
+        return object->getCell()->left;
+    case Up:
+        return object->getCell()->up;
+    case Right:
+        return object->getCell()->right;
+    case Down:
+        return object->getCell()->down;
+    default:
+        std::cout << "Simulator: Unknown Direction: " << direction << "!" << std::endl;
+        return nullptr;
+    }
+}
+
+bool Simulator::isPlacementAllowed(Cell* cell, Type objectType)
+{
+    return !(cell->type == Type::Door || cell->type == Type::Default || cell->type == Type::Wall);
 }
 
 /**

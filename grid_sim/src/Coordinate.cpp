@@ -14,6 +14,7 @@ Coordinate::Coordinate(const srgsim::Coordinate& coordinate)
     this->x = coordinate.x;
     this->y = coordinate.y;
 }
+
 bool operator==(Coordinate const& first, Coordinate const& second)
 {
     return first.x == second.x && first.y == second.y;

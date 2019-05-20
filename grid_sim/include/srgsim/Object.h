@@ -18,12 +18,15 @@ class Object
 {
 public:
     Object(Type type);
+    Object(Type type, essentials::ID* id);
     virtual ~Object();
 
-    void setCell(Cell* cell);
-    Cell* getCell();
-    Type getType() const;
     essentials::IDConstPtr getID();
+    Type getType() const;
+
+    Cell* getCell();
+    void setCell(Cell* cell);
+    void deleteCell();
 
 private:
     Cell* cell;

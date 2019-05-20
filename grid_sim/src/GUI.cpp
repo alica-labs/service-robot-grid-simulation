@@ -72,7 +72,7 @@ void GUI::draw(World* world)
         this->window->draw(sprite);
 
         // object sprites
-        for(Object* object : pair.second->objects) {
+        for(Object* object : pair.second->getObjects()) {
             sf::Sprite sprite = getSprite(object->getType());
             sprite.setPosition(object->getCell()->coordinate.x * scaledSpriteSize, object->getCell()->coordinate.y * scaledSpriteSize);
             this->window->draw(sprite);
