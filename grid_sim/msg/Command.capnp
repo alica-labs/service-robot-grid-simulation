@@ -4,7 +4,7 @@ $Cxx.namespace("srgsim");
 @0xcbaac9bc054f0dc5;
 
 struct Command {
-  senderId @0 :List(UInt8);
+  senderId @0 :Data;
   action @1 :Action;
   x @2: UInt32;
   y @3: UInt32;

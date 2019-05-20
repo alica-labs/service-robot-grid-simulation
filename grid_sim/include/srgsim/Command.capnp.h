@@ -71,7 +71,7 @@ public:
 #endif  // !CAPNP_LITE
 
   inline bool hasSenderId() const;
-  inline  ::capnp::List< ::uint8_t>::Reader getSenderId() const;
+  inline  ::capnp::Data::Reader getSenderId() const;
 
   inline  ::srgsim::Command::Action getAction() const;
 
@@ -108,12 +108,11 @@ public:
 #endif  // !CAPNP_LITE
 
   inline bool hasSenderId();
-  inline  ::capnp::List< ::uint8_t>::Builder getSenderId();
-  inline void setSenderId( ::capnp::List< ::uint8_t>::Reader value);
-  inline void setSenderId(::kj::ArrayPtr<const  ::uint8_t> value);
-  inline  ::capnp::List< ::uint8_t>::Builder initSenderId(unsigned int size);
-  inline void adoptSenderId(::capnp::Orphan< ::capnp::List< ::uint8_t>>&& value);
-  inline ::capnp::Orphan< ::capnp::List< ::uint8_t>> disownSenderId();
+  inline  ::capnp::Data::Builder getSenderId();
+  inline void setSenderId( ::capnp::Data::Reader value);
+  inline  ::capnp::Data::Builder initSenderId(unsigned int size);
+  inline void adoptSenderId(::capnp::Orphan< ::capnp::Data>&& value);
+  inline ::capnp::Orphan< ::capnp::Data> disownSenderId();
 
   inline  ::srgsim::Command::Action getAction();
   inline void setAction( ::srgsim::Command::Action value);
@@ -160,33 +159,29 @@ inline bool Command::Builder::hasSenderId() {
   return !_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS).isNull();
 }
-inline  ::capnp::List< ::uint8_t>::Reader Command::Reader::getSenderId() const {
-  return ::capnp::_::PointerHelpers< ::capnp::List< ::uint8_t>>::get(_reader.getPointerField(
+inline  ::capnp::Data::Reader Command::Reader::getSenderId() const {
+  return ::capnp::_::PointerHelpers< ::capnp::Data>::get(_reader.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
-inline  ::capnp::List< ::uint8_t>::Builder Command::Builder::getSenderId() {
-  return ::capnp::_::PointerHelpers< ::capnp::List< ::uint8_t>>::get(_builder.getPointerField(
+inline  ::capnp::Data::Builder Command::Builder::getSenderId() {
+  return ::capnp::_::PointerHelpers< ::capnp::Data>::get(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
-inline void Command::Builder::setSenderId( ::capnp::List< ::uint8_t>::Reader value) {
-  ::capnp::_::PointerHelpers< ::capnp::List< ::uint8_t>>::set(_builder.getPointerField(
+inline void Command::Builder::setSenderId( ::capnp::Data::Reader value) {
+  ::capnp::_::PointerHelpers< ::capnp::Data>::set(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS), value);
 }
-inline void Command::Builder::setSenderId(::kj::ArrayPtr<const  ::uint8_t> value) {
-  ::capnp::_::PointerHelpers< ::capnp::List< ::uint8_t>>::set(_builder.getPointerField(
-      ::capnp::bounded<0>() * ::capnp::POINTERS), value);
-}
-inline  ::capnp::List< ::uint8_t>::Builder Command::Builder::initSenderId(unsigned int size) {
-  return ::capnp::_::PointerHelpers< ::capnp::List< ::uint8_t>>::init(_builder.getPointerField(
+inline  ::capnp::Data::Builder Command::Builder::initSenderId(unsigned int size) {
+  return ::capnp::_::PointerHelpers< ::capnp::Data>::init(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS), size);
 }
 inline void Command::Builder::adoptSenderId(
-    ::capnp::Orphan< ::capnp::List< ::uint8_t>>&& value) {
-  ::capnp::_::PointerHelpers< ::capnp::List< ::uint8_t>>::adopt(_builder.getPointerField(
+    ::capnp::Orphan< ::capnp::Data>&& value) {
+  ::capnp::_::PointerHelpers< ::capnp::Data>::adopt(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS), kj::mv(value));
 }
-inline ::capnp::Orphan< ::capnp::List< ::uint8_t>> Command::Builder::disownSenderId() {
-  return ::capnp::_::PointerHelpers< ::capnp::List< ::uint8_t>>::disown(_builder.getPointerField(
+inline ::capnp::Orphan< ::capnp::Data> Command::Builder::disownSenderId() {
+  return ::capnp::_::PointerHelpers< ::capnp::Data>::disown(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
 

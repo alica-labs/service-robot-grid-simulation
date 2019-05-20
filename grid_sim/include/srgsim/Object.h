@@ -17,8 +17,7 @@ class Cell;
 class Object
 {
 public:
-    Object(Type type);
-    Object(Type type, essentials::ID* id);
+    Object(Type type, const essentials::ID* id);
     virtual ~Object();
 
     essentials::IDConstPtr getID();
@@ -31,9 +30,7 @@ public:
 private:
     Cell* cell;
     Type type;
-    essentials::ID* id;
-    static int objectCounter;
-
+    const essentials::ID* id;
 };
 
 } // namespace srgsim

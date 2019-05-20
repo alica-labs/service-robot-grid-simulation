@@ -3,8 +3,8 @@ project(grid_sim)
 
 add_compile_options(-std=c++11)
 
-# SFML (until 2.5 you need an extra FindSFML.cmake aside your project...)
-# https://github.com/SFML/SFML/wiki/Tutorial:-Build-your-SFML-project-with-CMake
+#SFML(until 2.5 you need an extra FindSFML.cmake aside your project...)
+#https: // github.com/SFML/SFML/wiki/Tutorial:-Build-your-SFML-project-with-CMake
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(SFML 2.4 COMPONENTS graphics window system REQUIRED)
 
@@ -12,7 +12,7 @@ find_package(Threads)
 
 find_package(tmxparser REQUIRED)
 
-find_package(catkin REQUIRED capnzero agent_id)
+find_package(catkin REQUIRED capnzero agent_id alica_capnzero_proxy)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -31,7 +31,11 @@ include_directories(
 add_executable(${PROJECT_NAME}
   src/Simulator.cpp
   src/GUI.cpp
-)
+        src/communication/Communication.cpp
+        src/SRGIDManager.cpp
+        src/communication/SpawnCommandHandler.cpp
+        src/communication/CommandHandler.cpp
+        src/communication/MoveCommandHandler.cpp include/srgsim/communication/MoveCommandHandler.h src/communication/PickUpCommandHandler.cpp include/srgsim/communication/PickUpCommandHandler.h src/communication/DoorCommandHandler.cpp include/srgsim/communication/DoorCommandHandler.h src/communication/PutDownCommandHandler.cpp include/srgsim/communication/PutDownCommandHandler.h)
 
 target_link_libraries(${PROJECT_NAME}
   ${SFML_LIBRARIES}
@@ -42,7 +46,7 @@ target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
         tmxparser)
 
-# copy the resource (e.g. texture files)
+#copy the resource(e.g.texture files)
 file(GLOB ResourceFiles
   ${CMAKE_SOURCE_DIR}/textures/*.png
   ${CMAKE_SOURCE_DIR}/textures/*.tmx
@@ -68,7 +72,7 @@ endforeach()
 add_library(${PROJECT_NAME}_world
   src/World.cpp
   src/Cell.cpp
-  src/Coordinate.cpp
+  src/container/Coordinate.cpp
   src/Object.cpp
 )
 

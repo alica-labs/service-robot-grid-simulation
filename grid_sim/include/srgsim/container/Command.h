@@ -1,10 +1,14 @@
 #pragma once
 
-namespace srgsim {
-    struct Command {
-
-    };
-}
+namespace srgsim
+{
+namespace container
+{
+struct Command
+{
+};
+} // namespace container
+} // namespace srgsim
 
 //
 //#include <string>
@@ -13,10 +17,10 @@ namespace srgsim {
 //
 //#include "engine/AgentIDConstPtr.h"
 //
-//namespace srgsim
+// namespace srgsim
 //{
-//typedef std::tuple<AgentIDConstPtr, std::string, std::string, std::string, std::string, std::string, std::vector<AgentIDConstPtr>> stdAlicaEngineInfo;
-//struct Command
+// typedef std::tuple<AgentIDConstPtr, std::string, std::string, std::string, std::string, std::string, std::vector<AgentIDConstPtr>> stdAlicaEngineInfo;
+// struct Command
 //{
 //    AlicaEngineInfo()
 //            : senderID(nullptr)
@@ -36,6 +40,7 @@ namespace srgsim {
 //        robotIDsWithMe = std::move(std::get<6>(s));
 //    }
 //
-//    stdAlicaEngineInfo toStandard() const { return std::make_tuple(senderID, masterPlan, currentPlan, currentState, currentRole, currentTask, robotIDsWithMe); }
+//    stdAlicaEngineInfo toStandard() const { return std::make_tuple(senderID, masterPlan, currentPlan, currentState, currentRole, currentTask, robotIDsWithMe);
+//    }
 //};
 //} // namespace alica

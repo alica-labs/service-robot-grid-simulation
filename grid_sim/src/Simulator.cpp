@@ -1,7 +1,11 @@
 #include "srgsim/Simulator.h"
 
 #include "srgsim/Cell.h"
+#include "srgsim/communication/Communication.h"
+#include "srgsim/GUI.h"
 #include "srgsim/Object.h"
+#include "srgsim/SRGIDManager.h"
+#include "srgsim/World.h"
 
 #include <iostream>
 #include <limits.h>
@@ -18,8 +22,10 @@ bool Simulator::running = false;
 
 Simulator::Simulator(bool headless)
         : headless(headless)
+        , idManager(new SRGIDManager())
 {
     // this->initTestWorld();
+    this->communication = new communication::Communication(this);
     this->initWorld();
 }
 
@@ -28,6 +34,8 @@ Simulator::~Simulator()
     for (auto& object : objects) {
         delete object.second;
     }
+    delete this->communication;
+    delete this->idManager;
     delete this->world;
     delete this->gui;
 }
@@ -47,13 +55,8 @@ void Simulator::start()
 
 void Simulator::run()
 {
-    //TODO remove later, just for debug
-    int id = 3;
-    std::vector<uint8_t> idByteVector;
-    for (int i = 0; i < static_cast<int>(sizeof(id)); i++) {
-        idByteVector.push_back(*(((uint8_t*) &id) + i));
-    }
-    essentials::ID* robotID  = new essentials::ID(idByteVector.data(), idByteVector.size());
+    // TODO remove later, just for debug
+    const essentials::ID* robotID = this->idManager->generateID();
     this->spawnRobot(robotID);
     if (!this->headless) {
         this->gui = new GUI();
@@ -72,7 +75,7 @@ void Simulator::run()
         std::cout << "[Simulator] ... took " << microsecondsPassed.count() << " microsecs" << std::endl;
 #endif
 
-        //TODO remove later, just for debug
+        // TODO remove later, just for debug
         std::cout << "Test: Simulator: moving Robot left" << std::endl;
         unsigned int microseconds = 1000000;
         usleep(microseconds);
@@ -83,7 +86,7 @@ void Simulator::run()
 std::string Simulator::getSelfPath()
 {
     char buff[PATH_MAX];
-    size_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
+    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
     if (len != -1) {
         buff[len] = '\0';
         std::string exePath = std::string(buff);
@@ -91,6 +94,7 @@ std::string Simulator::getSelfPath()
         return exePath.substr(0, exePath.find_last_of("/"));
     }
     /* handle error condition */
+    return "Simulator: Path not Found!";
 }
 
 bool Simulator::isRunning()
@@ -98,9 +102,14 @@ bool Simulator::isRunning()
     return running;
 }
 
+SRGIDManager* Simulator::getIdManager() const
+{
+    return idManager;
+}
+
 /////////////////////////// Interaction /////////////////////////////////////
 
-void Simulator::spawnRobot(essentials::ID* id)
+void Simulator::spawnRobot(const essentials::ID* id)
 {
     // create robot
     Object* object = new Object(Type::Robot, id);
@@ -117,11 +126,11 @@ void Simulator::spawnRobot(essentials::ID* id)
     world->placeObject(object, cell->coordinate);
 }
 
-void Simulator::moveObject(essentials::ID* id, Direction direction)
+void Simulator::moveObject(const essentials::ID* id, Direction direction)
 {
     auto iter = objects.find(essentials::IDConstPtr(id));
-    if(iter == objects.end()) {
-        std::cout << "Simulator::moveObject: unknown object ID " << *id  << " requested!" << std::endl;
+    if (iter == objects.end()) {
+        std::cout << "Simulator::moveObject: unknown object ID " << *id << " requested!" << std::endl;
         return;
     }
     Cell* goalCell = getNeighbourCell(direction, iter->second);
@@ -166,6 +175,7 @@ void Simulator::simSigintHandler(int sig)
     std::cout << "Simulator: Caught SIGINT! Terminating ..." << std::endl;
     running = false;
 }
+
 } // namespace srgsim
 
 int main(int argc, char* argv[])

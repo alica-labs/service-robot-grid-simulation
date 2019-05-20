@@ -2,9 +2,7 @@
 
 #include "container/Command.h"
 
-#include "GUI.h"
 #include "SRGEnums.h"
-#include "World.h"
 
 #include <essentials/IDConstPtr.h>
 
@@ -18,7 +16,16 @@ class thread;
 
 namespace srgsim
 {
+
+namespace communication
+{
+class Communication;
+}
+class SRGIDManager;
 class Object;
+class World;
+class GUI;
+class Cell;
 class Simulator
 {
 public:
@@ -29,8 +36,8 @@ public:
     void initWorld();
     static bool isRunning();
 
-    void spawnRobot(essentials::ID* id);
-    void moveObject(essentials::ID* id, Direction direction);
+    void spawnRobot(const essentials::ID* id);
+    void moveObject(const essentials::ID* id, Direction direction);
 
     static std::string getSelfPath();
 
@@ -44,10 +51,17 @@ private:
     bool headless;
     World* world;
     GUI* gui;
+    communication::Communication* communication;
+
+public:
+    SRGIDManager* getIdManager() const;
+
+private:
+    SRGIDManager* idManager;
 
     std::unordered_map<essentials::IDConstPtr, Object*> objects;
 
     std::thread* mainThread;
-    std::queue<Command> commandQueue;
+    std::queue<container::Command> commandQueue;
 };
 } // namespace srgsim
