@@ -56,7 +56,7 @@ void Simulator::start()
 void Simulator::run()
 {
     // TODO remove later, just for debug
-    const essentials::ID* robotID = this->idManager->generateID();
+    const essentials::Identifier* robotID = this->idManager->generateID();
     this->spawnRobot(robotID);
     if (!this->headless) {
         this->gui = new GUI();
@@ -109,7 +109,7 @@ SRGIDManager* Simulator::getIdManager() const
 
 /////////////////////////// Interaction /////////////////////////////////////
 
-void Simulator::spawnRobot(const essentials::ID* id)
+void Simulator::spawnRobot(const essentials::Identifier* id)
 {
     // create robot
     Object* object = new Object(Type::Robot, id);
@@ -126,9 +126,9 @@ void Simulator::spawnRobot(const essentials::ID* id)
     world->placeObject(object, cell->coordinate);
 }
 
-void Simulator::moveObject(const essentials::ID* id, Direction direction)
+void Simulator::moveObject(const essentials::Identifier* id, Direction direction)
 {
-    auto iter = objects.find(essentials::IDConstPtr(id));
+    auto iter = objects.find(essentials::IdentifierConstPtr(id));
     if (iter == objects.end()) {
         std::cout << "Simulator::moveObject: unknown object ID " << *id << " requested!" << std::endl;
         return;

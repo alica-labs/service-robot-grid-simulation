@@ -4,7 +4,7 @@
 
 #include "SRGEnums.h"
 
-#include <essentials/IDConstPtr.h>
+#include <essentials/IdentifierConstPtr.h>
 
 #include <queue>
 #include <unordered_map>
@@ -36,8 +36,8 @@ public:
     void initWorld();
     static bool isRunning();
 
-    void spawnRobot(const essentials::ID* id);
-    void moveObject(const essentials::ID* id, Direction direction);
+    void spawnRobot(const essentials::Identifier* id);
+    void moveObject(const essentials::Identifier* id, Direction direction);
 
     static std::string getSelfPath();
 
@@ -59,7 +59,7 @@ public:
 private:
     SRGIDManager* idManager;
 
-    std::unordered_map<essentials::IDConstPtr, Object*> objects;
+    std::unordered_map<essentials::IdentifierConstPtr, Object*> objects;
 
     std::thread* mainThread;
     std::queue<container::Command> commandQueue;

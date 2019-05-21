@@ -10,8 +10,6 @@
 #include "srgsim/SRGIDManager.h"
 #include "srgsim/Simulator.h"
 
-#include <essentials/ID.h>
-
 #include <capnp/common.h>
 #include <capnp/message.h>
 #include <capnzero/Subscriber.h>
@@ -27,11 +25,11 @@ const std::string Communication::commandTopic = "/srgsim/cmd";
 Communication::Communication(Simulator* simulator)
         : simulator(simulator)
 {
-    this->communicationHanlders.push_back(new communication::MoveCommandHandler(simulator));
-    this->communicationHanlders.push_back(new communication::DoorCommandHandler(simulator));
-    this->communicationHanlders.push_back(new communication::PickUpCommandHandler(simulator));
-    this->communicationHanlders.push_back(new communication::PutDownCommandHandler(simulator));
-    this->communicationHanlders.push_back(new communication::SpawnCommandHandler(simulator));
+    this->communicationHandlers.push_back(new communication::MoveCommandHandler(simulator));
+    this->communicationHandlers.push_back(new communication::DoorCommandHandler(simulator));
+    this->communicationHandlers.push_back(new communication::PickUpCommandHandler(simulator));
+    this->communicationHandlers.push_back(new communication::PutDownCommandHandler(simulator));
+    this->communicationHandlers.push_back(new communication::SpawnCommandHandler(simulator));
 
     this->ctx = zmq_ctx_new();
     this->url = "224.0.0.2:5555";
@@ -42,7 +40,7 @@ Communication::Communication(Simulator* simulator)
 
 Communication::~Communication()
 {
-    for(auto& handler : this->communicationHanlders) {
+    for(auto& handler : this->communicationHandlers) {
         delete handler;
     }
     delete this->commandSubscriber;
@@ -54,7 +52,7 @@ void Communication::commandCallback(::capnp::FlatArrayMessageReader& msg)
     srgsim::Command::Reader reader = msg.getRoot<srgsim::Command>();
     Command::Action action = reader.getAction();
 
-    for (CommandHandler* handler: this->communicationHanlders) {
+    for (CommandHandler* handler: this->communicationHandlers) {
         if (handler->handle(action, msg)) {
             break;
         }

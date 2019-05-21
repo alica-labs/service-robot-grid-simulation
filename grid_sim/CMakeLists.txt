@@ -12,7 +12,7 @@ find_package(Threads)
 
 find_package(tmxparser REQUIRED)
 
-find_package(catkin REQUIRED capnzero agent_id alica_capnzero_proxy)
+find_package(catkin REQUIRED capnzero agent_id alica_capnzero_proxy id)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -83,9 +83,16 @@ add_library(${PROJECT_NAME}_world
 ############### Sim Messages
 
 find_package(CapnProto REQUIRED)
+
+set(CAPNP_INCLUDE_DIRECTORY "${CAPNP_INCLUDE_DIRECTORY} ${id_SOURCE_PREFIX}/include")
+
 set(grid_sim_message_folder "${CMAKE_CURRENT_SOURCE_DIR}/msg")
+
+file(GLOB_RECURSE id_msgs ${id_SOURCE_PREFIX}/include/essentials/*.capnp)
+file(COPY ${id_msgs} DESTINATION ${grid_sim_message_folder})
+
 file(GLOB_RECURSE grid_sim_msgs ${grid_sim_message_folder} *.capnp)
-set(CAPNPC_SRC_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/msg)
+set(CAPNPC_SRC_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/msg")
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/srgsim")
 set(CAPNPC_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/srgsim")
 capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${grid_sim_msgs})

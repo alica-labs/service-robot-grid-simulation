@@ -11,6 +11,7 @@
   <depend>capnzero</depend>
   <depend>agent_id</depend>
   <depend>alica_capnzero_proxy</depend>
+  <depend>id</depend>
 
   <buildtool_depend>catkin</buildtool_depend>
 

@@ -34,7 +34,7 @@ private:
     void* ctx;
     std::string url;
     Simulator* simulator;
-    std::vector<CommandHandler*> communicationHanlders;
+    std::vector<CommandHandler*> communicationHandlers;
 };
 } // namespace communication
 } // namespace srgsim

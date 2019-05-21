@@ -4,15 +4,17 @@
 
 #include <srgsim/Simulator.h>
 
+#include <essentials/ID.capnp.h>
+
 namespace srgsim
 {
 namespace communication
 {
 
-const essentials::ID* CommandHandler::extractID(::capnp::FlatArrayMessageReader& msg)
+const essentials::Identifier* CommandHandler::extractID(::capnp::FlatArrayMessageReader& msg)
 {
     std::vector<uint8_t> idVector;
-    idVector.assign(msg.getRoot<srgsim::Command>().getSenderId().begin(), msg.getRoot<srgsim::Command>().getSenderId().end());
+    idVector.assign(msg.getRoot<srgsim::Command>().getSenderId().getValue().begin(), msg.getRoot<srgsim::Command>().getSenderId().getValue().end());
     return this->simulator->getIdManager()->getIDFromBytes(idVector);
 }
 

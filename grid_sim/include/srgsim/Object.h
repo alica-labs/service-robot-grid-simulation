@@ -2,12 +2,7 @@
 
 #include "srgsim/SRGEnums.h"
 
-#include <essentials/IDConstPtr.h>
-
-namespace essentials
-{
-class ID;
-}
+#include <essentials/IdentifierConstPtr.h>
 
 namespace srgsim
 {
@@ -17,10 +12,10 @@ class Cell;
 class Object
 {
 public:
-    Object(Type type, const essentials::ID* id);
+    Object(Type type, const essentials::Identifier* id);
     virtual ~Object();
 
-    essentials::IDConstPtr getID();
+    essentials::IdentifierConstPtr getID();
     Type getType() const;
 
     Cell* getCell();
@@ -30,7 +25,7 @@ public:
 private:
     Cell* cell;
     Type type;
-    const essentials::ID* id;
+    const essentials::Identifier* id;
 };
 
 } // namespace srgsim

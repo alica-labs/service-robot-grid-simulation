@@ -2,12 +2,12 @@
 
 #include "srgsim/Cell.h"
 
-#include <essentials/ID.h>
+#include <essentials/Identifier.h>
 
 namespace srgsim
 {
 
-Object::Object(Type type, const essentials::ID* id)
+Object::Object(Type type, const essentials::Identifier* id)
         : type(type), id(id)
 {
 }
@@ -47,8 +47,8 @@ Type Object::getType() const
     return type;
 }
 
-essentials::IDConstPtr Object::getID()
+essentials::IdentifierConstPtr Object::getID()
 {
-    return essentials::IDConstPtr(this->id);
+    return essentials::IdentifierConstPtr(this->id);
 }
 } // namespace srgsim

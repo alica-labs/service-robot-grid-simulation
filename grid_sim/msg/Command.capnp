@@ -1,10 +1,11 @@
+@0xcbaac9bc054f0dc5;
 using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("srgsim");
 
-@0xcbaac9bc054f0dc5;
+using IDMsg = import "ID.capnp";
 
 struct Command {
-  senderId @0 :Data;
+  senderId @0 :IDMsg.ID;
   action @1 :Action;
   x @2: UInt32;
   y @3: UInt32;

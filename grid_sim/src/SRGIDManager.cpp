@@ -1,4 +1,6 @@
 #include "srgsim/SRGIDManager.h"
+#include <vector>
+#include <essentials/Identifier.h>
 
 namespace srgsim
 {
@@ -8,13 +10,13 @@ SRGIDManager::SRGIDManager()
 }
 SRGIDManager::~SRGIDManager() {}
 
-const essentials::ID* SRGIDManager::getIDFromBytes(const std::vector<uint8_t>& vectorID)
+const essentials::Identifier* SRGIDManager::getIDFromBytes(const std::vector<uint8_t>& vectorID)
 {
     if (vectorID.empty()) { // empty values result in none-id
         return nullptr;
     }
     // create tmpID for lookup the ID
-    const essentials::ID* tmpID = new essentials::ID(vectorID.data(), vectorID.size());
+    const essentials::Identifier* tmpID = new essentials::Identifier(vectorID.data(), vectorID.size());
 
     // make the manager thread-safe
     std::lock_guard<std::mutex> guard(mutex);
@@ -27,7 +29,7 @@ const essentials::ID* SRGIDManager::getIDFromBytes(const std::vector<uint8_t>& v
     return *(entry.first);
 }
 
-const essentials::ID* SRGIDManager::generateID(int intID)
+const essentials::Identifier* SRGIDManager::generateID(int intID)
 {
     // little-endian encoding
     std::vector<uint8_t> idByteVector;
@@ -38,17 +40,17 @@ const essentials::ID* SRGIDManager::generateID(int intID)
     return this->getIDFromBytes(idByteVector);
 }
 
-const essentials::ID* SRGIDManager::generateID()
+const essentials::Identifier* SRGIDManager::generateID()
 {
     std::vector<uint8_t> idByteVector;
     for (int i = 0; i < static_cast<int>(sizeof(this->objectCounter)); i++) {
         idByteVector.push_back(*(((uint8_t*) &this->objectCounter) + i));
     }
     this->objectCounter++;
-    return new essentials::ID(idByteVector.data(), idByteVector.size());
+    return new essentials::Identifier(idByteVector.data(), idByteVector.size());
 }
 
-bool SRGIDManager::addID(const essentials::ID *id) {
+bool SRGIDManager::addID(const essentials::Identifier *id) {
     if(this->ids.find(id) == this->ids.end()) {
         this->ids.insert(id);
         return true;

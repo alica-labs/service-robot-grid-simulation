@@ -10,6 +10,7 @@
 #error "Version mismatch between generated code and library headers.  You must use the same version of the Cap'n Proto compiler and library."
 #endif
 
+#include "ID.capnp.h"
 
 namespace capnp {
 namespace schemas {
@@ -71,7 +72,7 @@ public:
 #endif  // !CAPNP_LITE
 
   inline bool hasSenderId() const;
-  inline  ::capnp::Data::Reader getSenderId() const;
+  inline  ::essentials::ID::Reader getSenderId() const;
 
   inline  ::srgsim::Command::Action getAction() const;
 
@@ -108,11 +109,11 @@ public:
 #endif  // !CAPNP_LITE
 
   inline bool hasSenderId();
-  inline  ::capnp::Data::Builder getSenderId();
-  inline void setSenderId( ::capnp::Data::Reader value);
-  inline  ::capnp::Data::Builder initSenderId(unsigned int size);
-  inline void adoptSenderId(::capnp::Orphan< ::capnp::Data>&& value);
-  inline ::capnp::Orphan< ::capnp::Data> disownSenderId();
+  inline  ::essentials::ID::Builder getSenderId();
+  inline void setSenderId( ::essentials::ID::Reader value);
+  inline  ::essentials::ID::Builder initSenderId();
+  inline void adoptSenderId(::capnp::Orphan< ::essentials::ID>&& value);
+  inline ::capnp::Orphan< ::essentials::ID> disownSenderId();
 
   inline  ::srgsim::Command::Action getAction();
   inline void setAction( ::srgsim::Command::Action value);
@@ -141,6 +142,7 @@ public:
   inline explicit Pipeline(::capnp::AnyPointer::Pipeline&& typeless)
       : _typeless(kj::mv(typeless)) {}
 
+  inline  ::essentials::ID::Pipeline getSenderId();
 private:
   ::capnp::AnyPointer::Pipeline _typeless;
   friend class ::capnp::PipelineHook;
@@ -159,29 +161,34 @@ inline bool Command::Builder::hasSenderId() {
   return !_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS).isNull();
 }
-inline  ::capnp::Data::Reader Command::Reader::getSenderId() const {
-  return ::capnp::_::PointerHelpers< ::capnp::Data>::get(_reader.getPointerField(
+inline  ::essentials::ID::Reader Command::Reader::getSenderId() const {
+  return ::capnp::_::PointerHelpers< ::essentials::ID>::get(_reader.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
-inline  ::capnp::Data::Builder Command::Builder::getSenderId() {
-  return ::capnp::_::PointerHelpers< ::capnp::Data>::get(_builder.getPointerField(
+inline  ::essentials::ID::Builder Command::Builder::getSenderId() {
+  return ::capnp::_::PointerHelpers< ::essentials::ID>::get(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
-inline void Command::Builder::setSenderId( ::capnp::Data::Reader value) {
-  ::capnp::_::PointerHelpers< ::capnp::Data>::set(_builder.getPointerField(
+#if !CAPNP_LITE
+inline  ::essentials::ID::Pipeline Command::Pipeline::getSenderId() {
+  return  ::essentials::ID::Pipeline(_typeless.getPointerField(0));
+}
+#endif  // !CAPNP_LITE
+inline void Command::Builder::setSenderId( ::essentials::ID::Reader value) {
+  ::capnp::_::PointerHelpers< ::essentials::ID>::set(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS), value);
 }
-inline  ::capnp::Data::Builder Command::Builder::initSenderId(unsigned int size) {
-  return ::capnp::_::PointerHelpers< ::capnp::Data>::init(_builder.getPointerField(
-      ::capnp::bounded<0>() * ::capnp::POINTERS), size);
+inline  ::essentials::ID::Builder Command::Builder::initSenderId() {
+  return ::capnp::_::PointerHelpers< ::essentials::ID>::init(_builder.getPointerField(
+      ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
 inline void Command::Builder::adoptSenderId(
-    ::capnp::Orphan< ::capnp::Data>&& value) {
-  ::capnp::_::PointerHelpers< ::capnp::Data>::adopt(_builder.getPointerField(
+    ::capnp::Orphan< ::essentials::ID>&& value) {
+  ::capnp::_::PointerHelpers< ::essentials::ID>::adopt(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS), kj::mv(value));
 }
-inline ::capnp::Orphan< ::capnp::Data> Command::Builder::disownSenderId() {
-  return ::capnp::_::PointerHelpers< ::capnp::Data>::disown(_builder.getPointerField(
+inline ::capnp::Orphan< ::essentials::ID> Command::Builder::disownSenderId() {
+  return ::capnp::_::PointerHelpers< ::essentials::ID>::disown(_builder.getPointerField(
       ::capnp::bounded<0>() * ::capnp::POINTERS));
 }
 

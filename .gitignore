@@ -34,3 +34,8 @@
 # clion stuff
 .idea/
 cmake-build-debug/
+
+#Capnp Stuff
+*ID.capnp
+*ID.capnp.h
+*ID.capnp.c++

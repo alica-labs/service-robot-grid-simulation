@@ -13,7 +13,7 @@ bool MoveCommandHandler::handle(Command::Action action, ::capnp::FlatArrayMessag
     if (action != Command::Action::GODOWN && action != Command::Action::GOUP && action != Command::Action::GORIGHT && action != Command::Action::GOLEFT)
         return false;
 
-    const essentials::ID* id = this->extractID(msg);
+    const essentials::Identifier* id = this->extractID(msg);
     switch (action) {
     case Command::Action::GOLEFT:
         this->simulator->moveObject(id, Direction::Left);
