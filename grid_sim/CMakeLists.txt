@@ -31,11 +31,15 @@ include_directories(
 add_executable(${PROJECT_NAME}
   src/Simulator.cpp
   src/GUI.cpp
-        src/communication/Communication.cpp
-        src/SRGIDManager.cpp
-        src/communication/SpawnCommandHandler.cpp
-        src/communication/CommandHandler.cpp
-        src/communication/MoveCommandHandler.cpp include/srgsim/communication/MoveCommandHandler.h src/communication/PickUpCommandHandler.cpp include/srgsim/communication/PickUpCommandHandler.h src/communication/DoorCommandHandler.cpp include/srgsim/communication/DoorCommandHandler.h src/communication/PutDownCommandHandler.cpp include/srgsim/communication/PutDownCommandHandler.h)
+  src/communication/Communication.cpp
+  src/SRGIDManager.cpp
+  src/communication/SpawnCommandHandler.cpp
+  src/communication/CommandHandler.cpp
+  src/communication/MoveCommandHandler.cpp
+  src/communication/PickUpCommandHandler.cpp
+  src/communication/DoorCommandHandler.cpp
+  src/communication/PutDownCommandHandler.cpp
+)
 
 target_link_libraries(${PROJECT_NAME}
   ${SFML_LIBRARIES}
