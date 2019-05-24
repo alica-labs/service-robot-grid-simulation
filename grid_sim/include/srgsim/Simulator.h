@@ -4,7 +4,7 @@
 
 #include "SRGEnums.h"
 
-#include <essentials/IdentifierConstPtr.h>
+#include <id_manager/IdentifierConstPtr.h>
 
 #include <queue>
 #include <unordered_map>
@@ -12,6 +12,10 @@
 namespace std
 {
 class thread;
+}
+
+namespace essentials {
+    class IDManager;
 }
 
 namespace srgsim
@@ -54,13 +58,11 @@ private:
     communication::Communication* communication;
 
 public:
-    SRGIDManager* getIdManager() const;
+    essentials::IDManager* getIdManager() const;
 
 private:
-    SRGIDManager* idManager;
-
+    essentials::IDManager* idManager;
     std::unordered_map<essentials::IdentifierConstPtr, Object*> objects;
-
     std::thread* mainThread;
     std::queue<container::Command> commandQueue;
 };

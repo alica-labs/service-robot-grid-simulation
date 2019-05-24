@@ -4,8 +4,9 @@
 #include "srgsim/communication/Communication.h"
 #include "srgsim/GUI.h"
 #include "srgsim/Object.h"
-#include "srgsim/SRGIDManager.h"
 #include "srgsim/World.h"
+
+#include <id_manager/IDManager.h>
 
 #include <iostream>
 #include <limits.h>
@@ -22,7 +23,7 @@ bool Simulator::running = false;
 
 Simulator::Simulator(bool headless)
         : headless(headless)
-        , idManager(new SRGIDManager())
+        , idManager(new essentials::IDManager())
 {
     // this->initTestWorld();
     this->communication = new communication::Communication(this);
@@ -102,7 +103,7 @@ bool Simulator::isRunning()
     return running;
 }
 
-SRGIDManager* Simulator::getIdManager() const
+essentials::IDManager* Simulator::getIdManager() const
 {
     return idManager;
 }
@@ -118,7 +119,7 @@ void Simulator::spawnRobot(const essentials::Identifier* id)
     // search for cell with valid spawn coordinates
     srand(time(NULL));
     Cell* cell = nullptr;
-    while (!cell || cell->type != Type::Floor) {
+    while (!cell || isPlacementAllowed(cell, Type::Robot)) {
         cell = world->getCell(Coordinate(rand() % world->getSizeX(), rand() % world->getSizeX()));
     }
 
@@ -163,7 +164,12 @@ Cell* Simulator::getNeighbourCell(const Direction& direction, Object* object)
 
 bool Simulator::isPlacementAllowed(Cell* cell, Type objectType)
 {
-    return !(cell->type == Type::Door || cell->type == Type::Default || cell->type == Type::Wall);
+    switch (objectType) {
+        case Type::Robot:
+            return cell->type == Floor;
+        default:
+            return !(cell->type == Type::Door || cell->type == Type::Default || cell->type == Type::Wall);
+    }
 }
 
 /**

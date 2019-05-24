@@ -1,7 +1,8 @@
 #include "srgsim/communication/DoorCommandHandler.h"
 
-#include "srgsim/SRGIDManager.h"
 #include "srgsim/Simulator.h"
+
+#include <id_manager/IDManager.h>
 
 namespace srgsim
 {

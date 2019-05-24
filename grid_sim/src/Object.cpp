@@ -2,7 +2,7 @@
 
 #include "srgsim/Cell.h"
 
-#include <essentials/Identifier.h>
+#include <id_manager/Identifier.h>
 
 namespace srgsim
 {

@@ -7,12 +7,13 @@
 #include "srgsim/communication/PutDownCommandHandler.h"
 
 #include "srgsim/Command.capnp.h"
-#include "srgsim/SRGIDManager.h"
 #include "srgsim/Simulator.h"
 
 #include <capnp/common.h>
 #include <capnp/message.h>
 #include <capnzero/Subscriber.h>
+
+#include <id_manager/IDManager.h>
 
 #include <vector>
 

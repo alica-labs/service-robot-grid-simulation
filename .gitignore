@@ -36,6 +36,5 @@
 cmake-build-debug/
 
 #Capnp Stuff
-*ID.capnp
-*ID.capnp.h
-*ID.capnp.c++
+*.capnp.h
+*.capnp.c++

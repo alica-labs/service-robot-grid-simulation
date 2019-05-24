@@ -18,7 +18,6 @@ public:
     virtual bool handle(Command::Action action, ::capnp::FlatArrayMessageReader& msg) = 0;
 
 protected:
-    const essentials::Identifier* extractID(::capnp::FlatArrayMessageReader& msg);
     Simulator* simulator;
 };
 

@@ -12,11 +12,12 @@ find_package(Threads)
 
 find_package(tmxparser REQUIRED)
 
-find_package(catkin REQUIRED capnzero agent_id alica_capnzero_proxy id)
+find_package(catkin REQUIRED capnzero alica_capnzero_proxy id id_manager)
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}_msgs ${PROJECT_NAME}_world
+  CATKIN_DEPENDS id
   DEPENDS SFML
 )
 
@@ -27,12 +28,10 @@ include_directories(
 )
 
 ############### Simulator
-
 add_executable(${PROJECT_NAME}
   src/Simulator.cpp
   src/GUI.cpp
   src/communication/Communication.cpp
-  src/SRGIDManager.cpp
   src/communication/SpawnCommandHandler.cpp
   src/communication/CommandHandler.cpp
   src/communication/MoveCommandHandler.cpp
@@ -48,7 +47,8 @@ target_link_libraries(${PROJECT_NAME}
   ${PROJECT_NAME}_msgs
   ${PROJECT_NAME}_world
   ${catkin_LIBRARIES}
-        tmxparser)
+  tmxparser
+)
 
 #copy the resource(e.g.texture files)
 file(GLOB ResourceFiles
@@ -72,7 +72,6 @@ foreach(ResourceFile ${ResourceFiles})
 endforeach()
 
 ############### World
-
 add_library(${PROJECT_NAME}_world
   src/World.cpp
   src/Cell.cpp
@@ -81,22 +80,17 @@ add_library(${PROJECT_NAME}_world
 )
 
 ############### Sim Messages
-
 find_package(CapnProto REQUIRED)
-
-set(CAPNP_INCLUDE_DIRECTORY "${CAPNP_INCLUDE_DIRECTORY} ${id_SOURCE_PREFIX}/include")
-
-set(grid_sim_message_folder "${CMAKE_CURRENT_SOURCE_DIR}/msg")
-
-file(GLOB_RECURSE id_msgs ${id_SOURCE_PREFIX}/include/essentials/*.capnp)
-file(COPY ${id_msgs} DESTINATION ${grid_sim_message_folder})
-
-file(GLOB_RECURSE grid_sim_msgs ${grid_sim_message_folder} *.capnp)
-set(CAPNPC_SRC_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/msg")
-file(MAKE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/srgsim")
-set(CAPNPC_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/srgsim")
-capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${grid_sim_msgs})
+set(CAPNPC_IMPORT_DIRS ${id_SOURCE_PREFIX}/include)# include external msgs
+set(${PROJECT_NAME}_msgs "${CMAKE_CURRENT_SOURCE_DIR}/include/srgsim")
+file(GLOB_RECURSE capnp_messages ${${PROJECT_NAME}_msgs} *.capnp)
+set(CAPNPC_SRC_PREFIX ${${PROJECT_NAME}_msgs})
+set(CAPNPC_OUTPUT_DIR ${${PROJECT_NAME}_msgs})
+capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${capnp_messages})
 
 add_library(${PROJECT_NAME}_msgs
   ${CAPNP_SRCS}
+)
+target_link_libraries(${PROJECT_NAME}_msgs
+  ${catkin_LIBRARIES}
 )

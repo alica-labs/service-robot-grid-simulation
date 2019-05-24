@@ -1,7 +1,9 @@
 #include "srgsim/communication/SpawnCommandHandler.h"
 
-#include "srgsim/SRGIDManager.h"
 #include "srgsim/Simulator.h"
+
+#include <id_manager/IDManager.h>
+#include <capnzero/ID.capnp.h>
 
 namespace srgsim
 {
@@ -10,14 +12,11 @@ namespace communication
 
 bool SpawnCommandHandler::handle(Command::Action action, ::capnp::FlatArrayMessageReader& msg)
 {
-
     if (action != Command::Action::SPAWN)
         return false;
 
-    const essentials::Identifier* id = this->extractID(msg);
-    if (this->simulator->getIdManager()->addID(id)) {
-        this->simulator->spawnRobot(id);
-    }
+    ::capnp::Data::Reader idReader = msg.getRoot<srgsim::Command>().getSenderId().getValue();
+    this->simulator->spawnRobot(this->simulator->getIdManager()->getIDFromBytes(idReader.asBytes().begin(), idReader.size()));
     return true;
 }
 } // namespace communication
