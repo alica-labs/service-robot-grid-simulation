@@ -2,7 +2,7 @@
 
 #include "srgsim/Simulator.h"
 
-#include <id_manager/IDManager.h>
+#include <essentials/IDManager.h>
 #include <capnzero/ID.capnp.h>
 
 namespace srgsim

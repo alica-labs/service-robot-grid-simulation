@@ -6,7 +6,7 @@
 #include "srgsim/Object.h"
 #include "srgsim/World.h"
 
-#include <id_manager/IDManager.h>
+#include <essentials/IDManager.h>
 
 #include <iostream>
 #include <limits.h>
