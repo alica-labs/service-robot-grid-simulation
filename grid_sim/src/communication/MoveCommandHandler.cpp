@@ -2,7 +2,7 @@
 
 #include "srgsim/Simulator.h"
 
-#include <id_manager/IDManager.h>
+#include <essentials/IDManager.h>
 
 namespace srgsim
 {
@@ -14,8 +14,10 @@ bool MoveCommandHandler::handle(Command::Action action, ::capnp::FlatArrayMessag
     if (action != Command::Action::GODOWN && action != Command::Action::GOUP && action != Command::Action::GORIGHT && action != Command::Action::GOLEFT)
         return false;
 
-    ::capnp::Data::Reader idReader = msg.getRoot<srgsim::Command>().getSenderId().getValue();
-    const essentials::Identifier* id = this->simulator->getIdManager()->getIDFromBytes(idReader.asBytes().begin(), idReader.size());
+    capnzero::ID::Reader idReader = msg.getRoot<srgsim::Command>().getSenderId();
+    const essentials::Identifier* id =
+            this->simulator->getIdManager()->getIDFromBytes(idReader.getValue().asBytes().begin(), idReader.getValue().size(),
+                                                            static_cast<uint8_t>(idReader.getType()));
     switch (action) {
     case Command::Action::GOLEFT:
         this->simulator->moveObject(id, Direction::Left);

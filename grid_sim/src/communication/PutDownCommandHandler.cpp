@@ -2,8 +2,6 @@
 
 #include "srgsim/Simulator.h"
 
-#include <id_manager/IDManager.h>
-
 namespace srgsim
 {
 namespace communication

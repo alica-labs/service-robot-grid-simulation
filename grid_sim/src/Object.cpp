@@ -2,8 +2,6 @@
 
 #include "srgsim/Cell.h"
 
-#include <id_manager/Identifier.h>
-
 namespace srgsim
 {
 

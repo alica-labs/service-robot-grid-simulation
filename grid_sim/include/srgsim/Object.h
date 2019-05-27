@@ -2,8 +2,8 @@
 
 #include "srgsim/SRGEnums.h"
 
-#include <id_manager/IdentifierConstPtr.h>
-#include <id_manager/Identifier.h>
+#include <essentials/IdentifierConstPtr.h>
+#include <essentials/Identifier.h>
 
 namespace srgsim
 {
