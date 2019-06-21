@@ -1,10 +1,10 @@
 #include "srgsim/Simulator.h"
 
 #include "srgsim/Cell.h"
-#include "srgsim/communication/Communication.h"
 #include "srgsim/GUI.h"
 #include "srgsim/Object.h"
 #include "srgsim/World.h"
+#include "srgsim/communication/Communication.h"
 
 #include <essentials/IDManager.h>
 
@@ -59,6 +59,7 @@ void Simulator::run()
     // TODO remove later, just for debug
     const essentials::Identifier* robotID = this->idManager->generateID();
     this->spawnRobot(robotID);
+
     if (!this->headless) {
         this->gui = new GUI();
     }
@@ -67,6 +68,7 @@ void Simulator::run()
         auto start = std::chrono::system_clock::now();
         std::cout << "[Simulator] Iteration started..." << std::endl;
 #endif
+
         if (!this->headless) {
             this->gui->draw(this->world);
         }
@@ -77,7 +79,7 @@ void Simulator::run()
 #endif
 
         // TODO remove later, just for debug
-        std::cout << "Test: Simulator: moving Robot left" << std::endl;
+        std::cout << "Test: Simulator: Sleep and moving Robot left" << std::endl;
         unsigned int microseconds = 1000000;
         usleep(microseconds);
         this->moveObject(robotID, Direction::Left);
@@ -113,8 +115,10 @@ essentials::IDManager* Simulator::getIdManager() const
 void Simulator::spawnRobot(const essentials::Identifier* id)
 {
     // create robot
-    Object* object = new Object(Type::Robot, id);
-    this->objects.emplace(object->getID(), object);
+    Object* object = this->addObject(id, Type::Robot);
+    if (!object) {
+        return;
+    }
 
     // search for cell with valid spawn coordinates
     srand(time(NULL));
@@ -125,6 +129,16 @@ void Simulator::spawnRobot(const essentials::Identifier* id)
 
     // place robot
     world->placeObject(object, cell->coordinate);
+}
+
+Object* Simulator::addObject(const essentials::Identifier* id, Type type)
+{
+    if (this->objects.find(essentials::IdentifierConstPtr(id)) == this->objects.end()) {
+        return nullptr;
+    }
+    Object* object = new Object(type, id);
+    this->objects.emplace(object->getID(), object);
+    return object;
 }
 
 void Simulator::moveObject(const essentials::Identifier* id, Direction direction)
@@ -165,10 +179,10 @@ Cell* Simulator::getNeighbourCell(const Direction& direction, Object* object)
 bool Simulator::isPlacementAllowed(Cell* cell, Type objectType)
 {
     switch (objectType) {
-        case Type::Robot:
-            return cell->type == Floor;
-        default:
-            return !(cell->type == Type::Door || cell->type == Type::Default || cell->type == Type::Wall);
+    case Type::Robot:
+        return cell->type == Floor;
+    default:
+        return !(cell->type == Type::Door || cell->type == Type::Default || cell->type == Type::Wall);
     }
 }
 

@@ -41,7 +41,9 @@ public:
     static bool isRunning();
 
     void spawnRobot(const essentials::Identifier* id);
+    Object* addObject(const essentials::Identifier* id, Type type);
     void moveObject(const essentials::Identifier* id, Direction direction);
+    essentials::IDManager* getIdManager() const;
 
     static std::string getSelfPath();
 
@@ -57,13 +59,10 @@ private:
     GUI* gui;
     communication::Communication* communication;
 
-public:
-    essentials::IDManager* getIdManager() const;
-
-private:
     essentials::IDManager* idManager;
     std::unordered_map<essentials::IdentifierConstPtr, Object*> objects;
     std::thread* mainThread;
     std::queue<container::Command> commandQueue;
+
 };
 } // namespace srgsim

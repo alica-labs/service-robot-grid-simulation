@@ -1,10 +1,10 @@
 #include "srgsim/communication/Communication.h"
 
-#include "srgsim/communication/SpawnCommandHandler.h"
 #include "srgsim/communication/DoorCommandHandler.h"
 #include "srgsim/communication/MoveCommandHandler.h"
 #include "srgsim/communication/PickUpCommandHandler.h"
 #include "srgsim/communication/PutDownCommandHandler.h"
+#include "srgsim/communication/SpawnCommandHandler.h"
 
 #include "srgsim/Command.capnp.h"
 #include "srgsim/Simulator.h"
@@ -41,7 +41,7 @@ Communication::Communication(Simulator* simulator)
 
 Communication::~Communication()
 {
-    for(auto& handler : this->communicationHandlers) {
+    for (auto& handler : this->communicationHandlers) {
         delete handler;
     }
     delete this->commandSubscriber;
@@ -53,12 +53,11 @@ void Communication::commandCallback(::capnp::FlatArrayMessageReader& msg)
     srgsim::Command::Reader reader = msg.getRoot<srgsim::Command>();
     Command::Action action = reader.getAction();
 
-    for (CommandHandler* handler: this->communicationHandlers) {
+    for (CommandHandler* handler : this->communicationHandlers) {
         if (handler->handle(action, msg)) {
             break;
         }
     }
-
 }
 } // namespace communication
 } // namespace srgsim
