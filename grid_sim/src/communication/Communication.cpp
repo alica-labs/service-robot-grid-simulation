@@ -34,9 +34,9 @@ Communication::Communication(Simulator* simulator)
 
     this->ctx = zmq_ctx_new();
     this->url = "224.0.0.2:5555";
-    this->commandSubscriber = new capnzero::Subscriber(this->ctx, this->commandTopic);
-    this->commandSubscriber->connect(capnzero::CommType::UDP, this->url);
-    this->commandSubscriber->subscribe(&Communication::commandCallback, &(*this));
+    this->commandSubscriber = new capnzero::Subscriber(this->ctx, this->commandTopic, &Communication::commandCallback, &(*this));
+    this->commandSubscriber->addAddress(capnzero::CommType::UDP, this->url);
+    this->commandSubscriber->connect();
 }
 
 Communication::~Communication()
