@@ -133,9 +133,7 @@ bool World::placeObject(Object* object, Coordinate coordinate)
         return false;
     }
 
-    //cellIter->second->objects.push_back(object);
     object->setCell(cellIter->second);
-
     return true;
 }
 

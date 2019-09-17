@@ -89,6 +89,7 @@ essentials::IDManager* Simulator::getIdManager() const
 
 void Simulator::spawnRobot(const essentials::Identifier* id)
 {
+    std::cout << "Simulator::spawnRobot() called!" << std::endl;
     // create robot
     Object* object = this->addObject(id, Type::Robot);
     if (!object) {
@@ -103,11 +104,16 @@ void Simulator::spawnRobot(const essentials::Identifier* id)
     }
 
     // place robot
-    world->placeObject(object, cell->coordinate);
+    if (world->placeObject(object, cell->coordinate)) {
+        std::cout << "Simulator::spawnRobot(): Success!" << std::endl;
+    } else {
+        std::cout << "Simulator::spawnRobot(): Fail!" << std::endl;
+    }
 }
 
 Object* Simulator::addObject(const essentials::Identifier* id, Type type)
 {
+    // TODO: this makes no sense and is probably the reason why no robot shows up
     if (this->objects.find(essentials::IdentifierConstPtr(id)) == this->objects.end()) {
         return nullptr;
     }

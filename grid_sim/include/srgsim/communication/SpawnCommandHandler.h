@@ -15,9 +15,6 @@ public:
     ~SpawnCommandHandler() = default;
 
     bool handle(SimCommand sc);
-
-private:
-    Simulator* simulator;
 };
 } // namespace communication
 } // namespace srgsim

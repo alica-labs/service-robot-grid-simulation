@@ -25,7 +25,6 @@ bool MoveCommandHandler::handle(SimCommand sc)
         this->simulator->moveObject(sc.senderID, Direction::Down);
         return true;
     default:
-        std::cout << "MoveCommandHandler: unreachable case." << std::endl;
         return false;
     }
 }
