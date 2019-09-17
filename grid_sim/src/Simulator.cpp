@@ -63,10 +63,11 @@ void Simulator::run()
         auto start = std::chrono::system_clock::now();
         std::cout << "[Simulator] Iteration started..." << std::endl;
 #endif
-
         if (!this->headless) {
             this->gui->draw(this->world);
         }
+
+
 #ifdef SIM_DEBUG
         auto timePassed = std::chrono::system_clock::now() - start;
         std::chrono::microseconds microsecondsPassed = std::chrono::duration_cast<std::chrono::microseconds>(timePassed);
