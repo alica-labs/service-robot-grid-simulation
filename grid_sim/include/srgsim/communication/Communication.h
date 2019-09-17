@@ -1,10 +1,11 @@
 #pragma once
 
-#include "srgsim/Command.capnp.h"
+#include "srgsim/SimCommandMsg.capnp.h"
 
 #include <capnp/serialize-packed.h>
 #include <string>
 #include <vector>
+#include <SystemConfig.h>
 
 namespace capnzero
 {
@@ -21,18 +22,17 @@ class Communication
 {
 public:
     Communication(Simulator* simulator);
-
     ~Communication();
 
-    capnzero::Subscriber* commandSubscriber;
-
 private:
-    static const std::string commandTopic;
+    void SimCommandCallback(::capnp::FlatArrayMessageReader& msg);
 
-    void commandCallback(::capnp::FlatArrayMessageReader& msg);
-
+    essentials::SystemConfig* sc;
     void* ctx;
-    std::string url;
+    std::string simCommandTopic;
+    std::string address;
+    capnzero::Subscriber* simCommandSub;
+
     Simulator* simulator;
     std::vector<CommandHandler*> communicationHandlers;
 };

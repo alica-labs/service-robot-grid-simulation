@@ -3,9 +3,9 @@
 #include "srgsim/Cell.h"
 #include "srgsim/Object.h"
 #include "srgsim/SRGEnums.h"
-#include "srgsim/Simulator.h"
 
 #include <iostream>
+#include <FileSystem.h>
 
 //#define GUI_DEBUG
 
@@ -13,7 +13,7 @@ namespace srgsim
 {
 GUI::GUI()
 {
-    std::string textureFile = Simulator::getSelfPath() + "/textures/test_texture.png";
+    std::string textureFile = essentials::FileSystem::getSelfPath() + "/textures/test_texture.png";
     std::cout << "[GUI] Info: loading textureFile '" << textureFile << "'" << std::endl;
     this->texture = new sf::Texture();
     if (!this->texture->loadFromFile(textureFile)) {

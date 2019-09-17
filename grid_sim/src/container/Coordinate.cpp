@@ -1,4 +1,4 @@
-#include "srgsim/container/Coordinate.h"
+#include "srgsim/containers/Coordinate.h"
 #include <iostream>
 
 namespace srgsim

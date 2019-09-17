@@ -2,9 +2,9 @@
 
 #include "srgsim/Cell.h"
 #include "srgsim/Object.h"
-#include "srgsim/Simulator.h"
 
 #include <Tmx.h>
+#include <FileSystem.h>
 
 #include <iostream>
 
@@ -12,8 +12,8 @@ namespace srgsim
 {
 World::World()
 {
-    std::string textureFile = Simulator::getSelfPath() + "/textures/Department.tmx";
-    std::cout << textureFile << " " << std::endl;
+    std::string textureFile = essentials::FileSystem::getSelfPath() + "/textures/Department.tmx";
+    std::cout <<"srgsim::World(): Loading '" << textureFile << "' world file!" << std::endl;
     Tmx::Map* map = new Tmx::Map();
     map->ParseFile(textureFile);
     for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {

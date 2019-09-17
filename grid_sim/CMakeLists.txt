@@ -12,7 +12,7 @@ find_package(Threads)
 
 find_package(tmxparser REQUIRED)
 
-find_package(catkin REQUIRED capnzero alica_capnzero_proxy id_capnzero id_manager)
+find_package(catkin REQUIRED capnzero alica_capnzero_proxy id_capnzero id_manager fsystem)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -76,7 +76,12 @@ add_library(${PROJECT_NAME}_world
   src/World.cpp
   src/Cell.cpp
   src/container/Coordinate.cpp
+  src/container/ContainerUtils.cpp
   src/Object.cpp
+)
+
+target_link_libraries(${PROJECT_NAME}_world
+  tmxparser
 )
 
 ############### Sim Messages

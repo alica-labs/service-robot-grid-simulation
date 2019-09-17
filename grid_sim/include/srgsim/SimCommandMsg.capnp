@@ -3,8 +3,8 @@ using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("srgsim");
 using IDMsg = import "/capnzero/ID.capnp";
 
-struct Command {
-  senderId @0 :IDMsg.ID;
+struct SimCommandMsg {
+  senderID @0 :IDMsg.ID;
   action @1 :Action;
   x @2: UInt32;
   y @3: UInt32;

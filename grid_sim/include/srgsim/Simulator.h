@@ -1,6 +1,6 @@
 #pragma once
 
-#include "container/Command.h"
+#include "containers/SimCommand.h"
 
 #include "SRGEnums.h"
 
@@ -45,8 +45,6 @@ public:
     void moveObject(const essentials::Identifier* id, Direction direction);
     essentials::IDManager* getIdManager() const;
 
-    static std::string getSelfPath();
-
     static void simSigintHandler(int sig);
 
 private:
@@ -62,7 +60,7 @@ private:
     essentials::IDManager* idManager;
     std::unordered_map<essentials::IdentifierConstPtr, Object*> objects;
     std::thread* mainThread;
-    std::queue<container::Command> commandQueue;
+    std::queue<SimCommand> commandQueue;
 
 };
 } // namespace srgsim

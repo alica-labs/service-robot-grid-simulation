@@ -9,27 +9,20 @@ namespace srgsim
 namespace communication
 {
 
-bool MoveCommandHandler::handle(Command::Action action, ::capnp::FlatArrayMessageReader& msg)
+bool MoveCommandHandler::handle(SimCommand sc)
 {
-    if (action != Command::Action::GODOWN && action != Command::Action::GOUP && action != Command::Action::GORIGHT && action != Command::Action::GOLEFT)
-        return false;
-
-    capnzero::ID::Reader idReader = msg.getRoot<srgsim::Command>().getSenderId();
-    const essentials::Identifier* id =
-            this->simulator->getIdManager()->getIDFromBytes(idReader.getValue().asBytes().begin(), idReader.getValue().size(),
-                                                            static_cast<uint8_t>(idReader.getType()));
-    switch (action) {
-    case Command::Action::GOLEFT:
-        this->simulator->moveObject(id, Direction::Left);
+    switch (sc.action) {
+    case SimCommand::GOLEFT:
+        this->simulator->moveObject(sc.senderID, Direction::Left);
         return true;
-    case Command::Action::GOUP:
-        this->simulator->moveObject(id, Direction::Up);
+    case SimCommand::GOUP:
+        this->simulator->moveObject(sc.senderID, Direction::Up);
         return true;
-    case Command::Action::GORIGHT:
-        this->simulator->moveObject(id, Direction::Right);
+    case SimCommand::GORIGHT:
+        this->simulator->moveObject(sc.senderID, Direction::Right);
         return true;
-    case Command::Action::GODOWN:
-        this->simulator->moveObject(id, Direction::Down);
+    case SimCommand::GODOWN:
+        this->simulator->moveObject(sc.senderID, Direction::Down);
         return true;
     default:
         std::cout << "MoveCommandHandler: unreachable case." << std::endl;

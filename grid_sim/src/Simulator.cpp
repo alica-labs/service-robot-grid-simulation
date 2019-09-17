@@ -25,7 +25,6 @@ Simulator::Simulator(bool headless)
         : headless(headless)
         , idManager(new essentials::IDManager())
 {
-    // this->initTestWorld();
     this->communication = new communication::Communication(this);
     this->initWorld();
 }
@@ -56,10 +55,6 @@ void Simulator::start()
 
 void Simulator::run()
 {
-    // TODO remove later, just for debug
-    const essentials::Identifier* robotID = this->idManager->generateID();
-    this->spawnRobot(robotID);
-
     if (!this->headless) {
         this->gui = new GUI();
     }
@@ -77,27 +72,7 @@ void Simulator::run()
         std::chrono::microseconds microsecondsPassed = std::chrono::duration_cast<std::chrono::microseconds>(timePassed);
         std::cout << "[Simulator] ... took " << microsecondsPassed.count() << " microsecs" << std::endl;
 #endif
-
-        // TODO remove later, just for debug
-        std::cout << "Test: Simulator: Sleep and moving Robot left" << std::endl;
-        unsigned int microseconds = 1000000;
-        usleep(microseconds);
-        this->moveObject(robotID, Direction::Left);
     }
-}
-
-std::string Simulator::getSelfPath()
-{
-    char buff[PATH_MAX];
-    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
-    if (len != -1) {
-        buff[len] = '\0';
-        std::string exePath = std::string(buff);
-
-        return exePath.substr(0, exePath.find_last_of("/"));
-    }
-    /* handle error condition */
-    return "Simulator: Path not Found!";
 }
 
 bool Simulator::isRunning()

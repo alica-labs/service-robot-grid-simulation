@@ -6,11 +6,10 @@
 #include "srgsim/communication/PutDownCommandHandler.h"
 #include "srgsim/communication/SpawnCommandHandler.h"
 
-#include "srgsim/Command.capnp.h"
 #include "srgsim/Simulator.h"
 
-#include <capnp/common.h>
-#include <capnp/message.h>
+#include <srgsim/containers/ContainerUtils.h>
+
 #include <capnzero/Subscriber.h>
 
 #include <essentials/IDManager.h>
@@ -21,7 +20,6 @@ namespace srgsim
 {
 namespace communication
 {
-const std::string Communication::commandTopic = "/srgsim/cmd";
 
 Communication::Communication(Simulator* simulator)
         : simulator(simulator)
@@ -32,12 +30,15 @@ Communication::Communication(Simulator* simulator)
     this->communicationHandlers.push_back(new communication::PutDownCommandHandler(simulator));
     this->communicationHandlers.push_back(new communication::SpawnCommandHandler(simulator));
 
+    this->sc = essentials::SystemConfig::getInstance();
     this->ctx = zmq_ctx_new();
-    this->url = "224.0.0.2:5555";
-    this->commandSubscriber = new capnzero::Subscriber(this->ctx, capnzero::Protocol::UDP);
-    this->commandSubscriber->setTopic(this->commandTopic);
-    this->commandSubscriber->addAddress(this->url);
-    this->commandSubscriber->subscribe(&Communication::commandCallback, &(*this));
+    this->address = (*sc)["SRGSim"]->get<std::string>("SRGSim.Communication.address", NULL);
+    this->simCommandTopic = (*sc)["SRGSim"]->get<std::string>("SRGSim.Communication.cmdTopic", NULL);
+
+    this->simCommandSub = new capnzero::Subscriber(this->ctx, capnzero::Protocol::UDP);
+    this->simCommandSub->setTopic(this->simCommandTopic);
+    this->simCommandSub->addAddress(this->address);
+    this->simCommandSub->subscribe(&Communication::SimCommandCallback, &(*this));
 }
 
 Communication::~Communication()
@@ -45,17 +46,14 @@ Communication::~Communication()
     for (auto& handler : this->communicationHandlers) {
         delete handler;
     }
-    delete this->commandSubscriber;
+    delete this->simCommandSub;
     zmq_ctx_term(this->ctx);
 }
 
-void Communication::commandCallback(::capnp::FlatArrayMessageReader& msg)
+void Communication::SimCommandCallback(::capnp::FlatArrayMessageReader& msg)
 {
-    srgsim::Command::Reader reader = msg.getRoot<srgsim::Command>();
-    Command::Action action = reader.getAction();
-
     for (CommandHandler* handler : this->communicationHandlers) {
-        if (handler->handle(action, msg)) {
+        if (handler->handle(ContainerUtils::toSimCommand(msg, this->simulator->getIdManager()))) {
             break;
         }
     }
