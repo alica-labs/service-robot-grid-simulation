@@ -18,7 +18,7 @@ World::World()
     map->ParseFile(textureFile);
     for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {
         for (int y = 0; y < map->GetTileLayer(0)->GetHeight(); y++) {
-            this->addCell(x, y)->type = static_cast<Type>(map->GetTileLayer(0)->GetTile(x, y).gid);
+            this->addCell(x, y)->type = static_cast<Type>(map->GetTileLayer(0)->GetTile(x, y).id);
         }
     }
 }

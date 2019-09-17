@@ -6,7 +6,7 @@ namespace srgsim
 {
 
 Object::Object(Type type, const essentials::Identifier* id)
-        : type(type), id(id)
+        : type(type), id(id), cell(nullptr)
 {
 }
 

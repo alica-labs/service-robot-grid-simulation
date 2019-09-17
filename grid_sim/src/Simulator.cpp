@@ -89,19 +89,21 @@ essentials::IDManager* Simulator::getIdManager() const
 
 void Simulator::spawnRobot(const essentials::Identifier* id)
 {
-    std::cout << "Simulator::spawnRobot() called!" << std::endl;
     // create robot
     Object* object = this->addObject(id, Type::Robot);
     if (!object) {
+        //e.g. robot already spawned
         return;
     }
 
     // search for cell with valid spawn coordinates
     srand(time(NULL));
     Cell* cell = nullptr;
-    while (!cell || isPlacementAllowed(cell, Type::Robot)) {
+    while (!cell || !isPlacementAllowed(cell, Type::Robot)) {
         cell = world->getCell(Coordinate(rand() % world->getSizeX(), rand() % world->getSizeX()));
     }
+
+    std::cout << "Simulator::spawnRobot(): Cell Type " << cell->type << " Floor Type" << Type::Floor << std::endl;
 
     // place robot
     if (world->placeObject(object, cell->coordinate)) {
@@ -113,13 +115,19 @@ void Simulator::spawnRobot(const essentials::Identifier* id)
 
 Object* Simulator::addObject(const essentials::Identifier* id, Type type)
 {
-    // TODO: this makes no sense and is probably the reason why no robot shows up
-    if (this->objects.find(essentials::IdentifierConstPtr(id)) == this->objects.end()) {
-        return nullptr;
+    auto objectEntry = this->objects.find(essentials::IdentifierConstPtr(id));
+    if (objectEntry == this->objects.end()) {
+        Object* object = new Object(type, id);
+        this->objects.emplace(object->getID(), object);
+        return object;
+    } else {
+        if (objectEntry->second->getType() != type ||
+            objectEntry->second->getType() == Type::Robot) {
+            return nullptr;
+        } else {
+            return objectEntry->second;
+        }
     }
-    Object* object = new Object(type, id);
-    this->objects.emplace(object->getID(), object);
-    return object;
 }
 
 void Simulator::moveObject(const essentials::Identifier* id, Direction direction)
@@ -161,9 +169,9 @@ bool Simulator::isPlacementAllowed(Cell* cell, Type objectType)
 {
     switch (objectType) {
     case Type::Robot:
-        return cell->type == Floor;
+        return cell->type == Type::Floor;
     default:
-        return !(cell->type == Type::Door || cell->type == Type::Default || cell->type == Type::Wall);
+        return !(cell->type == Type::Door || cell->type == Type::Wall);
     }
 }
 
