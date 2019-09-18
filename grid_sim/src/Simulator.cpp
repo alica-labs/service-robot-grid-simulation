@@ -72,6 +72,8 @@ void Simulator::run()
         if (!this->headless) {
             this->gui->draw(this->world);
         }
+
+
 #ifdef SIM_DEBUG
         auto timePassed = std::chrono::system_clock::now() - start;
         std::chrono::microseconds microsecondsPassed = std::chrono::duration_cast<std::chrono::microseconds>(timePassed);
@@ -107,7 +109,6 @@ bool Simulator::isRunning()
 
 essentials::IDManager* Simulator::getIdManager() const
 {
-    std::cout << "Get idManager!" << std::endl;
     return idManager;
 }
 
@@ -116,33 +117,45 @@ essentials::IDManager* Simulator::getIdManager() const
 void Simulator::spawnRobot(const essentials::Identifier* id)
 {
     // create robot
-    std::cout << "creating new robot . . .\n";
     Object* object = this->addObject(id, Type::Robot);
     if (!object) {
         return;
     }
 
     // search for cell with valid spawn coordinates
-    std::cout << "Finding valid Cell . . .\n";
     srand(time(NULL));
     Cell* cell = nullptr;
     while (!cell || isPlacementAllowed(cell, Type::Robot)) {
         cell = world->getCell(Coordinate(rand() % world->getSizeX(), rand() % world->getSizeX()));
     }
 
+    std::cout << "Simulator::spawnRobot(): Cell Type " << cell->type << " Floor Type" << Type::Floor << std::endl;
+
     // place robot
+    if (world->placeObject(object, cell->coordinate)) {
+        std::cout << "Simulator::spawnRobot(): Success!" << std::endl;
+    } else {
+        std::cout << "Simulator::spawnRobot(): Fail!" << std::endl;
+    }
     std::cout << "placing robot . . .\n";
     world->placeObject(object, cell->coordinate);
 }
 
 Object* Simulator::addObject(const essentials::Identifier* id, Type type)
 {
-    if (this->objects.find(essentials::IdentifierConstPtr(id)) == this->objects.end()) {
-        return nullptr;
+    auto objectEntry = this->objects.find(essentials::IdentifierConstPtr(id));
+    if (objectEntry == this->objects.end()) {
+        Object* object = new Object(type, id);
+        this->objects.emplace(object->getID(), object);
+        return object;
+    } else {
+        if (objectEntry->second->getType() != type ||
+            objectEntry->second->getType() == Type::Robot) {
+            return nullptr;
+        } else {
+            return objectEntry->second;
+        }
     }
-    Object* object = new Object(type, id);
-    this->objects.emplace(object->getID(), object);
-    return object;
 }
 
 void Simulator::moveObject(const essentials::Identifier* id, Direction direction)
@@ -184,9 +197,9 @@ bool Simulator::isPlacementAllowed(Cell* cell, Type objectType)
 {
     switch (objectType) {
     case Type::Robot:
-        return cell->type == Floor;
+        return cell->type == Type::Floor;
     default:
-        return !(cell->type == Type::Door || cell->type == Type::Default || cell->type == Type::Wall);
+        return !(cell->type == Type::Door || cell->type == Type::Wall);
     }
 }
 

@@ -8,14 +8,14 @@ namespace srgsim
 namespace communication
 {
 
-bool PickUpCommandHandler::handle(Command::Action action, ::capnp::FlatArrayMessageReader& msg)
+bool PickUpCommandHandler::handle(SimCommand sc)
 {
-
-    if (action != Command::Action::PICKUP)
+    if (sc.action == SimCommand::PICKUP) {
+        std::cout << "PickUpCommandHandler::handle() not implemented, yet!" << std::endl;
+        return true;
+    } else {
         return false;
-
-    // TODO implement
-    return true;
+    }
 }
 } // namespace communication
 } // namespace srgsim

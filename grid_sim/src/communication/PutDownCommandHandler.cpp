@@ -7,14 +7,14 @@ namespace srgsim
 namespace communication
 {
 
-bool PutDownCommandHandler::handle(Command::Action action, ::capnp::FlatArrayMessageReader& msg)
+bool PutDownCommandHandler::handle(SimCommand sc)
 {
-
-    if (action != Command::Action::PUTDOWN)
+    if (sc.action == SimCommand::PUTDOWN) {
+        std::cout << "PutDownCommandHandler::handle() not implemented, yet!" << std::endl;
+        return true;
+    } else {
         return false;
-
-    // TODO implement
-    return true;
+    }
 }
 } // namespace communication
 } // namespace srgsim

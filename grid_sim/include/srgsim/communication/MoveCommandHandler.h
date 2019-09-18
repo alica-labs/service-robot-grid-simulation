@@ -1,7 +1,6 @@
 #pragma once
 
 #include "srgsim/communication/CommandHandler.h"
-#include "srgsim/Command.capnp.h"
 #include "srgsim/Simulator.h"
 
 namespace srgsim
@@ -15,10 +14,7 @@ public:
     MoveCommandHandler(Simulator* simulator): CommandHandler(simulator) {}
     ~MoveCommandHandler() = default;
 
-    bool handle(Command::Action action, ::capnp::FlatArrayMessageReader& msg);
-
-private:
-    Simulator* simulator;
+    bool handle(SimCommand sc);
 };
 } // namespace communication
 } // namespace srgsim

@@ -7,8 +7,7 @@ namespace srgsim
  */
 enum Type
 {
-    Empty, // necessary to correct ids with regard to tmx file
-    Default,
+    Dirt,
     Gras,
     Wall,
     Door,
@@ -16,7 +15,7 @@ enum Type
     Floor,
     Robot,
     White,
-    Dirt,
+    Default,
     Last // has to be last
 };
 

@@ -7,14 +7,18 @@ namespace srgsim
 namespace communication
 {
 
-bool DoorCommandHandler::handle(Command::Action action, ::capnp::FlatArrayMessageReader& msg)
+bool DoorCommandHandler::handle(SimCommand sc)
 {
-
-    if (action != Command::Action::OPEN && action != Command::Action::CLOSE)
-        return false;
-
-    // TODO implement
-    return true;
+    switch(sc.action) {
+        case SimCommand::OPEN:
+            std::cout << "DoorCommandHandler::handle() not implemented, yet!" << std::endl;
+            return true;
+        case SimCommand::CLOSE:
+            std::cout << "DoorCommandHandler::handle() not implemented, yet!" << std::endl;
+            return true;
+        default:
+            return false;
+    }
 }
 } // namespace communication
 } // namespace srgsim
