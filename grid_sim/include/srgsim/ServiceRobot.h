@@ -9,7 +9,7 @@ namespace srgsim {
     class Localisation;
     class ServiceRobot : public Object {
     public:
-        ServiceRobot(const essentials::Identifier* id);
+        ServiceRobot(essentials::IdentifierConstPtr id);
         SimPerceptions createSimPerceptions(World* world);
     private:
         Localisation* localisation;

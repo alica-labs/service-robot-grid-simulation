@@ -21,14 +21,15 @@ namespace srgsim
 namespace communication
 {
 
-Communication::Communication(Simulator* simulator)
-        : simulator(simulator)
+Communication::Communication(essentials::IDManager* idManager, World* world)
+        : world(world)
+        , idManager(idManager)
 {
-    this->communicationHandlers.push_back(new communication::MoveCommandHandler(simulator));
-    this->communicationHandlers.push_back(new communication::DoorCommandHandler(simulator));
-    this->communicationHandlers.push_back(new communication::PickUpCommandHandler(simulator));
-    this->communicationHandlers.push_back(new communication::PutDownCommandHandler(simulator));
-    this->communicationHandlers.push_back(new communication::SpawnCommandHandler(simulator));
+    this->communicationHandlers.push_back(new communication::MoveCommandHandler(world));
+    this->communicationHandlers.push_back(new communication::DoorCommandHandler(world));
+    this->communicationHandlers.push_back(new communication::PickUpCommandHandler(world));
+    this->communicationHandlers.push_back(new communication::PutDownCommandHandler(world));
+    this->communicationHandlers.push_back(new communication::SpawnCommandHandler(world));
 
     this->sc = essentials::SystemConfig::getInstance();
     this->ctx = zmq_ctx_new();
@@ -58,13 +59,14 @@ Communication::~Communication()
 void Communication::SimCommandCallback(::capnp::FlatArrayMessageReader& msg)
 {
     for (CommandHandler* handler : this->communicationHandlers) {
-        if (handler->handle(ContainerUtils::toSimCommand(msg, this->simulator->getIdManager()))) {
+        if (handler->handle(ContainerUtils::toSimCommand(msg, this->idManager))) {
             break;
         }
     }
 }
 
-void Communication::sendSimPerceptions(srgsim::SimPerceptions sp) {
+void Communication::sendSimPerceptions(srgsim::SimPerceptions sp)
+{
     ::capnp::MallocMessageBuilder msgBuilder;
     ContainerUtils::toMsg(sp, msgBuilder);
     this->simPerceptionsPub->send(msgBuilder);

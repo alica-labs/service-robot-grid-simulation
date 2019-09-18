@@ -5,7 +5,7 @@
 
 namespace srgsim{
 
-    ServiceRobot::ServiceRobot(const essentials::Identifier* id) : Object(Type::Robot, id) {
+    ServiceRobot::ServiceRobot(essentials::IdentifierConstPtr id) : Object(Type::Robot, id) {
         this->localisation = new Localisation(this);
     }
 

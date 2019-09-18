@@ -13,7 +13,7 @@ namespace communication
 bool SpawnCommandHandler::handle(SimCommand sc)
 {
     if (sc.action == SimCommand::SPAWN) {
-        this->simulator->spawnRobot(sc.senderID);
+        this->world->spawnRobot(sc.senderID);
         return true;
     } else {
         return false;
