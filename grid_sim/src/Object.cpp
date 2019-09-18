@@ -5,14 +5,13 @@
 namespace srgsim
 {
 
-Object::Object(Type type, const essentials::Identifier* id)
+Object::Object(Type type, essentials::IdentifierConstPtr id)
         : type(type), id(id), cell(nullptr)
 {
 }
 
 Object::~Object()
 {
-    delete this->id;
 }
 
 void Object::setCell(Cell* cell)

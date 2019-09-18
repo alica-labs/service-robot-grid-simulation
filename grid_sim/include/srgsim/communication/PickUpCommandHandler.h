@@ -11,7 +11,7 @@ class PickUpCommandHandler : public CommandHandler
 {
 
 public:
-    PickUpCommandHandler(Simulator* simulator): CommandHandler(simulator) {}
+    PickUpCommandHandler(World* world): CommandHandler(world) {}
     ~PickUpCommandHandler() = default;
 
     bool handle(SimCommand sc);

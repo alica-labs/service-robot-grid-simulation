@@ -76,10 +76,11 @@ add_library(${PROJECT_NAME}_world
   src/World.cpp
   src/Cell.cpp
   src/container/Coordinate.cpp
-  src/container/ContainerUtils.cpp
   src/Object.cpp
+  src/ServiceRobot.cpp
+  src/Sensor.cpp
+  src/Localisation.cpp
 )
-
 target_link_libraries(${PROJECT_NAME}_world
   tmxparser
 )
@@ -94,6 +95,7 @@ set(CAPNPC_OUTPUT_DIR ${${PROJECT_NAME}_msgs})
 capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${capnp_messages})
 
 add_library(${PROJECT_NAME}_msgs
+  src/container/ContainerUtils.cpp
   ${CAPNP_SRCS}
 )
 target_link_libraries(${PROJECT_NAME}_msgs

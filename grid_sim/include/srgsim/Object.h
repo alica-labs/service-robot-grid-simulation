@@ -13,7 +13,7 @@ class Cell;
 class Object
 {
 public:
-    Object(Type type, const essentials::Identifier* id);
+    Object(Type type, essentials::IdentifierConstPtr id);
     virtual ~Object();
 
     essentials::IdentifierConstPtr getID();
@@ -26,7 +26,7 @@ public:
 private:
     Cell* cell;
     Type type;
-    const essentials::Identifier* id;
+    essentials::IdentifierConstPtr id;
 };
 
 } // namespace srgsim

@@ -1,6 +1,7 @@
 #include "srgsim/containers/ContainerUtils.h"
 
 #include <srgsim/SimCommandMsg.capnp.h>
+#include <srgsim/SimPerceptionsMsg.capnp.h>
 #include <essentials/IDManager.h>
 #include <essentials/WildcardID.h>
 
@@ -59,7 +60,7 @@ SimCommand ContainerUtils::toSimCommand(::capnp::FlatArrayMessageReader& msg, es
 
 void ContainerUtils::toMsg(srgsim::SimCommand sc, ::capnp::MallocMessageBuilder& builder)
 {
-    srgsim::SimCommandMsg::Builder msg = builder.getRoot<srgsim::SimCommandMsg>();
+    SimCommandMsg::Builder msg = builder.getRoot<SimCommandMsg>();
 
     capnzero::ID::Builder senderID = msg.initSenderID();
     senderID.setValue(kj::arrayPtr(sc.senderID->getRaw(), (unsigned int) sc.senderID->getSize()));
@@ -99,5 +100,61 @@ void ContainerUtils::toMsg(srgsim::SimCommand sc, ::capnp::MallocMessageBuilder&
 
     msg.setX(sc.x);
     msg.setY(sc.y);
+}
+
+SimPerceptions ContainerUtils::toSimPerceptions(::capnp::FlatArrayMessageReader &msg, essentials::IDManager *idManager) {
+    SimPerceptions sps;
+    srgsim::SimPerceptionsMsg::Reader reader = msg.getRoot<srgsim::SimPerceptionsMsg>();
+    sps.receiverID = idManager->getIDFromBytes(
+            reader.getReceiverID().getValue().asBytes().begin(), reader.getReceiverID().getValue().size(), reader.getReceiverID().getType());
+    for (srgsim::SimPerceptionsMsg::Perception::Reader perceptionMsg : reader.getPerceptions()) {
+        srgsim::Perception perception;
+        perception.objectID = idManager->getIDFromBytes(
+                perceptionMsg.getObjectID().getValue().asBytes().begin(), perceptionMsg.getObjectID().getValue().size(), perceptionMsg.getObjectID().getType());
+        switch(perceptionMsg.getType()) {
+            case srgsim::SimPerceptionsMsg::Perception::Type::ROBOT:
+                perception.type = Type::Robot;
+                break;
+            case srgsim::SimPerceptionsMsg::Perception::Type::DOOR:
+                perception.type = Type::Door;
+                break;
+            default:
+                std::cerr << "srgsim::ContainterUtils::toSimPerceptions(): Unknown object type in capnp message found!" << std::endl;
+                break;
+        }
+        perception.x = perceptionMsg.getX();
+        perception.y = perceptionMsg.getY();
+        sps.perceptions.push_back(perception);
+    }
+    return sps;
+}
+
+void ContainerUtils::toMsg(srgsim::SimPerceptions sp, ::capnp::MallocMessageBuilder &builder) {
+    SimPerceptionsMsg::Builder msg = builder.getRoot<SimPerceptionsMsg>();
+
+    capnzero::ID::Builder receiverID = msg.initReceiverID();
+    receiverID.setValue(kj::arrayPtr(sp.receiverID->getRaw(), (unsigned int) sp.receiverID->getSize()));
+    receiverID.setType(sp.receiverID->getType());
+
+    ::capnp::List< ::srgsim::SimPerceptionsMsg::Perception>::Builder perceptionsBuilder = msg.initPerceptions(sp.perceptions.size());
+    for (unsigned int i = 0; i < sp.perceptions.size(); i++) {
+        srgsim::SimPerceptionsMsg::Perception::Builder pBuilder = perceptionsBuilder[i];
+        pBuilder.setY(sp.perceptions[i].y);
+        pBuilder.setX(sp.perceptions[i].x);
+        switch(sp.perceptions[i].type) {
+            case Type::Robot:
+                pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::ROBOT);
+                break;
+            case Type::Door:
+                pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::DOOR);
+                break;
+            default:
+                std::cerr << "srgsim::ContainterUtils::toMsg(): Unknown object type perceived: " << sp.perceptions[i].type << "!" << std::endl;
+                break;
+        }
+        capnzero::ID::Builder objectID = pBuilder.initObjectID();
+        objectID.setType(sp.perceptions[i].objectID->getType());
+        objectID.setValue(::capnp::Data::Reader(sp.perceptions[i].objectID->getRaw(), sp.perceptions[i].objectID->getSize()));
+    }
 }
 } // namespace srgsim

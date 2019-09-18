@@ -2,16 +2,22 @@
 
 #include "containers/Coordinate.h"
 
-#include "SRGEnums.h"
+#include "srgsim/SRGEnums.h"
+#include "srgsim/containers/SimPerceptions.h"
+
+#include <essentials/IdentifierConstPtr.h>
 
 #include <stdint.h>
 #include <vector>
 #include <map>
+#include <unordered_map>
+#include <mutex>
 
 namespace srgsim
 {
 class Cell;
 class Object;
+class ServiceRobot;
 
 /**
  * Coordinates are:
@@ -22,6 +28,7 @@ class World
 {
 public:
     World();
+    World(std::string tmxMapFile);
     ~World();
 
     Cell* addCell(uint32_t x, uint32_t y);
@@ -32,15 +39,15 @@ public:
     const std::map<Coordinate, Cell*>& getGrid();
 
     bool placeObject(Object* object, Coordinate coordinate);
+    std::vector<SimPerceptions> createSimPerceptions();
+    bool spawnRobot(essentials::IdentifierConstPtr id);
+    Object* addObject(essentials::IdentifierConstPtr id, Type type);
+    bool addRobot(ServiceRobot* robot);
+    void moveObject(const essentials::Identifier* id, Direction direction);
 
 private:
-    /**
-     * Lets the world grow on demand and
-     * fills up non existing cells with Floor cells.
-     * @param x
-     * @param y
-     */
-    void growWorld(uint32_t x, uint32_t y);
+    bool isPlacementAllowed(Cell* cell, Type objectType);
+    Cell* getNeighbourCell(const Direction& direction, Object* object);
 
     std::map<Coordinate, Cell*> cellGrid;
     /**
@@ -51,5 +58,9 @@ private:
      * Current field width
      */
     uint32_t sizeY;
+
+    std::mutex dataMutex;
+    std::unordered_map<essentials::IdentifierConstPtr, Object*> objects;
+    std::unordered_map<essentials::IdentifierConstPtr, ServiceRobot*> robots;
 };
 } // namespace srgsim

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "srgsim/communication/CommandHandler.h"
-#include "srgsim/Simulator.h"
 
 namespace srgsim
 {
@@ -11,7 +10,7 @@ class DoorCommandHandler : public CommandHandler
 {
 
 public:
-    DoorCommandHandler(Simulator* simulator): CommandHandler(simulator) {}
+    DoorCommandHandler(World* world): CommandHandler(world) {}
     ~DoorCommandHandler() = default;
 
     bool handle(SimCommand sc);

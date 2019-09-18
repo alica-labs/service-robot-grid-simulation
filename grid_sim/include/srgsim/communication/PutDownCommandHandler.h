@@ -11,7 +11,7 @@ class PutDownCommandHandler : public CommandHandler
 {
 
 public:
-    PutDownCommandHandler(Simulator* simulator): CommandHandler(simulator) {}
+    PutDownCommandHandler(World* world): CommandHandler(world) {}
     ~PutDownCommandHandler() = default;
 
     bool handle(SimCommand sc);

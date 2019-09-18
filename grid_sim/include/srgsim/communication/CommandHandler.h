@@ -1,7 +1,7 @@
 #pragma once
 
-#include "srgsim/SimCommandMsg.capnp.h"
-#include "srgsim/Simulator.h"
+#include "srgsim/containers/SimCommand.h"
+#include "srgsim/World.h"
 #include <capnp/serialize-packed.h>
 
 namespace srgsim
@@ -13,11 +13,11 @@ class CommandHandler
 {
 
 public:
-    CommandHandler(Simulator* simulator): simulator(simulator){};
+    CommandHandler(World* world): world(world){};
     virtual ~CommandHandler() {}
     virtual bool handle(SimCommand sc) = 0;
 protected:
-    Simulator* simulator;
+    World* world;
 };
 
 } // namespace communication

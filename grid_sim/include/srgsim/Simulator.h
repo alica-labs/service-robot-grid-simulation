@@ -7,7 +7,6 @@
 #include <essentials/IdentifierConstPtr.h>
 
 #include <queue>
-#include <unordered_map>
 
 namespace std
 {
@@ -25,7 +24,7 @@ namespace communication
 {
 class Communication;
 }
-class SRGIDManager;
+
 class Object;
 class World;
 class GUI;
@@ -37,11 +36,9 @@ public:
     ~Simulator();
     void start();
     void run();
-    void initWorld();
     static bool isRunning();
 
-    void spawnRobot(const essentials::Identifier* id);
-    Object* addObject(const essentials::Identifier* id, Type type);
+    bool spawnRobot(const essentials::Identifier* id);
     void moveObject(const essentials::Identifier* id, Direction direction);
     void pickObject(const essentials::Identifier* id, Direction direction);
     void putObject(const essentials::Identifier* id, Direction direction);
@@ -51,9 +48,6 @@ public:
     std::string getSelfPath();
 
 private:
-    Cell* getNeighbourCell(const Direction& direction, Object* object);
-    bool isPlacementAllowed(Cell* cell, Type objectType);
-
     static bool running;
     bool headless;
     World* world;
@@ -61,9 +55,7 @@ private:
     communication::Communication* communication;
 
     essentials::IDManager* idManager;
-    std::unordered_map<essentials::IdentifierConstPtr, Object*> objects;
     std::thread* mainThread;
     std::queue<SimCommand> commandQueue;
-
 };
 } // namespace srgsim

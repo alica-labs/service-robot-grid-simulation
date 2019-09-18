@@ -1,7 +1,6 @@
 #pragma once
 
 #include "srgsim/communication/CommandHandler.h"
-#include "srgsim/Simulator.h"
 
 namespace srgsim
 {
@@ -11,7 +10,7 @@ class SpawnCommandHandler : public CommandHandler
 {
 
 public:
-    SpawnCommandHandler(Simulator* simulator): CommandHandler(simulator) {}
+    SpawnCommandHandler(World* world): CommandHandler(world) {}
     ~SpawnCommandHandler() = default;
 
     bool handle(SimCommand sc);

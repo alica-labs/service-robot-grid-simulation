@@ -13,16 +13,16 @@ bool MoveCommandHandler::handle(SimCommand sc)
 {
     switch (sc.action) {
     case SimCommand::GOLEFT:
-        this->simulator->moveObject(sc.senderID, Direction::Left);
+        this->world->moveObject(sc.senderID, Direction::Left);
         return true;
     case SimCommand::GOUP:
-        this->simulator->moveObject(sc.senderID, Direction::Up);
+        this->world->moveObject(sc.senderID, Direction::Up);
         return true;
     case SimCommand::GORIGHT:
-        this->simulator->moveObject(sc.senderID, Direction::Right);
+        this->world->moveObject(sc.senderID, Direction::Right);
         return true;
     case SimCommand::GODOWN:
-        this->simulator->moveObject(sc.senderID, Direction::Down);
+        this->world->moveObject(sc.senderID, Direction::Down);
         return true;
     default:
         return false;
