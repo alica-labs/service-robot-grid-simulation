@@ -107,6 +107,7 @@ bool Simulator::isRunning()
 
 essentials::IDManager* Simulator::getIdManager() const
 {
+    std::cout << "Get idManager!" << std::endl;
     return idManager;
 }
 
@@ -115,12 +116,14 @@ essentials::IDManager* Simulator::getIdManager() const
 void Simulator::spawnRobot(const essentials::Identifier* id)
 {
     // create robot
+    std::cout << "creating new robot . . .\n";
     Object* object = this->addObject(id, Type::Robot);
     if (!object) {
         return;
     }
 
     // search for cell with valid spawn coordinates
+    std::cout << "Finding valid Cell . . .\n";
     srand(time(NULL));
     Cell* cell = nullptr;
     while (!cell || isPlacementAllowed(cell, Type::Robot)) {
@@ -128,6 +131,7 @@ void Simulator::spawnRobot(const essentials::Identifier* id)
     }
 
     // place robot
+    std::cout << "placing robot . . .\n";
     world->placeObject(object, cell->coordinate);
 }
 
