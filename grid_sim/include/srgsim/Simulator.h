@@ -43,9 +43,12 @@ public:
     void spawnRobot(const essentials::Identifier* id);
     Object* addObject(const essentials::Identifier* id, Type type);
     void moveObject(const essentials::Identifier* id, Direction direction);
+    void pickObject(const essentials::Identifier* id, Direction direction);
+    void putObject(const essentials::Identifier* id, Direction direction);
     essentials::IDManager* getIdManager() const;
 
     static void simSigintHandler(int sig);
+    std::string getSelfPath();
 
 private:
     Cell* getNeighbourCell(const Direction& direction, Object* object);

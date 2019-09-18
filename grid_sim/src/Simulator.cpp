@@ -158,6 +158,8 @@ Object* Simulator::addObject(const essentials::Identifier* id, Type type)
     }
 }
 
+
+
 void Simulator::moveObject(const essentials::Identifier* id, Direction direction)
 {
     auto iter = objects.find(essentials::IdentifierConstPtr(id));
@@ -203,6 +205,14 @@ bool Simulator::isPlacementAllowed(Cell* cell, Type objectType)
     }
 }
 
+void Simulator::pickObject(const essentials::Identifier *id, Direction direction) {
+    std::cout << "Pickup not yet implemented" << std::endl;
+}
+
+void Simulator::putObject(const essentials::Identifier *id, Direction direction) {
+    std::cout << "putting down not yet implemented" << std::endl;
+}
+
 /**
  * This is for handling [Ctrl] + [c]
  * @param sig
@@ -212,6 +222,7 @@ void Simulator::simSigintHandler(int sig)
     std::cout << "Simulator: Caught SIGINT! Terminating ..." << std::endl;
     running = false;
 }
+
 
 } // namespace srgsim
 
