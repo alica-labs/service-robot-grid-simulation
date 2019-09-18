@@ -2,7 +2,7 @@
 using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("srgsim");
 using IDMsg = import "/capnzero/ID.capnp";
-// TODO container and msg and send and receive in WM
+# TODO container and msg and send and receive in WM
 struct SimSensorMsg {
   receiverID @0 :IDMsg.ID;
   action @1 :List(Perception);
