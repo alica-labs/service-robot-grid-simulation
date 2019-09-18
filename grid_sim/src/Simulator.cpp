@@ -98,20 +98,6 @@ void Simulator::run()
     }
 }
 
-std::string Simulator::getSelfPath()
-{
-    char buff[PATH_MAX];
-    ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff) - 1);
-    if (len != -1) {
-        buff[len] = '\0';
-        std::string exePath = std::string(buff);
-
-        return exePath.substr(0, exePath.find_last_of("/"));
-    }
-    /* handle error condition */
-    return "Simulator: Path not Found!";
-}
-
 bool Simulator::isRunning()
 {
     return running;
