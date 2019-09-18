@@ -170,7 +170,7 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
     // place robot
     if (this->placeObject(object, cell->coordinate)) {
         // only add robot into list, if it was placed correctly
-        this->robots.emplace(object->getID(), static_cast<ServiceRobot*>(object));
+        this->addRobot(static_cast<ServiceRobot*>(object));
         return true;
     } else {
         return false;
@@ -218,6 +218,16 @@ void World::moveObject(const essentials::Identifier* id, Direction direction)
     }
     iter->second->getCell()->removeObject(iter->second);
     goalCell->addObject(iter->second);
+}
+
+bool World::addRobot(srgsim::ServiceRobot *robot) {
+    auto robotEntry = this->robots.find(robot->getID());
+    if (robotEntry == this->robots.end()) {
+        this->robots.emplace(robot->getID(), robot);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 // INTERNAL METHODS

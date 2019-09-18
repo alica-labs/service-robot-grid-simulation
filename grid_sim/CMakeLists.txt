@@ -31,9 +31,6 @@ include_directories(
 add_executable(${PROJECT_NAME}
   src/Simulator.cpp
   src/GUI.cpp
-  src/ServiceRobot.cpp
-  src/Sensor.cpp
-  src/Localisation.cpp
   src/communication/Communication.cpp
   src/communication/SpawnCommandHandler.cpp
   src/communication/CommandHandler.cpp
@@ -80,6 +77,9 @@ add_library(${PROJECT_NAME}_world
   src/Cell.cpp
   src/container/Coordinate.cpp
   src/Object.cpp
+  src/ServiceRobot.cpp
+  src/Sensor.cpp
+  src/Localisation.cpp
 )
 target_link_libraries(${PROJECT_NAME}_world
   tmxparser

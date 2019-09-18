@@ -42,6 +42,7 @@ public:
     std::vector<SimPerceptions> createSimPerceptions();
     bool spawnRobot(essentials::IdentifierConstPtr id);
     Object* addObject(essentials::IdentifierConstPtr id, Type type);
+    bool addRobot(ServiceRobot* robot);
     void moveObject(const essentials::Identifier* id, Direction direction);
 
 private:
