@@ -25,11 +25,12 @@ namespace communication
 {
 class Communication;
 }
-class SRGIDManager;
+
 class Object;
 class World;
 class GUI;
 class Cell;
+class ServiceRobot;
 class Simulator
 {
 public:
@@ -40,7 +41,7 @@ public:
     void initWorld();
     static bool isRunning();
 
-    void spawnRobot(const essentials::Identifier* id);
+    bool spawnRobot(const essentials::Identifier* id);
     Object* addObject(const essentials::Identifier* id, Type type);
     void moveObject(const essentials::Identifier* id, Direction direction);
     essentials::IDManager* getIdManager() const;
@@ -59,6 +60,7 @@ private:
 
     essentials::IDManager* idManager;
     std::unordered_map<essentials::IdentifierConstPtr, Object*> objects;
+    std::unordered_map<essentials::IdentifierConstPtr, ServiceRobot*> robots;
     std::thread* mainThread;
     std::queue<SimCommand> commandQueue;
 

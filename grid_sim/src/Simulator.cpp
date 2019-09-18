@@ -4,12 +4,12 @@
 #include "srgsim/GUI.h"
 #include "srgsim/Object.h"
 #include "srgsim/World.h"
+#include "srgsim/ServiceRobot.h"
 #include "srgsim/communication/Communication.h"
 
 #include <essentials/IDManager.h>
 
 #include <iostream>
-#include <limits.h>
 #include <signal.h>
 #include <string>
 #include <thread>
@@ -65,19 +65,29 @@ void Simulator::run()
     }
     while (Simulator::running) {
 #ifdef SIM_DEBUG
-        auto start = std::chrono::system_clock::now();
         std::cout << "[Simulator] Iteration started..." << std::endl;
 #endif
+        auto start = std::chrono::system_clock::now();
 
+        // 1. Update GUI
         if (!this->headless) {
             this->gui->draw(this->world);
         }
 
+        // 2. Produce and send perceptions for each robot
+        for (auto& robotEntry : this->robots) {
+            this->communication->sendSimPerceptions(robotEntry.second->createSimPerceptions(this->world));
+        }
 
-#ifdef SIM_DEBUG
+
         auto timePassed = std::chrono::system_clock::now() - start;
-        std::chrono::microseconds microsecondsPassed = std::chrono::duration_cast<std::chrono::microseconds>(timePassed);
-        std::cout << "[Simulator] ... took " << microsecondsPassed.count() << " microsecs" << std::endl;
+        std::chrono::milliseconds millisecondsPassed = std::chrono::duration_cast<std::chrono::milliseconds>(timePassed);
+
+        if (millisecondsPassed.count() < 33) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(33-millisecondsPassed.count()));
+        }
+#ifdef SIM_DEBUG
+        std::cout << "[Simulator] ... took " << millisecondsPassed.count() << " milliseconds" << std::endl;
 #endif
 
         // TODO remove later, just for debug
@@ -114,12 +124,13 @@ essentials::IDManager* Simulator::getIdManager() const
 
 /////////////////////////// Interaction /////////////////////////////////////
 
-void Simulator::spawnRobot(const essentials::Identifier* id)
+bool Simulator::spawnRobot(const essentials::Identifier* id)
 {
     // create robot
     Object* object = this->addObject(id, Type::Robot);
-    if (!object) {
-        return;
+    if (object->getCell()) {
+        // robot is already placed, maybe it was spawned already...
+        return false;
     }
 
     // search for cell with valid spawn coordinates
@@ -129,13 +140,12 @@ void Simulator::spawnRobot(const essentials::Identifier* id)
         cell = world->getCell(Coordinate(rand() % world->getSizeX(), rand() % world->getSizeX()));
     }
 
-    std::cout << "Simulator::spawnRobot(): Cell Type " << cell->type << " Floor Type" << Type::Floor << std::endl;
-
     // place robot
     if (world->placeObject(object, cell->coordinate)) {
-        std::cout << "Simulator::spawnRobot(): Success!" << std::endl;
+        this->robots.emplace(object->getID(), static_cast<ServiceRobot*>(object));
+        return true;
     } else {
-        std::cout << "Simulator::spawnRobot(): Fail!" << std::endl;
+        return false;
     }
     std::cout << "placing robot . . .\n";
     world->placeObject(object, cell->coordinate);
@@ -145,12 +155,17 @@ Object* Simulator::addObject(const essentials::Identifier* id, Type type)
 {
     auto objectEntry = this->objects.find(essentials::IdentifierConstPtr(id));
     if (objectEntry == this->objects.end()) {
-        Object* object = new Object(type, id);
+        Object* object;
+        if (type == Type::Robot) {
+            object = new ServiceRobot(id);
+        } else {
+            object = new Object(type, id);
+        }
         this->objects.emplace(object->getID(), object);
         return object;
     } else {
-        if (objectEntry->second->getType() != type ||
-            objectEntry->second->getType() == Type::Robot) {
+        if (objectEntry->second->getType() != type) {
+            std::cerr << "Simulator::addObject(): Object ID " << id << " is already known as type (" << objectEntry->second->getType() << "), but requested type is (" << type << ")!" << std::endl;
             return nullptr;
         } else {
             return objectEntry->second;

@@ -39,6 +39,11 @@ Communication::Communication(Simulator* simulator)
     this->simCommandSub->setTopic(this->simCommandTopic);
     this->simCommandSub->addAddress(this->address);
     this->simCommandSub->subscribe(&Communication::SimCommandCallback, &(*this));
+
+    this->simPerceptionsTopic = (*sc)["SRGSim"]->get<std::string>("SRGSim.Communication.perceptionsTopic", NULL);
+    this->simPerceptionsPub = new capnzero::Publisher(this->ctx, capnzero::Protocol::UDP);
+    this->simPerceptionsPub->setDefaultTopic(simPerceptionsTopic);
+    this->simPerceptionsPub->addAddress(this->address);
 }
 
 Communication::~Communication()
@@ -57,6 +62,12 @@ void Communication::SimCommandCallback(::capnp::FlatArrayMessageReader& msg)
             break;
         }
     }
+}
+
+void Communication::sendSimPerceptions(srgsim::SimPerceptions sp) {
+    ::capnp::MallocMessageBuilder msgBuilder;
+    ContainerUtils::toMsg(sp, msgBuilder);
+    this->simPerceptionsPub->send(msgBuilder);
 }
 } // namespace communication
 } // namespace srgsim

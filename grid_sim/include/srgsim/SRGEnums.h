@@ -2,9 +2,7 @@
 
 namespace srgsim
 {
-/**
- * Only add new types BEFORE unknown!
- */
+
 enum Type
 {
     Dirt,
@@ -16,7 +14,7 @@ enum Type
     Robot,
     White,
     Default,
-    Last // has to be last
+    Last // has to be last for iterating with ints over this enum
 };
 
 enum Direction
