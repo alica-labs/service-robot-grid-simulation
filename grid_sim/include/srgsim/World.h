@@ -39,6 +39,7 @@ public:
     const std::map<Coordinate, Cell*>& getGrid();
 
     bool placeObject(Object* object, Coordinate coordinate);
+    const Object* getObject(essentials::IdentifierConstPtr id);
     std::vector<SimPerceptions> createSimPerceptions();
     bool spawnRobot(essentials::IdentifierConstPtr id);
     Object* addObject(essentials::IdentifierConstPtr id, Type type);

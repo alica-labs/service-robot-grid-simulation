@@ -9,16 +9,10 @@ namespace srgsim
 {
 SimCommand ContainerUtils::toSimCommand(::capnp::FlatArrayMessageReader& msg, essentials::IDManager* idManager)
 {
-
     SimCommand sc;
     srgsim::SimCommandMsg::Reader reader = msg.getRoot<srgsim::SimCommandMsg>();
-    essentials::WildcardID wildcardId(nullptr, 0);
-    if (reader.getSenderID().getType() == essentials::Identifier::WILDCARD_TYPE) {
-        sc.senderID = &wildcardId;
-    } else {
-        sc.senderID = idManager->getIDFromBytes(
-                reader.getSenderID().getValue().asBytes().begin(), reader.getSenderID().getValue().size(), reader.getSenderID().getType());
-    }
+    sc.senderID = idManager->getIDFromBytes(
+            reader.getSenderID().getValue().asBytes().begin(), reader.getSenderID().getValue().size(), reader.getSenderID().getType());
 
     switch(reader.getAction()) {
         case srgsim::SimCommandMsg::Action::SPAWN:

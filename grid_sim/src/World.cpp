@@ -125,6 +125,15 @@ bool World::placeObject(Object* object, Coordinate coordinate)
     return true;
 }
 
+const Object* World::getObject(essentials::IdentifierConstPtr id) {
+    auto objectEntry = this->objects.find(id);
+    if (objectEntry != this->objects.end()) {
+        return objectEntry->second;
+    } else {
+        return nullptr;
+    }
+}
+
 const std::map<Coordinate, Cell*>& World::getGrid()
 {
     return this->cellGrid;
