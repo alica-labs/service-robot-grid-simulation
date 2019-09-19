@@ -19,7 +19,6 @@ namespace srgsim {
         static void toMsg(SimPerceptions simPerceptions, ::capnp::MallocMessageBuilder& builder);
 
     private:
-    private:
         ContainerUtils() = delete;
     };
 }
