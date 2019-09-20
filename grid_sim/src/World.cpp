@@ -151,15 +151,11 @@ uint32_t World::getSizeY() const
 
 std::vector<SimPerceptions> World::createSimPerceptions()
 {
-    std::cout << "[Simulator] Create and send perceptions123..." << std::endl;
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    std::cout << "[Simulator] Create and send perceptions123..." << std::endl;
     std::vector<SimPerceptions> perceptions;
-    std::cout << "[Simulator] Create and send perceptions123..." << std::endl;
     for (auto& robotEntry : this->robots) {
         perceptions.push_back(robotEntry.second->createSimPerceptions(this));
     }
-    std::cout << "[Simulator] Create and send perceptions123..." << std::endl;
     return perceptions;
 }
 
