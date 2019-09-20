@@ -40,7 +40,7 @@ World::~World()
 
 Cell* World::addCell(uint32_t x, uint32_t y)
 {
-    std::lock_guard<std::mutex> guard(dataMutex);
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     if (this->cellGrid.size() == 0) {
         Cell* cell = new Cell(x, y);
         this->cellGrid.emplace(Coordinate(x, y), cell);
@@ -106,7 +106,7 @@ Cell* World::addCell(uint32_t x, uint32_t y)
 
 Cell* World::getCell(Coordinate coordinate)
 {
-    std::lock_guard<std::mutex> guard(dataMutex);
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     if (this->cellGrid.find(coordinate) != this->cellGrid.end()) {
         return this->cellGrid.at(coordinate);
     }
@@ -115,7 +115,7 @@ Cell* World::getCell(Coordinate coordinate)
 
 bool World::placeObject(Object* object, Coordinate coordinate)
 {
-    std::lock_guard<std::mutex> guard(dataMutex);
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto cellIter = this->cellGrid.find(coordinate);
     if (cellIter == this->cellGrid.end()) {
         return false;
@@ -151,17 +151,21 @@ uint32_t World::getSizeY() const
 
 std::vector<SimPerceptions> World::createSimPerceptions()
 {
-    std::lock_guard<std::mutex> guard(dataMutex);
+    std::cout << "[Simulator] Create and send perceptions123..." << std::endl;
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    std::cout << "[Simulator] Create and send perceptions123..." << std::endl;
     std::vector<SimPerceptions> perceptions;
+    std::cout << "[Simulator] Create and send perceptions123..." << std::endl;
     for (auto& robotEntry : this->robots) {
         perceptions.push_back(robotEntry.second->createSimPerceptions(this));
     }
+    std::cout << "[Simulator] Create and send perceptions123..." << std::endl;
     return perceptions;
 }
 
 bool World::spawnRobot(essentials::IdentifierConstPtr id)
 {
-    std::lock_guard<std::mutex> guard(dataMutex);
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     // create robot
     Object* object = this->addObject(id, Type::Robot);
     if (object->getCell()) {
@@ -188,7 +192,7 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
 
 Object* World::addObject(essentials::IdentifierConstPtr id, Type type)
 {
-    std::lock_guard<std::mutex> guard(dataMutex);
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto objectEntry = this->objects.find(essentials::IdentifierConstPtr(id));
     if (objectEntry == this->objects.end()) {
         Object* object;
@@ -212,7 +216,7 @@ Object* World::addObject(essentials::IdentifierConstPtr id, Type type)
 
 void World::moveObject(const essentials::Identifier* id, Direction direction)
 {
-    std::lock_guard<std::mutex> guard(dataMutex);
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto iter = objects.find(essentials::IdentifierConstPtr(id));
     if (iter == objects.end()) {
         std::cout << "World::moveObject: unknown object ID " << *id << " requested!" << std::endl;

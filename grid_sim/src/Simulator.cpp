@@ -51,6 +51,7 @@ void Simulator::run()
     while (Simulator::running) {
 #ifdef SIM_DEBUG
         std::cout << "[Simulator] Iteration started..." << std::endl;
+        std::cout << "[Simulator] Updating GUI..." << std::endl;
 #endif
         auto start = std::chrono::system_clock::now();
 
@@ -58,7 +59,9 @@ void Simulator::run()
         if (!this->headless) {
             this->gui->draw(this->world);
         }
-
+#ifdef SIM_DEBUG
+        std::cout << "[Simulator] Create and send perceptions..." << std::endl;
+#endif
         // 2. Produce and send perceptions for each robot
         std::vector<SimPerceptions> perceptionsMsgs = this->world->createSimPerceptions();
         for (auto& simPerceptionsMsg : perceptionsMsgs) {
@@ -68,11 +71,14 @@ void Simulator::run()
         auto timePassed = std::chrono::system_clock::now() - start;
         std::chrono::milliseconds millisecondsPassed = std::chrono::duration_cast<std::chrono::milliseconds>(timePassed);
 
+#ifdef SIM_DEBUG
+        std::cout << "[Simulator] Sleep " <<  millisecondsPassed.count() << "ms to keep frequency..." << std::endl;
+#endif
         if (millisecondsPassed.count() < 33) {
             std::this_thread::sleep_for(std::chrono::milliseconds(33-millisecondsPassed.count()));
         }
 #ifdef SIM_DEBUG
-        std::cout << "[Simulator] ... took " << millisecondsPassed.count() << " milliseconds" << std::endl;
+        std::cout << "[Simulator] ...iteration end!\n------------------------------" << std::endl;
 #endif
     }
 }

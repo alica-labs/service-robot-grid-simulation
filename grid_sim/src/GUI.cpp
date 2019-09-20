@@ -7,7 +7,7 @@
 #include <iostream>
 #include <FileSystem.h>
 
-//#define GUI_DEBUG
+#define GUI_DEBUG
 
 namespace srgsim
 {

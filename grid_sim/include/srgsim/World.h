@@ -60,7 +60,7 @@ private:
      */
     uint32_t sizeY;
 
-    std::mutex dataMutex;
+    mutable std::recursive_mutex dataMutex;
     std::unordered_map<essentials::IdentifierConstPtr, Object*> objects;
     std::unordered_map<essentials::IdentifierConstPtr, ServiceRobot*> robots;
 };
