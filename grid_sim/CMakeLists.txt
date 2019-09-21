@@ -32,12 +32,12 @@ add_executable(${PROJECT_NAME}
   src/Simulator.cpp
   src/GUI.cpp
   src/communication/Communication.cpp
-  src/communication/SpawnCommandHandler.cpp
-  src/communication/CommandHandler.cpp
-  src/communication/MoveCommandHandler.cpp
-  src/communication/PickUpCommandHandler.cpp
-  src/communication/DoorCommandHandler.cpp
-  src/communication/PutDownCommandHandler.cpp
+        src/commands/SpawnCommandHandler.cpp
+        src/commands/CommandHandler.cpp
+        src/commands/MoveCommandHandler.cpp
+        src/commands/PickUpCommandHandler.cpp
+        src/commands/DoorCommandHandler.cpp
+        src/commands/PutDownCommandHandler.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -73,13 +73,13 @@ endforeach()
 
 ############### World
 add_library(${PROJECT_NAME}_world
-  src/World.cpp
-  src/Cell.cpp
+        src/world/World.cpp
+        src/world/Cell.cpp
   src/container/Coordinate.cpp
-  src/Object.cpp
-  src/ServiceRobot.cpp
-  src/Sensor.cpp
-  src/Localisation.cpp
+        src/world/Object.cpp
+        src/world/ServiceRobot.cpp
+        src/world/Sensor.cpp
+        src/world/Localisation.cpp
 )
 target_link_libraries(${PROJECT_NAME}_world
   tmxparser
@@ -88,7 +88,7 @@ target_link_libraries(${PROJECT_NAME}_world
 ############### Sim Messages
 find_package(CapnProto REQUIRED)
 set(CAPNPC_IMPORT_DIRS ${id_capnzero_SOURCE_PREFIX}/include)# include external msgs
-set(${PROJECT_NAME}_msgs "${CMAKE_CURRENT_SOURCE_DIR}/include/srgsim")
+set(${PROJECT_NAME}_msgs "${CMAKE_CURRENT_SOURCE_DIR}/include/srgsim/msgs")
 file(GLOB_RECURSE capnp_messages ${${PROJECT_NAME}_msgs} *.capnp)
 set(CAPNPC_SRC_PREFIX ${${PROJECT_NAME}_msgs})
 set(CAPNPC_OUTPUT_DIR ${${PROJECT_NAME}_msgs})

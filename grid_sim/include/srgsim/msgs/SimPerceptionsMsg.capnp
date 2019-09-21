@@ -14,8 +14,12 @@ struct SimPerceptionsMsg {
       y @3: UInt32;
 
     enum Type {
-      door @0;
-      robot @1;
+      doorclosed @0;
+      dooropen @1;
+      cupred @2;
+      cupblue @3;
+      cupyellow @4;
+      robot @5;
     }
   }
 }

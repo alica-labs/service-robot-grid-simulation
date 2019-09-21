@@ -1,8 +1,8 @@
-#include "srgsim/World.h"
+#include "srgsim/world/World.h"
 
-#include "srgsim/Cell.h"
-#include "srgsim/Object.h"
-#include "srgsim/ServiceRobot.h"
+#include "srgsim/world/Cell.h"
+#include "srgsim/world/Object.h"
+#include "srgsim/world/ServiceRobot.h"
 
 #include <FileSystem.h>
 #include <Tmx.h>
@@ -16,14 +16,33 @@ World::World()
 {
 }
 
-World::World(std::string tmxMapFile)
+World::World(std::string tmxMapFile, bool robot)
 {
     std::cout << "srgsim::World(): Loading '" << tmxMapFile << "' world file!" << std::endl;
     Tmx::Map* map = new Tmx::Map();
     map->ParseFile(tmxMapFile);
-    for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {
-        for (int y = 0; y < map->GetTileLayer(0)->GetHeight(); y++) {
-            this->addCell(x, y)->type = static_cast<Type>(map->GetTileLayer(0)->GetTile(x, y).id);
+    if (!robot) {
+        // That is the case for the simulator - it knows everything!
+        for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {
+            for (int y = 0; y < map->GetTileLayer(0)->GetHeight(); y++) {
+                this->addCell(x, y)->type = static_cast<Type>(map->GetTileLayer(0)->GetTile(x, y).id);
+            }
+        }
+    } else {
+        // The robot should know everything! ;-)
+        for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {
+            for (int y = 0; y < map->GetTileLayer(0)->GetHeight(); y++) {
+                Type type = static_cast<Type>(map->GetTileLayer(0)->GetTile(x, y).id);
+                switch (type) {
+                    case Type::CupYellow:
+                    case Type::CupBlue:
+                    case Type::CupRed:
+                        this->addCell(x, y)->type = Type::Floor;
+                        break;
+                    default:
+                        this->addCell(x, y)->type = type;
+                }
+            }
         }
     }
 }
@@ -104,7 +123,7 @@ Cell* World::addCell(uint32_t x, uint32_t y)
     }
 }
 
-Cell* World::getCell(Coordinate coordinate)
+const Cell* World::getCell(Coordinate coordinate) const
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     if (this->cellGrid.find(coordinate) != this->cellGrid.end()) {
@@ -171,7 +190,7 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
 
     // search for cell with valid spawn coordinates
     srand(time(NULL));
-    Cell* cell = nullptr;
+    const Cell* cell = nullptr;
     while (!cell || !isPlacementAllowed(cell, Type::Robot)) {
         cell = this->getCell(Coordinate(rand() % this->sizeX, rand() % this->sizeY));
     }
@@ -210,7 +229,7 @@ Object* World::addObject(essentials::IdentifierConstPtr id, Type type)
     }
 }
 
-void World::moveObject(const essentials::Identifier* id, Direction direction)
+void World::moveObject(essentials::IdentifierConstPtr id, Direction direction)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto iter = objects.find(essentials::IdentifierConstPtr(id));
@@ -258,13 +277,13 @@ Cell* World::getNeighbourCell(const Direction& direction, Object* object)
     }
 }
 
-bool World::isPlacementAllowed(Cell* cell, Type objectType)
+bool World::isPlacementAllowed(const Cell* cell, Type objectType) const
 {
     switch (objectType) {
     case Type::Robot:
         return cell->type == Type::Floor;
     default:
-        return !(cell->type == Type::Door || cell->type == Type::Wall);
+        return !(cell->type == Type::DoorClosed || cell->type == Type::DoorOpen || cell->type == Type::Wall);
     }
 }
 } // namespace srgsim

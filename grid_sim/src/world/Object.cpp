@@ -1,6 +1,6 @@
-#include "srgsim/Object.h"
+#include "srgsim/world/Object.h"
 
-#include "srgsim/Cell.h"
+#include "srgsim/world/Cell.h"
 
 namespace srgsim
 {

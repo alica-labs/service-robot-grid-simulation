@@ -1,11 +1,11 @@
-#include "srgsim/communication/PickUpCommandHandler.h"
+#include "srgsim/commands/PickUpCommandHandler.h"
 
 
 #include "srgsim/Simulator.h"
 
 namespace srgsim
 {
-namespace communication
+namespace commands
 {
 
 bool PickUpCommandHandler::handle(SimCommand sc)

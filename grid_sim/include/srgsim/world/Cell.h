@@ -1,8 +1,8 @@
 #pragma once
 
-#include "containers/Coordinate.h"
+#include "srgsim/containers/Coordinate.h"
 
-#include "SRGEnums.h"
+#include "srgsim/SRGEnums.h"
 
 #include <string>
 #include <vector>
@@ -22,6 +22,7 @@ public:
     const std::vector<Object *> &getObjects() const;
     void addObject(Object* object);
     void removeObject(Object* object);
+    std::string toString() const;
 
     Type type;
     std::string room;

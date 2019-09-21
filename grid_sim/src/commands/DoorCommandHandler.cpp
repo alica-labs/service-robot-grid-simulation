@@ -1,10 +1,10 @@
-#include "srgsim/communication/DoorCommandHandler.h"
+#include "srgsim/commands/DoorCommandHandler.h"
 
 #include "srgsim/Simulator.h"
 
 namespace srgsim
 {
-namespace communication
+namespace commands
 {
 
 bool DoorCommandHandler::handle(SimCommand sc)

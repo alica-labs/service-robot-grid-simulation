@@ -6,8 +6,9 @@ using IDMsg = import "/capnzero/ID.capnp";
 struct SimCommandMsg {
   senderID @0 :IDMsg.ID;
   action @1 :Action;
-  x @2: UInt32;
-  y @3: UInt32;
+  objectID @2 :IDMsg.ID;
+  x @3: UInt32;
+  y @4: UInt32;
 
   enum Action {
       spawn @0;

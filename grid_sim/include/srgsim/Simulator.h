@@ -13,8 +13,9 @@ namespace std
 class thread;
 }
 
-namespace essentials {
-    class IDManager;
+namespace essentials
+{
+class IDManager;
 }
 
 namespace srgsim
@@ -25,10 +26,16 @@ namespace communication
 class Communication;
 }
 
+namespace commands
+{
+class CommandHandler;
+}
+
 class Object;
 class World;
 class GUI;
 class Cell;
+
 class Simulator
 {
 public:
@@ -37,15 +44,8 @@ public:
     void start();
     void run();
     static bool isRunning();
-
-    bool spawnRobot(const essentials::Identifier* id);
-    void moveObject(const essentials::Identifier* id, Direction direction);
-    void pickObject(const essentials::Identifier* id, Direction direction);
-    void putObject(const essentials::Identifier* id, Direction direction);
-    essentials::IDManager* getIdManager() const;
-
     static void simSigintHandler(int sig);
-    std::string getSelfPath();
+    void processSimCommand(SimCommand sc);
 
 private:
     static bool running;
@@ -57,5 +57,6 @@ private:
     essentials::IDManager* idManager;
     std::thread* mainThread;
     std::queue<SimCommand> commandQueue;
+    std::vector<commands::CommandHandler*> communicationHandlers;
 };
 } // namespace srgsim

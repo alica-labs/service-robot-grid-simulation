@@ -1,17 +1,17 @@
 #pragma once
 
-#include "containers/Coordinate.h"
+#include "srgsim/containers/Coordinate.h"
 
 #include "srgsim/SRGEnums.h"
 #include "srgsim/containers/SimPerceptions.h"
 
 #include <essentials/IdentifierConstPtr.h>
 
-#include <stdint.h>
-#include <vector>
 #include <map>
-#include <unordered_map>
 #include <mutex>
+#include <stdint.h>
+#include <unordered_map>
+#include <vector>
 
 namespace srgsim
 {
@@ -28,11 +28,11 @@ class World
 {
 public:
     World();
-    World(std::string tmxMapFile);
+    World(std::string tmxMapFile, bool robot = false);
     ~World();
 
     Cell* addCell(uint32_t x, uint32_t y);
-    Cell* getCell(Coordinate coordinate);
+    const Cell* getCell(Coordinate coordinate) const;
 
     uint32_t getSizeX() const;
     uint32_t getSizeY() const;
@@ -44,10 +44,10 @@ public:
     bool spawnRobot(essentials::IdentifierConstPtr id);
     Object* addObject(essentials::IdentifierConstPtr id, Type type);
     bool addRobot(ServiceRobot* robot);
-    void moveObject(const essentials::Identifier* id, Direction direction);
+    void moveObject(essentials::IdentifierConstPtr id, Direction direction);
 
 private:
-    bool isPlacementAllowed(Cell* cell, Type objectType);
+    bool isPlacementAllowed(const Cell* cell, Type objectType) const;
     Cell* getNeighbourCell(const Direction& direction, Object* object);
 
     std::map<Coordinate, Cell*> cellGrid;

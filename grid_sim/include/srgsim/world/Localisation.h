@@ -1,7 +1,7 @@
 #pragma once
 
 #include "srgsim/containers/Perception.h"
-#include "srgsim/Sensor.h"
+#include "Sensor.h"
 
 #include <vector>
 

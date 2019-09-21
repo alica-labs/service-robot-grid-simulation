@@ -1,4 +1,4 @@
-#include "srgsim/communication/MoveCommandHandler.h"
+#include "srgsim/commands/MoveCommandHandler.h"
 
 #include "srgsim/Simulator.h"
 
@@ -6,11 +6,12 @@
 
 namespace srgsim
 {
-namespace communication
+namespace commands
 {
 
 bool MoveCommandHandler::handle(SimCommand sc)
 {
+    std::cout << "MoveCommandHandler::handle()" << std::endl;
     switch (sc.action) {
     case SimCommand::GOLEFT:
         this->world->moveObject(sc.senderID, Direction::Left);

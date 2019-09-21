@@ -1,10 +1,10 @@
-#include "srgsim/communication/PutDownCommandHandler.h"
+#include "srgsim/commands/PutDownCommandHandler.h"
 
 #include "srgsim/Simulator.h"
 
 namespace srgsim
 {
-namespace communication
+namespace commands
 {
 
 bool PutDownCommandHandler::handle(SimCommand sc)

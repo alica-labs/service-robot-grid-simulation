@@ -1,11 +1,11 @@
 #include "srgsim/GUI.h"
 
-#include "srgsim/Cell.h"
-#include "srgsim/Object.h"
+#include "srgsim/world/Cell.h"
+#include "srgsim/world/Object.h"
 #include "srgsim/SRGEnums.h"
 
-#include <iostream>
 #include <FileSystem.h>
+#include <iostream>
 
 //#define GUI_DEBUG
 
@@ -13,7 +13,7 @@ namespace srgsim
 {
 GUI::GUI()
 {
-    std::string textureFile = essentials::FileSystem::getSelfPath() + "/textures/test_texture.png";
+    std::string textureFile = essentials::FileSystem::getSelfPath() + "/textures/textures.png";
     std::cout << "[GUI] Info: loading textureFile '" << textureFile << "'" << std::endl;
     this->texture = new sf::Texture();
     if (!this->texture->loadFromFile(textureFile)) {
@@ -31,8 +31,11 @@ GUI::GUI()
         case Type::Wall:
             sprite.setTextureRect(sf::IntRect(textureSize * 2, 0, textureSize, textureSize));
             break;
-        case Type::Door:
-            sprite.setTextureRect(sf::IntRect(0, textureSize, textureSize, textureSize));
+        case Type::DoorOpen:
+            sprite.setTextureRect(sf::IntRect(textureSize * 3, 0, textureSize, textureSize));
+            break;
+        case Type::DoorClosed:
+            sprite.setTextureRect(sf::IntRect(textureSize * 3, textureSize, textureSize, textureSize));
             break;
         case Type::Floor:
             sprite.setTextureRect(sf::IntRect(textureSize * 2, textureSize, textureSize, textureSize));
@@ -42,6 +45,15 @@ GUI::GUI()
             break;
         case Type::Robot:
             sprite.setTextureRect(sf::IntRect(0, textureSize * 2, textureSize, textureSize));
+            break;
+        case Type::CupBlue:
+            sprite.setTextureRect(sf::IntRect(textureSize, textureSize * 3, textureSize, textureSize));
+            break;
+        case Type::CupRed:
+            sprite.setTextureRect(sf::IntRect(0, textureSize * 3, textureSize, textureSize));
+            break;
+        case Type::CupYellow:
+            sprite.setTextureRect(sf::IntRect(textureSize*2, textureSize * 3, textureSize, textureSize));
             break;
         default:
             sprite.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
@@ -72,12 +84,13 @@ void GUI::draw(World* world)
         this->window->draw(sprite);
 
         // object sprites
-        for(Object* object : pair.second->getObjects()) {
+        for (Object* object : pair.second->getObjects()) {
             sf::Sprite sprite = getSprite(object->getType());
             sprite.setPosition(object->getCell()->coordinate.x * scaledSpriteSize, object->getCell()->coordinate.y * scaledSpriteSize);
             this->window->draw(sprite);
 #ifdef GUI_DEBUG
-            std::cout << "GUI: Placing object of Type " << object->getType() << " at (" << object->getCell()->coordinate.x << ", " << object->getCell()->coordinate.y << ")" << std::endl;
+            std::cout << "GUI: Placing object of Type " << object->getType() << " at (" << object->getCell()->coordinate.x << ", "
+                      << object->getCell()->coordinate.y << ")" << std::endl;
 #endif
         }
     }

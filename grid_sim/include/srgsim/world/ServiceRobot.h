@@ -1,6 +1,6 @@
 #pragma once
 
-#include "srgsim/Object.h"
+#include "Object.h"
 
 #include "srgsim/containers/SimPerceptions.h"
 

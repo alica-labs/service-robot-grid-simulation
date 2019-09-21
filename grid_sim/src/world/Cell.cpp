@@ -1,8 +1,9 @@
-#include "srgsim/Cell.h"
+#include "srgsim/world/Cell.h"
 
-#include "srgsim/Object.h"
+#include "srgsim/world/Object.h"
 
 #include <iostream>
+#include <sstream>
 
 namespace srgsim
 {
@@ -52,6 +53,12 @@ void Cell::removeObject(Object* object)
             return;
         }
     }
+}
+
+std::string Cell::toString() const {
+    std::stringstream ss;
+    ss << "Cell: (" << this->coordinate.x << ", " << this->coordinate.y << ") Type: " << this->type << std::endl;
+    return ss.str();
 }
 
 } // namespace srgsim

@@ -1,7 +1,7 @@
-#include "srgsim/Localisation.h"
-#include "srgsim/Cell.h"
+#include "srgsim/world/Localisation.h"
+#include "srgsim/world/Cell.h"
 #include "srgsim/SRGEnums.h"
-#include "srgsim/ServiceRobot.h"
+#include "srgsim/world/ServiceRobot.h"
 
 namespace srgsim
 {

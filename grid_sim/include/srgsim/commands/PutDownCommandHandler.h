@@ -1,11 +1,11 @@
 #pragma once
 
-#include "srgsim/communication/CommandHandler.h"
+#include "CommandHandler.h"
 #include "srgsim/Simulator.h"
 
 namespace srgsim
 {
-namespace communication
+namespace commands
 {
 class PutDownCommandHandler : public CommandHandler
 {

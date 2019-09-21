@@ -1,4 +1,4 @@
-#include "srgsim/communication/SpawnCommandHandler.h"
+#include "srgsim/commands/SpawnCommandHandler.h"
 
 #include "srgsim/Simulator.h"
 
@@ -7,7 +7,7 @@
 
 namespace srgsim
 {
-namespace communication
+namespace commands
 {
 
 bool SpawnCommandHandler::handle(SimCommand sc)

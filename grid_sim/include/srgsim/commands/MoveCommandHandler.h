@@ -1,10 +1,10 @@
 #pragma once
 
-#include "srgsim/communication/CommandHandler.h"
+#include "CommandHandler.h"
 
 namespace srgsim
 {
-namespace communication
+namespace commands
 {
 class MoveCommandHandler : public CommandHandler
 {

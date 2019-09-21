@@ -1,6 +1,6 @@
-#include "srgsim/ServiceRobot.h"
+#include "srgsim/world/ServiceRobot.h"
 
-#include "srgsim/Localisation.h"
+#include "srgsim/world/Localisation.h"
 #include <essentials/IdentifierConstPtr.h>
 
 namespace srgsim{

@@ -1,9 +1,16 @@
 #include "srgsim/Simulator.h"
 
-#include "srgsim/Cell.h"
+#include "srgsim/commands/CommandHandler.h"
+#include "srgsim/commands/DoorCommandHandler.h"
+#include "srgsim/commands/MoveCommandHandler.h"
+#include "srgsim/commands/PickUpCommandHandler.h"
+#include "srgsim/commands/PutDownCommandHandler.h"
+#include "srgsim/commands/SpawnCommandHandler.h"
+
+#include "srgsim/world/Cell.h"
 #include "srgsim/GUI.h"
-#include "srgsim/World.h"
-#include "srgsim/ServiceRobot.h"
+#include "srgsim/world/World.h"
+#include "srgsim/world/ServiceRobot.h"
 #include "srgsim/communication/Communication.h"
 
 #include <essentials/IDManager.h>
@@ -24,12 +31,21 @@ Simulator::Simulator(bool headless)
         , idManager(new essentials::IDManager())
 {
     this->world = new World();
-    this->communication = new communication::Communication(this->idManager, this->world);
+    this->communicationHandlers.push_back(new commands::MoveCommandHandler(world));
+    this->communicationHandlers.push_back(new commands::DoorCommandHandler(world));
+    this->communicationHandlers.push_back(new commands::PickUpCommandHandler(world));
+    this->communicationHandlers.push_back(new commands::PutDownCommandHandler(world));
+    this->communicationHandlers.push_back(new commands::SpawnCommandHandler(world));
+    this->communication = new communication::Communication(this->idManager, this);
 }
 
 Simulator::~Simulator()
 {
+
     delete this->communication;
+    for (auto& handler : this->communicationHandlers) {
+        delete handler;
+    }
     delete this->idManager;
     delete this->world;
     delete this->gui;
@@ -59,22 +75,38 @@ void Simulator::run()
         if (!this->headless) {
             this->gui->draw(this->world);
         }
+
+#ifdef SIM_DEBUG
+        std::cout << "[Simulator] Handle commands..." << std::endl;
+#endif
+        // 2. Handle Commands
+        while(this->commandQueue.size() > 0) {
+            SimCommand sc = this->commandQueue.front();
+            this->commandQueue.pop();
+            for (commands::CommandHandler* handler : this->communicationHandlers) {
+                if (handler->handle(sc)) {
+                    break;
+                }
+            }
+        }
+
 #ifdef SIM_DEBUG
         std::cout << "[Simulator] Create and send perceptions..." << std::endl;
 #endif
-        // 2. Produce and send perceptions for each robot
+        // 3. Produce and send perceptions for each robot
         std::vector<SimPerceptions> perceptionsMsgs = this->world->createSimPerceptions();
         for (auto& simPerceptionsMsg : perceptionsMsgs) {
             this->communication->sendSimPerceptions(simPerceptionsMsg);
         }
 
+        // 4. Sleep in order to keep the cpu effort low
         auto timePassed = std::chrono::system_clock::now() - start;
         std::chrono::milliseconds millisecondsPassed = std::chrono::duration_cast<std::chrono::milliseconds>(timePassed);
 
 #ifdef SIM_DEBUG
         std::cout << "[Simulator] Sleep " <<  millisecondsPassed.count() << "ms to keep frequency..." << std::endl;
 #endif
-        if (millisecondsPassed.count() < 33) {
+        if (millisecondsPassed.count() < 33) { // Simulator frequency is 30 times per seconds!
             std::this_thread::sleep_for(std::chrono::milliseconds(33-millisecondsPassed.count()));
         }
 #ifdef SIM_DEBUG
@@ -82,6 +114,11 @@ void Simulator::run()
 #endif
     }
 }
+
+void Simulator::processSimCommand(SimCommand sc) {
+    this->commandQueue.push(sc);
+}
+
 
 bool Simulator::isRunning()
 {

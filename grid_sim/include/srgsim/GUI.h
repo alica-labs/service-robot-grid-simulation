@@ -1,6 +1,6 @@
 #pragma once
 
-#include "World.h"
+#include "srgsim/world/World.h"
 #include "srgsim/SRGEnums.h"
 
 #include <SFML/Graphics.hpp>

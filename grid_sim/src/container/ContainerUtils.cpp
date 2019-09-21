@@ -1,7 +1,7 @@
 #include "srgsim/containers/ContainerUtils.h"
 
-#include <srgsim/SimCommandMsg.capnp.h>
-#include <srgsim/SimPerceptionsMsg.capnp.h>
+#include <srgsim/msgs/SimCommandMsg.capnp.h>
+#include <srgsim/msgs/SimPerceptionsMsg.capnp.h>
 #include <essentials/IDManager.h>
 #include <essentials/WildcardID.h>
 
@@ -13,6 +13,8 @@ SimCommand ContainerUtils::toSimCommand(::capnp::FlatArrayMessageReader& msg, es
     srgsim::SimCommandMsg::Reader reader = msg.getRoot<srgsim::SimCommandMsg>();
     sc.senderID = idManager->getIDFromBytes(
             reader.getSenderID().getValue().asBytes().begin(), reader.getSenderID().getValue().size(), reader.getSenderID().getType());
+    sc.objectID = idManager->getIDFromBytes(
+            reader.getObjectID().getValue().asBytes().begin(), reader.getObjectID().getValue().size(), reader.getObjectID().getType());
 
     switch(reader.getAction()) {
         case srgsim::SimCommandMsg::Action::SPAWN:
@@ -109,8 +111,20 @@ SimPerceptions ContainerUtils::toSimPerceptions(::capnp::FlatArrayMessageReader 
             case srgsim::SimPerceptionsMsg::Perception::Type::ROBOT:
                 perception.type = Type::Robot;
                 break;
-            case srgsim::SimPerceptionsMsg::Perception::Type::DOOR:
-                perception.type = Type::Door;
+            case srgsim::SimPerceptionsMsg::Perception::Type::DOORCLOSED:
+                perception.type = Type::DoorClosed;
+                break;
+            case srgsim::SimPerceptionsMsg::Perception::Type::DOOROPEN:
+                perception.type = Type::DoorOpen;
+                break;
+            case srgsim::SimPerceptionsMsg::Perception::Type::CUPRED:
+                perception.type = Type::CupRed;
+                break;
+            case srgsim::SimPerceptionsMsg::Perception::Type::CUPBLUE:
+                perception.type = Type::CupBlue;
+                break;
+            case srgsim::SimPerceptionsMsg::Perception::Type::CUPYELLOW:
+                perception.type = Type::CupYellow;
                 break;
             default:
                 std::cerr << "srgsim::ContainterUtils::toSimPerceptions(): Unknown object type in capnp message found!" << std::endl;
@@ -139,8 +153,20 @@ void ContainerUtils::toMsg(srgsim::SimPerceptions sp, ::capnp::MallocMessageBuil
             case Type::Robot:
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::ROBOT);
                 break;
-            case Type::Door:
-                pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::DOOR);
+            case Type::DoorClosed:
+                pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::DOORCLOSED);
+                break;
+            case Type::DoorOpen:
+                pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::DOOROPEN);
+                break;
+            case Type::CupRed:
+                pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::CUPRED);
+                break;
+            case Type::CupBlue:
+                pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::CUPBLUE);
+                break;
+            case Type::CupYellow:
+                pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::CUPYELLOW);
                 break;
             default:
                 std::cerr << "srgsim::ContainterUtils::toMsg(): Unknown object type perceived: " << sp.perceptions[i].type << "!" << std::endl;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <essentials/Identifier.h>
+#include <essentials/IdentifierConstPtr.h>
 
 #include <cstdint>
 
@@ -12,9 +12,10 @@ struct SimCommand
         SPAWN, GOLEFT, GORIGHT, GOUP, GODOWN, PICKUP, PUTDOWN, OPEN, CLOSE
     };
 
-    const essentials::Identifier* senderID;
+    essentials::IdentifierConstPtr senderID;
+    Action action;
+    essentials::IdentifierConstPtr objectID;
     uint32_t x;
     uint32_t y;
-    Action action;
 };
 } // namespace srgsim

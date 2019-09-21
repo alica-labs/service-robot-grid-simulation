@@ -1,12 +1,12 @@
 #pragma once
 
 #include "srgsim/containers/SimCommand.h"
-#include "srgsim/World.h"
+#include "srgsim/world/World.h"
 #include <capnp/serialize-packed.h>
 
 namespace srgsim
 {
-namespace communication
+namespace commands
 {
 
 class CommandHandler

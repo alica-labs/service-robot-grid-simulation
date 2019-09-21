@@ -1,37 +1,38 @@
 #pragma once
 
-#include "srgsim/SimCommandMsg.capnp.h"
 #include "srgsim/containers/SimPerceptions.h"
-
-#include <SystemConfig.h>
-#include <essentials/IDManager.h>
 
 #include <capnp/serialize-packed.h>
 #include <string>
 #include <vector>
 
+namespace essentials
+{
+class IDManager;
+class SystemConfig;
+} // namespace essentials
+
 namespace capnzero
 {
 class Subscriber;
 class Publisher;
-}
+} // namespace capnzero
 
 namespace srgsim
 {
-class World;
+class Simulator;
 namespace communication
 {
-class CommandHandler;
 class Communication
 {
 public:
-    Communication(essentials::IDManager* idManager, World* world);
+    Communication(essentials::IDManager* idManager, Simulator* simulator);
     ~Communication();
 
     void sendSimPerceptions(SimPerceptions sp);
 
 private:
-    void SimCommandCallback(::capnp::FlatArrayMessageReader& msg);
+    void onSimCommand(::capnp::FlatArrayMessageReader& msg);
 
     essentials::SystemConfig* sc;
     void* ctx;
@@ -41,9 +42,8 @@ private:
     capnzero::Subscriber* simCommandSub;
     capnzero::Publisher* simPerceptionsPub;
 
-    World* world;
     essentials::IDManager* idManager;
-    std::vector<CommandHandler*> communicationHandlers;
+    Simulator* simulator;
 };
 } // namespace communication
 } // namespace srgsim
