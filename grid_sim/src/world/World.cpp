@@ -28,6 +28,7 @@ World::World(std::string tmxMapFile, bool robot)
                 this->addCell(x, y)->type = static_cast<Type>(map->GetTileLayer(0)->GetTile(x, y).id);
             }
         }
+        // Place objects from config.
     } else {
         // The robot should know everything! ;-)
         for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {

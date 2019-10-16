@@ -45,6 +45,9 @@ public:
     Object* addObject(essentials::IdentifierConstPtr id, Type type);
     bool addRobot(ServiceRobot* robot);
     void moveObject(essentials::IdentifierConstPtr id, Direction direction);
+    bool openDoor(essentials::IdentifierConstPtr id);
+    bool closeDoor(essentials::IdentifierConstPtr id);
+    bool pickupObject(essentials::IdentifierConstPtr id);
 
 private:
     bool isPlacementAllowed(const Cell* cell, Type objectType) const;
