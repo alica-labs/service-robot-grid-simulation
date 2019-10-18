@@ -287,4 +287,19 @@ bool World::isPlacementAllowed(const Cell* cell, Type objectType) const
         return !(cell->type == Type::DoorClosed || cell->type == Type::DoorOpen || cell->type == Type::Wall);
     }
 }
+
+bool World::pickupObject(essentials::IdentifierConstPtr id) {
+    std::cout << "World::pickupObject - Not yet implemented!" << std::endl;
+    return false;
+}
+
+bool World::openDoor(essentials::IdentifierConstPtr id) {
+    std::cout << "World::openDoor - Not yet implemented!" << std::endl;
+    return false;
+}
+
+bool World::closeDoor(essentials::IdentifierConstPtr id) {
+    std::cout << "World::closeDoor - Not yet implemented!" << std::endl;
+    return false;
+}
 } // namespace srgsim
