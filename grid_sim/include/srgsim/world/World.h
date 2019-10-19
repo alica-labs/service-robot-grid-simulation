@@ -13,6 +13,9 @@
 #include <unordered_map>
 #include <vector>
 
+namespace essentials {
+    class SystemConfig;
+}
 namespace srgsim
 {
 class Cell;

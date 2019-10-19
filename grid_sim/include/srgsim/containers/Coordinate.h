@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <iostream>
 
 namespace srgsim
 {
@@ -14,6 +15,12 @@ public:
 
     uint32_t x;
     uint32_t y;
+
+    friend std::ostream& operator<<(std::ostream& os, const srgsim::Coordinate& obj)
+    {
+        os << "(" << obj.x << ", " << obj.y << ")";
+        return os;
+    }
 };
 
 bool operator==(Coordinate const& first, Coordinate const& second);

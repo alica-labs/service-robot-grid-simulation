@@ -12,7 +12,7 @@ find_package(Threads)
 
 find_package(tmxparser REQUIRED)
 
-find_package(catkin REQUIRED capnzero alica_capnzero_proxy id_capnzero id_manager fsystem)
+find_package(catkin REQUIRED capnzero alica_capnzero_proxy id_capnzero id_manager fsystem system_config)
 
 catkin_package(
   INCLUDE_DIRS include

@@ -7,6 +7,7 @@
 #include <essentials/IdentifierConstPtr.h>
 
 #include <queue>
+#include <mutex>
 
 namespace std
 {
@@ -16,6 +17,7 @@ class thread;
 namespace essentials
 {
 class IDManager;
+class SystemConfig;
 }
 
 namespace srgsim
@@ -48,6 +50,9 @@ public:
     void processSimCommand(SimCommand sc);
 
 private:
+    void placeObjectsFromConf();
+
+    essentials::SystemConfig* sc;
     static bool running;
     bool headless;
     World* world;
@@ -56,6 +61,8 @@ private:
 
     essentials::IDManager* idManager;
     std::thread* mainThread;
+
+    mutable std::recursive_mutex commandMutex;
     std::queue<SimCommand> commandQueue;
     std::vector<commands::CommandHandler*> communicationHandlers;
 };

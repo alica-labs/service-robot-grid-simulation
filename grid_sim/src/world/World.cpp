@@ -4,6 +4,7 @@
 #include "srgsim/world/Object.h"
 #include "srgsim/world/ServiceRobot.h"
 
+#include <SystemConfig.h>
 #include <FileSystem.h>
 #include <Tmx.h>
 
@@ -21,29 +22,9 @@ World::World(std::string tmxMapFile, bool robot)
     std::cout << "srgsim::World(): Loading '" << tmxMapFile << "' world file!" << std::endl;
     Tmx::Map* map = new Tmx::Map();
     map->ParseFile(tmxMapFile);
-    if (!robot) {
-        // That is the case for the simulator - it knows everything!
-        for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {
-            for (int y = 0; y < map->GetTileLayer(0)->GetHeight(); y++) {
-                this->addCell(x, y)->type = static_cast<Type>(map->GetTileLayer(0)->GetTile(x, y).id);
-            }
-        }
-        // Place objects from config.
-    } else {
-        // The robot should know everything! ;-)
-        for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {
-            for (int y = 0; y < map->GetTileLayer(0)->GetHeight(); y++) {
-                Type type = static_cast<Type>(map->GetTileLayer(0)->GetTile(x, y).id);
-                switch (type) {
-                    case Type::CupYellow:
-                    case Type::CupBlue:
-                    case Type::CupRed:
-                        this->addCell(x, y)->type = Type::Floor;
-                        break;
-                    default:
-                        this->addCell(x, y)->type = type;
-                }
-            }
+    for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {
+        for (int y = 0; y < map->GetTileLayer(0)->GetHeight(); y++) {
+            this->addCell(x, y)->type = static_cast<Type>(map->GetTileLayer(0)->GetTile(x, y).id);
         }
     }
 }
@@ -138,6 +119,10 @@ bool World::placeObject(Object* object, Coordinate coordinate)
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto cellIter = this->cellGrid.find(coordinate);
     if (cellIter == this->cellGrid.end()) {
+        return false;
+    }
+
+    if (!isPlacementAllowed(cellIter->second, object->getType())) {
         return false;
     }
 
