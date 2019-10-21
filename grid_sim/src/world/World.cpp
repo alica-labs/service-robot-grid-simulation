@@ -1,11 +1,10 @@
 #include "srgsim/world/World.h"
 
 #include "srgsim/world/Cell.h"
+#include "srgsim/world/Door.h"
 #include "srgsim/world/Object.h"
 #include "srgsim/world/ServiceRobot.h"
-#include "srgsim/world/Door.h"
 
-#include <SystemConfig.h>
 #include <FileSystem.h>
 #include <Tmx.h>
 
@@ -131,7 +130,8 @@ bool World::placeObject(Object* object, Coordinate coordinate)
     return true;
 }
 
-const Object* World::getObject(essentials::IdentifierConstPtr id) {
+const Object* World::getObject(essentials::IdentifierConstPtr id)
+{
     auto objectEntry = this->objects.find(id);
     if (objectEntry != this->objects.end()) {
         return objectEntry->second;
@@ -195,52 +195,46 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
 Object* World::addObject(essentials::IdentifierConstPtr id, Type type)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    auto objectEntry = this->objects.find(essentials::IdentifierConstPtr(id));
-    if (objectEntry == this->objects.end()) {
-        Object* object;
+    Object* object = editObject(id);
+    if (!object) {
         switch (type) {
-            case Type::Robot:
-                object = new ServiceRobot(id);
-                break;
-            case Type::Door:
-                object = new class Door(id, false);
-                break;
-            default:
-                object = new Object(type, id);
+        case Type::Robot:
+            object = new ServiceRobot(id);
+            break;
+        case Type::Door:
+            object = new class Door(id, false);
+            break;
+        default:
+            object = new Object(type, id);
         }
         this->objects.emplace(object->getID(), object);
         return object;
+    } else if (object->getType() != type) {
+        std::cerr << "World::addObject(): Object ID " << id << " is already known as type (" << object->getType() << "), but requested type is (" << type
+                  << ")!" << std::endl;
+        return nullptr;
     } else {
-        if (objectEntry->second->getType() != type) {
-            std::cerr << "World::addObject(): Object ID " << id << " is already known as type (" << objectEntry->second->getType()
-                      << "), but requested type is (" << type << ")!" << std::endl;
-            return nullptr;
-        } else {
-            return objectEntry->second;
-        }
+        return object;
     }
 }
 
 void World::moveObject(essentials::IdentifierConstPtr id, Direction direction)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    auto iter = objects.find(essentials::IdentifierConstPtr(id));
-    if (iter == objects.end()) {
-        std::cout << "World::moveObject: unknown object ID " << *id << " requested!" << std::endl;
-        return;
-    }
-    Cell* goalCell = getNeighbourCell(direction, iter->second);
+    Object* object = editObject(id);
+    Cell* goalCell = getNeighbourCell(direction, object);
     if (!goalCell) {
         return;
     }
-    if (!isPlacementAllowed(goalCell, iter->second->getType())) {
+    if (!isPlacementAllowed(goalCell, object->getType())) {
         return;
     }
-    iter->second->getCell()->removeObject(iter->second);
-    goalCell->addObject(iter->second);
+    object->getCell()->removeObject(object);
+    goalCell->addObject(object);
 }
 
-bool World::addRobot(srgsim::ServiceRobot *robot) {
+bool World::addRobot(srgsim::ServiceRobot* robot)
+{
     auto robotEntry = this->robots.find(robot->getID());
     if (robotEntry == this->robots.end()) {
         this->robots.emplace(robot->getID(), robot);
@@ -248,6 +242,31 @@ bool World::addRobot(srgsim::ServiceRobot *robot) {
     } else {
         return false;
     }
+}
+
+bool World::pickupObject(essentials::IdentifierConstPtr id)
+{
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    std::cout << "World::pickupObject - Not yet implemented!" << std::endl;
+    return false;
+}
+
+void World::openDoor(essentials::IdentifierConstPtr id)
+{
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    class Door* door = dynamic_cast<class Door*>(editObject(id));
+    if (door) {
+        door->setOpen(true);
+    } else {
+        std::cout << "World::openDoor(): No suitable door found with ID: " << *id << std::endl;
+    }
+}
+
+void World::closeDoor(essentials::IdentifierConstPtr id)
+{
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    class Door* door = dynamic_cast<class Door*>(editObject(id));
+    door->setOpen(false);
 }
 
 // INTERNAL METHODS
@@ -279,18 +298,14 @@ bool World::isPlacementAllowed(const Cell* cell, Type objectType) const
     }
 }
 
-bool World::pickupObject(essentials::IdentifierConstPtr id) {
-    std::cout << "World::pickupObject - Not yet implemented!" << std::endl;
-    return false;
+Object* World::editObject(essentials::IdentifierConstPtr id)
+{
+    auto objectEntry = this->objects.find(id);
+    if (objectEntry != this->objects.end()) {
+        return objectEntry->second;
+    } else {
+        return nullptr;
+    }
 }
 
-bool World::openDoor(essentials::IdentifierConstPtr id) {
-    std::cout << "World::openDoor - Not yet implemented!" << std::endl;
-    return false;
-}
-
-bool World::closeDoor(essentials::IdentifierConstPtr id) {
-    std::cout << "World::closeDoor - Not yet implemented!" << std::endl;
-    return false;
-}
 } // namespace srgsim

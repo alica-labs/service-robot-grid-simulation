@@ -48,13 +48,14 @@ public:
     Object* addObject(essentials::IdentifierConstPtr id, Type type);
     bool addRobot(ServiceRobot* robot);
     void moveObject(essentials::IdentifierConstPtr id, Direction direction);
-    bool openDoor(essentials::IdentifierConstPtr id);
-    bool closeDoor(essentials::IdentifierConstPtr id);
+    void openDoor(essentials::IdentifierConstPtr id);
+    void closeDoor(essentials::IdentifierConstPtr id);
     bool pickupObject(essentials::IdentifierConstPtr id);
 
 private:
     bool isPlacementAllowed(const Cell* cell, Type objectType) const;
     Cell* getNeighbourCell(const Direction& direction, Object* object);
+    Object* editObject(essentials::IdentifierConstPtr id);
 
     std::map<Coordinate, Cell*> cellGrid;
     /**

@@ -62,6 +62,10 @@ void ContainerUtils::toMsg(srgsim::SimCommand sc, ::capnp::MallocMessageBuilder&
     senderID.setValue(kj::arrayPtr(sc.senderID->getRaw(), (unsigned int) sc.senderID->getSize()));
     senderID.setType(sc.senderID->getType());
 
+    capnzero::ID::Builder objectID = msg.initObjectID();
+    objectID.setValue(kj::arrayPtr(sc.objectID->getRaw(), (unsigned int) sc.objectID->getSize()));
+    objectID.setType(sc.objectID->getType());
+
     switch(sc.action) {
         case SimCommand::SPAWN:
             msg.setAction(srgsim::SimCommandMsg::Action::SPAWN);
