@@ -75,12 +75,14 @@ endforeach()
 add_library(${PROJECT_NAME}_world
         src/world/World.cpp
         src/world/Cell.cpp
-  src/container/Coordinate.cpp
+        src/container/Coordinate.cpp
         src/world/Object.cpp
         src/world/ServiceRobot.cpp
         src/world/Sensor.cpp
         src/world/Localisation.cpp
+        src/world/Door.cpp
 )
+
 target_link_libraries(${PROJECT_NAME}_world
   tmxparser
 )

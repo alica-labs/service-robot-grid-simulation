@@ -11,6 +11,7 @@
 #include "srgsim/communication/Communication.h"
 #include "srgsim/world/Cell.h"
 #include "srgsim/world/ServiceRobot.h"
+#include "srgsim/world/Door.h"
 #include "srgsim/world/World.h"
 
 #include <SystemConfig.h>
@@ -56,6 +57,8 @@ void Simulator::placeObjectsFromConf()
             type = Type::CupRed;
         } else if (stringObjectType.compare("cup_yellow") == 0) {
             type = Type::CupYellow;
+        } else if (stringObjectType.compare("door") == 0) {
+            type = Type::Door;
         } else {
             continue;
         }
@@ -64,6 +67,11 @@ void Simulator::placeObjectsFromConf()
         if (object->getCell()) {
             // object is already placed, maybe it was created already...
             continue;
+        }
+
+        if (object->getType() == Type::Door) {
+            bool open = (*sc)["Objects"]->get<bool>("Objects", objectSection.c_str(), "open", NULL);
+            static_cast<class Door*>(object)->setOpen(open);
         }
 
         uint32_t x = (*sc)["Objects"]->get<uint32_t>("Objects", objectSection.c_str(), "x", NULL);

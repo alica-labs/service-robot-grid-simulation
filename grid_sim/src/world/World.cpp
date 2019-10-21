@@ -3,6 +3,7 @@
 #include "srgsim/world/Cell.h"
 #include "srgsim/world/Object.h"
 #include "srgsim/world/ServiceRobot.h"
+#include "srgsim/world/Door.h"
 
 #include <SystemConfig.h>
 #include <FileSystem.h>
@@ -197,10 +198,15 @@ Object* World::addObject(essentials::IdentifierConstPtr id, Type type)
     auto objectEntry = this->objects.find(essentials::IdentifierConstPtr(id));
     if (objectEntry == this->objects.end()) {
         Object* object;
-        if (type == Type::Robot) {
-            object = new ServiceRobot(id);
-        } else {
-            object = new Object(type, id);
+        switch (type) {
+            case Type::Robot:
+                object = new ServiceRobot(id);
+                break;
+            case Type::Door:
+                object = new class Door(id, false);
+                break;
+            default:
+                object = new Object(type, id);
         }
         this->objects.emplace(object->getID(), object);
         return object;

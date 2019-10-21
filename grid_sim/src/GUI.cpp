@@ -2,6 +2,7 @@
 
 #include "srgsim/world/Cell.h"
 #include "srgsim/world/Object.h"
+#include "srgsim/world/Door.h"
 #include "srgsim/SRGEnums.h"
 
 #include <FileSystem.h>
@@ -85,7 +86,18 @@ void GUI::draw(World* world)
 
         // object sprites
         for (Object* object : pair.second->getObjects()) {
-            sf::Sprite sprite = getSprite(object->getType());
+            sf::Sprite sprite;
+            switch (object->getType()) {
+                case Door:
+                    if (static_cast<class Door*>(object)->isOpen()) {
+                        sprite = getSprite(Type::DoorOpen);
+                    } else {
+                        sprite = getSprite(Type::DoorClosed);
+                    }
+                    break;
+                default:
+                    sprite = getSprite(object->getType());
+            }
             sprite.setPosition(object->getCell()->coordinate.x * scaledSpriteSize, object->getCell()->coordinate.y * scaledSpriteSize);
             this->window->draw(sprite);
 #ifdef GUI_DEBUG

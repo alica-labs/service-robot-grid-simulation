@@ -20,6 +20,7 @@ enum Type
     CupRed,
     CupBlue,
     CupYellow,
+    Door,
     Last // has to be last for iterating with ints over this enum
 };
 
