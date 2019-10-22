@@ -9,12 +9,14 @@
 
 #include <map>
 #include <mutex>
+#include <srgsim/containers/SimCommand.h>
 #include <stdint.h>
 #include <unordered_map>
 #include <vector>
 
-namespace essentials {
-    class SystemConfig;
+namespace essentials
+{
+class SystemConfig;
 }
 namespace srgsim
 {
@@ -43,6 +45,8 @@ public:
 
     bool placeObject(Object* object, Coordinate coordinate);
     const Object* getObject(essentials::IdentifierConstPtr id);
+    Object* editObject(essentials::IdentifierConstPtr id);
+    ServiceRobot* getRobot(essentials::IdentifierConstPtr id);
     std::vector<SimPerceptions> createSimPerceptions();
     bool spawnRobot(essentials::IdentifierConstPtr id);
     Object* addObject(essentials::IdentifierConstPtr id, Type type);
@@ -50,12 +54,11 @@ public:
     void moveObject(essentials::IdentifierConstPtr id, Direction direction);
     void openDoor(essentials::IdentifierConstPtr id);
     void closeDoor(essentials::IdentifierConstPtr id);
-    bool pickupObject(essentials::IdentifierConstPtr id);
 
 private:
     bool isPlacementAllowed(const Cell* cell, Type objectType) const;
     Cell* getNeighbourCell(const Direction& direction, Object* object);
-    Object* editObject(essentials::IdentifierConstPtr id);
+
 
     std::map<Coordinate, Cell*> cellGrid;
     /**

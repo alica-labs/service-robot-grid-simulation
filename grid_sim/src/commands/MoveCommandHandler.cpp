@@ -11,7 +11,6 @@ namespace commands
 
 bool MoveCommandHandler::handle(SimCommand sc)
 {
-    std::cout << "MoveCommandHandler::handle()" << std::endl;
     switch (sc.action) {
     case SimCommand::GOLEFT:
         this->world->moveObject(sc.senderID, Direction::Left);

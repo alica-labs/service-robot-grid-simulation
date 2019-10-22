@@ -1,9 +1,10 @@
 #include "srgsim/GUI.h"
 
-#include "srgsim/world/Cell.h"
-#include "srgsim/world/Object.h"
-#include "srgsim/world/Door.h"
 #include "srgsim/SRGEnums.h"
+#include "srgsim/world/Cell.h"
+#include "srgsim/world/Door.h"
+#include "srgsim/world/Object.h"
+#include "srgsim/world/ServiceRobot.h"
 
 #include <FileSystem.h>
 #include <iostream>
@@ -54,7 +55,7 @@ GUI::GUI()
             sprite.setTextureRect(sf::IntRect(0, textureSize * 3, textureSize, textureSize));
             break;
         case Type::CupYellow:
-            sprite.setTextureRect(sf::IntRect(textureSize*2, textureSize * 3, textureSize, textureSize));
+            sprite.setTextureRect(sf::IntRect(textureSize * 2, textureSize * 3, textureSize, textureSize));
             break;
         default:
             sprite.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
@@ -88,18 +89,27 @@ void GUI::draw(World* world)
         for (Object* object : pair.second->getObjects()) {
             sf::Sprite sprite;
             switch (object->getType()) {
-                case Door:
-                    if (static_cast<class Door*>(object)->isOpen()) {
-                        sprite = getSprite(Type::DoorOpen);
-                    } else {
-                        sprite = getSprite(Type::DoorClosed);
-                    }
-                    break;
-                default:
-                    sprite = getSprite(object->getType());
+            case Door:
+                if (static_cast<class Door*>(object)->isOpen()) {
+                    sprite = getSprite(Type::DoorOpen);
+                } else {
+                    sprite = getSprite(Type::DoorClosed);
+                }
+                break;
+            default:
+                sprite = getSprite(object->getType());
             }
             sprite.setPosition(object->getCell()->coordinate.x * scaledSpriteSize, object->getCell()->coordinate.y * scaledSpriteSize);
             this->window->draw(sprite);
+
+            if (ServiceRobot* robot = dynamic_cast<ServiceRobot*>(object)) {
+                if (Object* carriedObject = robot->getCarriedObject()) {
+                    sprite = getSprite(carriedObject->getType());
+                    sprite.setPosition((robot->getCell()->coordinate.x * scaledSpriteSize) + scaledSpriteSize/2, (robot->getCell()->coordinate.y * scaledSpriteSize) + scaledSpriteSize/2);
+                    sprite.setScale(0.25, 0.25);
+                    this->window->draw(sprite);
+                }
+            }
 #ifdef GUI_DEBUG
             std::cout << "GUI: Placing object of Type " << object->getType() << " at (" << object->getCell()->coordinate.x << ", "
                       << object->getCell()->coordinate.y << ")" << std::endl;

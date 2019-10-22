@@ -140,6 +140,16 @@ const Object* World::getObject(essentials::IdentifierConstPtr id)
     }
 }
 
+ServiceRobot* World::getRobot(essentials::IdentifierConstPtr id)
+{
+    auto robotEntry = this->robots.find(id);
+    if (robotEntry != this->robots.end()) {
+        return robotEntry->second;
+    } else {
+        return nullptr;
+    }
+}
+
 const std::map<Coordinate, Cell*>& World::getGrid()
 {
     return this->cellGrid;
@@ -244,13 +254,6 @@ bool World::addRobot(srgsim::ServiceRobot* robot)
     }
 }
 
-bool World::pickupObject(essentials::IdentifierConstPtr id)
-{
-    std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    std::cout << "World::pickupObject - Not yet implemented!" << std::endl;
-    return false;
-}
-
 void World::openDoor(essentials::IdentifierConstPtr id)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
@@ -266,7 +269,11 @@ void World::closeDoor(essentials::IdentifierConstPtr id)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     class Door* door = dynamic_cast<class Door*>(editObject(id));
-    door->setOpen(false);
+    if (door) {
+        door->setOpen(false);
+    } else {
+        std::cout << "World::closeDoor(): No suitable door found with ID: " << *id << std::endl;
+    }
 }
 
 // INTERNAL METHODS

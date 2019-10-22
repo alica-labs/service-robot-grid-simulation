@@ -6,12 +6,12 @@ namespace srgsim
 {
 namespace commands
 {
-class DoorCommandHandler : public CommandHandler
+class ManipulationHandler : public CommandHandler
 {
 
 public:
-    DoorCommandHandler(World* world): CommandHandler(world) {}
-    ~DoorCommandHandler() = default;
+    ManipulationHandler(World* world): CommandHandler(world) {}
+    ~ManipulationHandler() = default;
 
     bool handle(SimCommand sc);
 };

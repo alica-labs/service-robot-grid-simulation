@@ -1,10 +1,8 @@
 #include "srgsim/Simulator.h"
 
 #include "srgsim/commands/CommandHandler.h"
-#include "srgsim/commands/DoorCommandHandler.h"
+#include "srgsim/commands/ManipulationHandler.h"
 #include "srgsim/commands/MoveCommandHandler.h"
-#include "srgsim/commands/PickUpCommandHandler.h"
-#include "srgsim/commands/PutDownCommandHandler.h"
 #include "srgsim/commands/SpawnCommandHandler.h"
 
 #include "srgsim/GUI.h"
@@ -35,9 +33,7 @@ Simulator::Simulator(bool headless)
     this->world = new World();
     this->placeObjectsFromConf();
     this->communicationHandlers.push_back(new commands::MoveCommandHandler(world));
-    this->communicationHandlers.push_back(new commands::DoorCommandHandler(world));
-    this->communicationHandlers.push_back(new commands::PickUpCommandHandler(world));
-    this->communicationHandlers.push_back(new commands::PutDownCommandHandler(world));
+    this->communicationHandlers.push_back(new commands::ManipulationHandler(world));
     this->communicationHandlers.push_back(new commands::SpawnCommandHandler(world));
     this->communication = new communication::Communication(this->idManager, this);
 }

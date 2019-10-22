@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(grid_sim)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 add_compile_options(-std=c++11)
 
 #SFML(until 2.5 you need an extra FindSFML.cmake aside your project...)
@@ -35,10 +37,8 @@ add_executable(${PROJECT_NAME}
         src/commands/SpawnCommandHandler.cpp
         src/commands/CommandHandler.cpp
         src/commands/MoveCommandHandler.cpp
-        src/commands/PickUpCommandHandler.cpp
-        src/commands/DoorCommandHandler.cpp
-        src/commands/PutDownCommandHandler.cpp
-)
+        src/commands/ManipulationHandler.cpp
+        )
 
 target_link_libraries(${PROJECT_NAME}
   ${SFML_LIBRARIES}
@@ -77,10 +77,13 @@ add_library(${PROJECT_NAME}_world
         src/world/Cell.cpp
         src/container/Coordinate.cpp
         src/world/Object.cpp
+        src/world/Door.cpp
         src/world/ServiceRobot.cpp
         src/world/Sensor.cpp
+        src/world/Actuator.cpp
         src/world/Localisation.cpp
-        src/world/Door.cpp
+        src/world/Manipulation.cpp
+        src/world/ObjectDetection.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_world
