@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Perception.h"
+#include "CellPerceptions.h"
 
 #include <essentials/IdentifierConstPtr.h>
 
@@ -11,6 +11,6 @@ namespace srgsim
     struct SimPerceptions
     {
         essentials::IdentifierConstPtr receiverID;
-        std::vector<Perception> perceptions;
+        std::vector<CellPerceptions> cellPerceptions;
     };
 } // namespace srgsim

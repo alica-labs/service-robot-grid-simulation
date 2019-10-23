@@ -1,6 +1,7 @@
 #pragma once
 
 #include "srgsim/containers/Coordinate.h"
+#include "srgsim/containers/CellPerceptions.h"
 
 #include "srgsim/SRGEnums.h"
 
@@ -22,6 +23,7 @@ public:
     const std::vector<Object *> &getObjects() const;
     void addObject(Object* object);
     void removeObject(Object* object);
+    void update(std::vector<Object*> objects);
     std::string toString() const;
 
     Type type;

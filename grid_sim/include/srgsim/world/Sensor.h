@@ -1,6 +1,6 @@
 #pragma once
 
-#include "srgsim/containers/Perception.h"
+#include "srgsim/containers/CellPerceptions.h"
 
 #include <vector>
 
@@ -11,7 +11,7 @@ namespace srgsim {
     public:
         Sensor(ServiceRobot* robot);
         virtual ~Sensor();
-        virtual std::vector<Perception> createPerceptions(World* world) = 0;
+        virtual std::vector<CellPerceptions> createPerceptions(World* world) = 0;
     protected:
         ServiceRobot* robot;
     };

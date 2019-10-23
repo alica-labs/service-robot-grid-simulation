@@ -1,6 +1,6 @@
 #pragma once
 
-#include "srgsim/containers/Perception.h"
+#include "srgsim/containers/CellPerceptions.h"
 #include "Sensor.h"
 
 #include <vector>
@@ -16,7 +16,7 @@ namespace srgsim {
     class ObjectDetection : public Sensor{
     public:
         ObjectDetection(ServiceRobot* robot);
-        std::vector<Perception> createPerceptions(World* world);
+        std::vector<CellPerceptions> createPerceptions(World* world);
 
     private:
         std::vector<const Cell*> collectCells(Coordinate p0, Coordinate p1, World* world);

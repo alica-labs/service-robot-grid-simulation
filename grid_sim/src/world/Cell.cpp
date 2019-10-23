@@ -55,7 +55,38 @@ void Cell::removeObject(Object* object)
     }
 }
 
-std::string Cell::toString() const {
+void Cell::update(std::vector<Object*> updateObjects) {
+    // remove unseen objects
+    for (Object* cellObject : this->objects) {
+        bool found = false;
+        for (Object* updateObject : updateObjects) {
+            if (updateObject->getID() == cellObject->getID()) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            this->removeObject(cellObject);
+        }
+    }
+
+    // add new objects
+    for (Object* updateObject : updateObjects) {
+        bool found = false;
+        for (Object* cellObject : this->objects) {
+            if (updateObject->getID() == cellObject->getID()) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            this->addObject(updateObject);
+        }
+    }
+}
+
+std::string Cell::toString() const
+{
     std::stringstream ss;
     ss << "Cell: (" << this->coordinate.x << ", " << this->coordinate.y << ") Type: " << this->type << std::endl;
     return ss.str();

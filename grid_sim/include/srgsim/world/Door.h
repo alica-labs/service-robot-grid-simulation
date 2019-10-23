@@ -7,10 +7,7 @@ namespace srgsim
 class Door : public Object
 {
 public:
-    Door(essentials::IdentifierConstPtr id, bool open);
-    void setOpen(bool open);
+    Door(essentials::IdentifierConstPtr id, State state = State::Closed);
     bool isOpen();
-private:
-    bool open;
 };
 } // namespace srgsim

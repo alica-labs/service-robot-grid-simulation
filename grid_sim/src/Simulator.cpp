@@ -43,8 +43,8 @@ void Simulator::placeObjectsFromConf()
     this->sc = essentials::SystemConfig::getInstance();
     std::shared_ptr<std::vector<std::string>> objectSections = (*sc)["Objects"]->getSections("Objects", NULL);
     for (std::string objectSection : *objectSections) {
-        int intObjectID = std::stoi(objectSection);
-        essentials::IdentifierConstPtr id = essentials::IdentifierConstPtr(this->idManager->getID<int>(intObjectID));
+        int32_t intObjectID = std::stoi(objectSection);
+        essentials::IdentifierConstPtr id = essentials::IdentifierConstPtr(this->idManager->getID<int32_t>(intObjectID));
         std::string stringObjectType = (*sc)["Objects"]->get<std::string>("Objects", objectSection.c_str(), "type", NULL);
         Type type;
         if (stringObjectType.compare("cup_blue") == 0) {
@@ -59,15 +59,20 @@ void Simulator::placeObjectsFromConf()
             continue;
         }
 
-        Object* object = this->world->addObject(id, type);
+        Object* object;
+        if (type == Type::Door) {
+            if ((*sc)["Objects"]->get<bool>("Objects", objectSection.c_str(), "open", NULL)) {
+                object = this->world->createOrUpdateObject(id, type, State::Open);
+            } else {
+                object = this->world->createOrUpdateObject(id, type, State::Closed);
+            }
+        } else {
+            object = this->world->createOrUpdateObject(id, type);
+        }
+
         if (object->getCell()) {
             // object is already placed, maybe it was created already...
             continue;
-        }
-
-        if (object->getType() == Type::Door) {
-            bool open = (*sc)["Objects"]->get<bool>("Objects", objectSection.c_str(), "open", NULL);
-            static_cast<class Door*>(object)->setOpen(open);
         }
 
         uint32_t x = (*sc)["Objects"]->get<uint32_t>("Objects", objectSection.c_str(), "x", NULL);

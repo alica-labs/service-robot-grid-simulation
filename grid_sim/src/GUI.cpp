@@ -79,42 +79,60 @@ void GUI::draw(World* world)
 
     this->window->clear();
 
-    for (auto& pair : world->getGrid()) {
-        // background sprite
-        sf::Sprite sprite = getSprite(pair.second->type);
-        sprite.setPosition(pair.second->coordinate.x * scaledSpriteSize, pair.second->coordinate.y * scaledSpriteSize);
-        this->window->draw(sprite);
-
-        // object sprites
-        for (Object* object : pair.second->getObjects()) {
-            sf::Sprite sprite;
-            switch (object->getType()) {
-            case Door:
-                if (static_cast<class Door*>(object)->isOpen()) {
-                    sprite = getSprite(Type::DoorOpen);
-                } else {
-                    sprite = getSprite(Type::DoorClosed);
-                }
-                break;
-            default:
-                sprite = getSprite(object->getType());
-            }
-            sprite.setPosition(object->getCell()->coordinate.x * scaledSpriteSize, object->getCell()->coordinate.y * scaledSpriteSize);
+    {
+        std::recursive_mutex& dataMutex = world->getDataMutex();
+        std::lock_guard<std::recursive_mutex> guard(dataMutex);
+        for (auto &pair : world->getGrid()) {
+            // background sprite
+            sf::Sprite sprite = getSprite(pair.second->type);
+            sprite.setPosition(pair.second->coordinate.x * scaledSpriteSize,
+                               pair.second->coordinate.y * scaledSpriteSize);
             this->window->draw(sprite);
 
-            if (ServiceRobot* robot = dynamic_cast<ServiceRobot*>(object)) {
-                if (Object* carriedObject = robot->getCarriedObject()) {
-                    sprite = getSprite(carriedObject->getType());
-                    sprite.setPosition((robot->getCell()->coordinate.x * scaledSpriteSize) + scaledSpriteSize/2, (robot->getCell()->coordinate.y * scaledSpriteSize) + scaledSpriteSize/2);
-                    sprite.setScale(0.25, 0.25);
-                    this->window->draw(sprite);
+            // object sprites
+            for (Object *object : pair.second->getObjects()) {
+                sf::Sprite sprite;
+                switch (object->getType()) {
+                    case Door:
+                        if (static_cast<class Door *>(object)->isOpen()) {
+                            sprite = getSprite(Type::DoorOpen);
+                        } else {
+                            sprite = getSprite(Type::DoorClosed);
+                        }
+                        break;
+                    default:
+                        sprite = getSprite(object->getType());
                 }
-            }
+                sprite.setPosition(object->getCell()->coordinate.x * scaledSpriteSize,
+                                   object->getCell()->coordinate.y * scaledSpriteSize);
+                this->window->draw(sprite);
+
+                if (ServiceRobot *robot = dynamic_cast<ServiceRobot *>(object)) {
+                    if (Object *carriedObject = robot->getCarriedObject()) {
+                        sprite = getSprite(carriedObject->getType());
+                        sprite.setPosition((robot->getCell()->coordinate.x * scaledSpriteSize) + scaledSpriteSize / 2,
+                                           (robot->getCell()->coordinate.y * scaledSpriteSize) + scaledSpriteSize / 2);
+                        sprite.setScale(0.25, 0.25);
+                        this->window->draw(sprite);
+                    }
+                }
 #ifdef GUI_DEBUG
-            std::cout << "GUI: Placing object of Type " << object->getType() << " at (" << object->getCell()->coordinate.x << ", "
-                      << object->getCell()->coordinate.y << ")" << std::endl;
+                std::cout << "GUI: Placing object of Type " << object->getType() << " at (" << object->getCell()->coordinate.x << ", "
+                          << object->getCell()->coordinate.y << ")" << std::endl;
 #endif
+            }
         }
+
+        // for debug purposes
+        for (Perception perception : world->getMarkers()) {
+            sf::Sprite sprite;
+            sprite = getSprite(perception.type);
+            sprite.setPosition((perception.x * scaledSpriteSize) + scaledSpriteSize / 4,
+                               (perception.y * scaledSpriteSize) + scaledSpriteSize / 4);
+            sprite.setScale(0.25, 0.25);
+            this->window->draw(sprite);
+        }
+        world->getMarkers().clear();
     }
     this->window->display();
 }

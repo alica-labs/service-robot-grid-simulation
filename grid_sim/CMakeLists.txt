@@ -81,7 +81,6 @@ add_library(${PROJECT_NAME}_world
         src/world/ServiceRobot.cpp
         src/world/Sensor.cpp
         src/world/Actuator.cpp
-        src/world/Localisation.cpp
         src/world/Manipulation.cpp
         src/world/ObjectDetection.cpp
 )

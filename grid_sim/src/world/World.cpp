@@ -179,7 +179,7 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     // create robot
-    Object* object = this->addObject(id, Type::Robot);
+    Object* object = this->createOrUpdateObject(id, Type::Robot);
     if (object->getCell()) {
         // robot is already placed, maybe it was spawned already...
         return false;
@@ -202,7 +202,7 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
     }
 }
 
-Object* World::addObject(essentials::IdentifierConstPtr id, Type type)
+Object* World::createOrUpdateObject(essentials::IdentifierConstPtr id, Type type, State state)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     Object* object = editObject(id);
@@ -212,20 +212,31 @@ Object* World::addObject(essentials::IdentifierConstPtr id, Type type)
             object = new ServiceRobot(id);
             break;
         case Type::Door:
-            object = new class Door(id, false);
+            object = new class Door(id, state);
             break;
         default:
-            object = new Object(type, id);
+            object = new Object(type, id, state);
         }
+        std::cout << "World::createOrUpdateObject(): Created " << *object;
         this->objects.emplace(object->getID(), object);
         return object;
-    } else if (object->getType() != type) {
-        std::cerr << "World::addObject(): Object ID " << id << " is already known as type (" << object->getType() << "), but requested type is (" << type
-                  << ")!" << std::endl;
-        return nullptr;
-    } else {
-        return object;
     }
+
+    object->setType(type);
+    object->setState(state);
+    return object;
+}
+
+bool World::removeObject(srgsim::Object* object)
+{
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    auto entry = this->objects.find(object->getID());
+    if (entry == this->objects.end()) {
+        return false;
+    }
+    this->objects.erase(object->getID());
+    object->deleteCell();
+    return true;
 }
 
 void World::moveObject(essentials::IdentifierConstPtr id, Direction direction)
@@ -259,7 +270,7 @@ void World::openDoor(essentials::IdentifierConstPtr id)
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     class Door* door = dynamic_cast<class Door*>(editObject(id));
     if (door) {
-        door->setOpen(true);
+        door->setState(State::Open);
     } else {
         std::cout << "World::openDoor(): No suitable door found with ID: " << *id << std::endl;
     }
@@ -270,10 +281,48 @@ void World::closeDoor(essentials::IdentifierConstPtr id)
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     class Door* door = dynamic_cast<class Door*>(editObject(id));
     if (door) {
-        door->setOpen(false);
+        door->setState(State::Closed);
     } else {
         std::cout << "World::closeDoor(): No suitable door found with ID: " << *id << std::endl;
     }
+}
+
+std::vector<Perception> World::getMarkers()
+{
+    return this->markers;
+}
+
+void World::addMarker(Perception p)
+{
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    this->markers.push_back(p);
+}
+
+std::recursive_mutex& World::getDataMutex()
+{
+    return this->dataMutex;
+}
+
+std::vector<Object*> World::updateCell(CellPerceptions cellPerceptions) {
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    std::vector<Object*> objects;
+
+    Coordinate coordinates = Coordinate(cellPerceptions.x, cellPerceptions.y);
+    auto cellEntry = this->cellGrid.find(coordinates);
+    if (cellEntry == this->cellGrid.end()) {
+        std::cerr << "World::updateCell(): Coordinate " << coordinates << " does not exist in the world! " << std::endl;
+        return objects;
+    }
+
+    // update objects itself
+    for (srgsim::Perception perception : cellPerceptions.perceptions) {
+        objects.push_back(this->createOrUpdateObject(perception.objectID, perception.type, perception.state));
+    }
+
+    // update association with cell
+    cellEntry->second->update(objects);
+
+    return objects;
 }
 
 // INTERNAL METHODS

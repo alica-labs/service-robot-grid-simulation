@@ -6,7 +6,6 @@
 
 namespace srgsim {
     class World;
-    class Localisation;
     class ObjectDetection;
     class Manipulation;
     class ServiceRobot : public Object {
@@ -18,7 +17,6 @@ namespace srgsim {
         Object *getCarriedObject();
 
     private:
-        Localisation* localisation;
         ObjectDetection* objectDetection;
         Manipulation* manipulation;
     };

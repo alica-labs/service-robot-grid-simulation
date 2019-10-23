@@ -5,21 +5,33 @@ using IDMsg = import "/capnzero/ID.capnp";
 
 struct SimPerceptionsMsg {
   receiverID @0 :IDMsg.ID;
-  perceptions @1 :List(Perception);
+  cellPerceptions @1 :List(CellPerceptions);
+
+  struct CellPerceptions {
+      x @0: UInt32;
+      y @1: UInt32;
+      perceptions @2 :List(Perception);
+  }
 
   struct Perception {
       type @0: Type;
-      objectID @1 :IDMsg.ID;
-      x @2: UInt32;
-      y @3: UInt32;
+      state @1: State;
+      objectID @2 :IDMsg.ID;
+      x @3: UInt32;
+      y @4: UInt32;
 
     enum Type {
-      doorclosed @0;
-      dooropen @1;
-      cupred @2;
-      cupblue @3;
-      cupyellow @4;
-      robot @5;
+      door @0;
+      cupred @1;
+      cupblue @2;
+      cupyellow @3;
+      robot @4;
+    }
+
+    enum State {
+      open @0;
+      closed @1;
+      undefined @2;
     }
   }
 }

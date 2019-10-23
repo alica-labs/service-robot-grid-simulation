@@ -5,14 +5,15 @@
 namespace srgsim
 {
 
-Object::Object(Type type, essentials::IdentifierConstPtr id)
-        : type(type), id(id), cell(nullptr)
+Object::Object(Type type, essentials::IdentifierConstPtr id, State state)
+        : type(type)
+        , state(state)
+        , id(id)
+        , cell(nullptr)
 {
 }
 
-Object::~Object()
-{
-}
+Object::~Object() {}
 
 void Object::setCell(Cell* cell)
 {
@@ -44,7 +45,22 @@ Type Object::getType() const
     return type;
 }
 
-essentials::IdentifierConstPtr Object::getID()
+void Object::setType(Type type)
+{
+    this->type = type;
+}
+
+State Object::getState() const
+{
+    return state;
+}
+
+void Object::setState(State state)
+{
+    this->state = state;
+}
+
+essentials::IdentifierConstPtr Object::getID() const
 {
     return essentials::IdentifierConstPtr(this->id);
 }

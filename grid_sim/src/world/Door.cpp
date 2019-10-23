@@ -5,17 +5,13 @@
 
 namespace srgsim
 {
-Door::Door(essentials::IdentifierConstPtr id, bool open)
-        : Object(Type::Door, id)
-        , open(open)
+Door::Door(essentials::IdentifierConstPtr id, State state)
+        : Object(Type::Door, id, state)
 {
 }
 
 bool Door::isOpen() {
-    return open;
+    return this->state == State::Open;
 };
 
-void Door::setOpen(bool open) {
-    this->open = open;
-}
 } // namespace srgsim
