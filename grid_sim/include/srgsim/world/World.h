@@ -33,7 +33,7 @@ class World
 {
 public:
     World();
-    World(std::string tmxMapFile, bool robot = false);
+    World(std::string tmxMapFile);
     ~World();
 
     Cell* addCell(uint32_t x, uint32_t y);
@@ -42,11 +42,11 @@ public:
     uint32_t getSizeX() const;
     uint32_t getSizeY() const;
     const std::map<Coordinate, Cell*>& getGrid();
-    std::vector<Perception> getMarkers();
+    std::vector<Perception>& getMarkers();
     void addMarker(Perception p);
     std::recursive_mutex& getDataMutex();
 
-    std::vector<SimPerceptions> createSimPerceptions();
+    std::vector<SimPerceptions> createSimPerceptionsList();
 
     std::vector<Object*> updateCell(srgsim::CellPerceptions cellPerceptions);
 

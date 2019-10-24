@@ -20,6 +20,11 @@ bool operator==(Coordinate const& first, Coordinate const& second)
     return first.x == second.x && first.y == second.y;
 }
 
+bool operator!=(Coordinate const& first, Coordinate const& second)
+{
+    return !(first == second);
+}
+
 bool operator<(Coordinate const& first, Coordinate const& second)
 {
     if (first.x < second.x) {

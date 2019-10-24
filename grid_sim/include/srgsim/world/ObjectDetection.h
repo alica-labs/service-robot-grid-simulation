@@ -24,6 +24,5 @@ namespace srgsim {
         essentials::SystemConfig* sc;
         uint32_t sightLimit;
 
-
     };
 }

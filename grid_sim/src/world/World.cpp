@@ -17,7 +17,7 @@ World::World()
 {
 }
 
-World::World(std::string tmxMapFile, bool robot)
+World::World(std::string tmxMapFile)
 {
     std::cout << "srgsim::World(): Loading '" << tmxMapFile << "' world file!" << std::endl;
     Tmx::Map* map = new Tmx::Map();
@@ -165,7 +165,7 @@ uint32_t World::getSizeY() const
     return sizeY;
 }
 
-std::vector<SimPerceptions> World::createSimPerceptions()
+std::vector<SimPerceptions> World::createSimPerceptionsList()
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     std::vector<SimPerceptions> perceptions;
@@ -287,7 +287,7 @@ void World::closeDoor(essentials::IdentifierConstPtr id)
     }
 }
 
-std::vector<Perception> World::getMarkers()
+std::vector<Perception>& World::getMarkers()
 {
     return this->markers;
 }

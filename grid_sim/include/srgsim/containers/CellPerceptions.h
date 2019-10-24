@@ -12,7 +12,7 @@ struct CellPerceptions
 
     friend std::ostream& operator<<(std::ostream& os, const srgsim::CellPerceptions& obj)
     {
-        os << "CellPerceptions: X: " << obj.x << " Y: " << obj.y << std::endl;
+//        os << "CellPerceptions: X: " << obj.x << " Y: " << obj.y << std::endl;
         for (Perception p : obj.perceptions) {
             os << p;
         }

@@ -14,12 +14,12 @@ find_package(Threads)
 
 find_package(tmxparser REQUIRED)
 
-find_package(catkin REQUIRED capnzero alica_capnzero_proxy id_capnzero id_manager fsystem system_config)
+find_package(catkin REQUIRED capnzero alica_capnzero_proxy id_capnzero id_manager fsystem system_config cnc_geometry)
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}_msgs ${PROJECT_NAME}_world
-  CATKIN_DEPENDS id_capnzero
+  CATKIN_DEPENDS capnzero alica_capnzero_proxy id_capnzero id_manager fsystem system_config cnc_geometry
   DEPENDS SFML
 )
 
@@ -87,6 +87,7 @@ add_library(${PROJECT_NAME}_world
 
 target_link_libraries(${PROJECT_NAME}_world
   tmxparser
+  ${catkin_LIBRARIES}
 )
 
 ############### Sim Messages

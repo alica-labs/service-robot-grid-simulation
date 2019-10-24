@@ -7,6 +7,7 @@
 #include "srgsim/containers/CellPerceptions.h"
 
 #include <SystemConfig.h>
+#include <cnc_geometry/Calculator.h>
 
 #include <math.h>
 
@@ -28,6 +29,11 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
         int32_t xDelta = sin(currentDegree) * sightLimit;
         int32_t yDelta = cos(currentDegree) * sightLimit;
 //        std::cout << "ObjectDetection::createPerceptions(): xDelta " << xDelta << " yDelta " << yDelta << std::endl;
+        Perception p;
+        p.type = Type::CupRed;
+        p.x = ownCoord.x + xDelta;
+        p.y = ownCoord.y + yDelta;
+        world->addMarker(p);
 
         std::vector<const Cell*> currentCells = this->collectCells(ownCoord, Coordinate(ownCoord.x + xDelta, ownCoord.y + yDelta), world);
         for (const Cell* cell : currentCells) {
@@ -61,48 +67,44 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
             p.y = cellPerceptions.y;
             cellPerceptions.perceptions.push_back(p);
         }
+        cellPerceptionsList.push_back(cellPerceptions);
     }
-    std::cout << "ObjectDetection::createPerceptions(): --------------------- " << std::endl;
 
     return cellPerceptionsList;
 }
 
-std::vector<const Cell*> ObjectDetection::collectCells(Coordinate p0, Coordinate p1, World* world)
+std::vector<const Cell*> ObjectDetection::collectCells(Coordinate start, Coordinate end, World* world)
 {
-    int32_t dx = p1.x - p0.x;
-    int32_t dy = p1.y - p0.y;
-    uint32_t nx = abs(dx);
-    uint32_t ny = abs(dy);
-    int32_t sign_x = dx > 0 ? 1 : -1;
-    int32_t sign_y = dy > 0 ? 1 : -1;
-
     std::vector<const Cell*> cells;
-    Coordinate p(p0.x, p0.y);
-    cells.push_back(world->getCell(p));
-    for (uint32_t ix = 0, iy = 0; ix < nx || iy < ny;) {
-        if (nx == 0) {
-            // next step is vertical
-            p.y += sign_y;
-            iy++;
-        } else if (ny == 0) {
-            // next step is horizontal
-            p.x += sign_x;
-            ix++;
-        } else if ((ix + 1) / nx < (iy + 1) / ny) {
-            // next step is horizontal
-            p.x += sign_x;
-            ix++;
-        } else {
-            // next step is vertical
-            p.y += sign_y;
-            iy++;
-        }
-        const Cell* cell = world->getCell(p);
-        if (cell && cell->type == Type::Floor) {
-            cells.push_back(world->getCell(p));
-        } else {
+    cells.push_back(world->getCell(start));
+
+    int32_t sign_x = ((int32_t)end.x - (int32_t)start.x) > 0 ? 1 : -1;
+    int32_t sign_y = ((int32_t)end.y - (int32_t)start.y) > 0 ? 1 : -1;
+
+    Coordinate currentPoint(start.x, start.y);
+    Coordinate pointStepX(start.x, start.y);
+    Coordinate pointStepY(start.x, start.y);
+    while(true) {
+        if (currentPoint == end){
             break;
         }
+        pointStepX = Coordinate(currentPoint.x+sign_x,currentPoint.y);
+        pointStepY = Coordinate(currentPoint.x,currentPoint.y+sign_y);
+        double distanceStepX = geometry::distancePointToLineSegmentCalc(pointStepX.x, pointStepX.y, start.x, start.y, end.x, end.y);
+        double distanceStepY = geometry::distancePointToLineSegmentCalc(pointStepY.x, pointStepY.y, start.x, start.y, end.x, end.y);
+
+//        std::cout << "CurrentPoint: " << currentPoint << " StepX: " << pointStepX << " StepY: " << pointStepY << " DistX: " << distanceStepX << " DistY: " << distanceStepY << std::endl;
+        if (distanceStepX < distanceStepY) {
+            currentPoint = pointStepX;
+        } else {
+            currentPoint = pointStepY;
+        }
+
+        const Cell* cell = world->getCell(currentPoint);
+        if (!cell || cell->type != Type::Floor) {
+            break;
+        }
+        cells.push_back(cell);
     }
     return cells;
 }

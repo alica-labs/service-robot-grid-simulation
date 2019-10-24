@@ -24,5 +24,6 @@ public:
 };
 
 bool operator==(Coordinate const& first, Coordinate const& second);
+bool operator!=(Coordinate const& first, Coordinate const& second);
 bool operator<(Coordinate const& first, Coordinate const& second);
 } // namespace srgsim

@@ -19,6 +19,7 @@
 #include <signal.h>
 #include <string>
 #include <thread>
+#include <srgsim/world/ObjectDetection.h>
 
 //#define SIM_DEBUG
 
@@ -30,8 +31,13 @@ Simulator::Simulator(bool headless)
         : headless(headless)
         , idManager(new essentials::IDManager())
 {
+
+
     this->world = new World();
     this->placeObjectsFromConf();
+//    ObjectDetection od (nullptr);
+//    od.collectCells(Coordinate(12,3), Coordinate(3,7), world);
+//    return;
     this->communicationHandlers.push_back(new commands::MoveCommandHandler(world));
     this->communicationHandlers.push_back(new commands::ManipulationHandler(world));
     this->communicationHandlers.push_back(new commands::SpawnCommandHandler(world));
@@ -141,9 +147,9 @@ void Simulator::run()
         std::cout << "[Simulator] Create and send perceptions..." << std::endl;
 #endif
         // 3. Produce and send perceptions for each robot
-        std::vector<SimPerceptions> perceptionsMsgs = this->world->createSimPerceptions();
-        for (auto& simPerceptionsMsg : perceptionsMsgs) {
-            this->communication->sendSimPerceptions(simPerceptionsMsg);
+        std::vector<SimPerceptions> simPerceptionsList = this->world->createSimPerceptionsList();
+        for (auto& simPerceptions : simPerceptionsList) {
+            this->communication->sendSimPerceptions(simPerceptions);
         }
 
         // 4. Sleep in order to keep the cpu effort low
