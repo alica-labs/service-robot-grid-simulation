@@ -9,12 +9,12 @@ namespace srgsim
 class Coordinate
 {
 public:
-    Coordinate(uint32_t x, uint32_t y);
+    Coordinate(int32_t x, int32_t y);
     virtual ~Coordinate() = default;
     Coordinate(const Coordinate& coordinate);
 
-    uint32_t x;
-    uint32_t y;
+    int32_t x;
+    int32_t y;
 
     friend std::ostream& operator<<(std::ostream& os, const srgsim::Coordinate& obj)
     {

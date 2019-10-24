@@ -3,7 +3,7 @@
 
 namespace srgsim
 {
-Coordinate::Coordinate(uint32_t x, uint32_t y)
+Coordinate::Coordinate(int32_t x, int32_t y)
 {
     this->x = x;
     this->y = y;

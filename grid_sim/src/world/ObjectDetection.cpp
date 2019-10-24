@@ -26,9 +26,8 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
     Coordinate ownCoord = this->robot->getCell()->coordinate;
     std::map<Coordinate, const Cell*> cellsInVision;
     for (double currentDegree = -M_PI; currentDegree < M_PI; currentDegree += M_PI / 90) { // PI/90 <=> 2 degree resolution
-        int32_t xDelta = sin(currentDegree) * sightLimit;
-        int32_t yDelta = cos(currentDegree) * sightLimit;
-//        std::cout << "ObjectDetection::createPerceptions(): xDelta " << xDelta << " yDelta " << yDelta << std::endl;
+        int32_t xDelta = round(sin(currentDegree) * sightLimit);
+        int32_t yDelta = round(cos(currentDegree) * sightLimit);
         Perception p;
         p.type = Type::CupRed;
         p.x = ownCoord.x + xDelta;
@@ -61,8 +60,9 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
         cellPerceptions.y = entry.second->coordinate.y;
         for (Object* object : objects) {
             Perception p;
-            p.type = object->getType();
             p.objectID = object->getID();
+            p.type = object->getType();
+            p.state = object->getState();
             p.x = cellPerceptions.x;
             p.y = cellPerceptions.y;
             cellPerceptions.perceptions.push_back(p);
