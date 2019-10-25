@@ -31,7 +31,7 @@ private:
     float scaleFactor = 0;
     float scaledSpriteSize = 0;
 
-    sf::Sprite sprites[Type::Last];
+    sf::Sprite sprites[static_cast<int>(Type::Last)];
     sf::Texture* texture;
     sf::RenderWindow* window;
 

@@ -28,7 +28,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const srgsim::Object& obj)
     {
-        os << "ID: " << obj.id << " Type: " << obj.type << " State: " << obj.state << std::endl;
+        os << "ID: " << obj.id << " Type: " << static_cast<int>(obj.type) << " State: " << static_cast<int>(obj.state) << std::endl;
         return os;
     }
 protected:

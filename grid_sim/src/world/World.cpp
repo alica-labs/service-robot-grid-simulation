@@ -330,16 +330,16 @@ std::vector<Object*> World::updateCell(CellPerceptions cellPerceptions) {
 Cell* World::getNeighbourCell(const Direction& direction, Object* object)
 {
     switch (direction) {
-    case Left:
+        case Direction::Left:
         return object->getCell()->left;
-    case Up:
+        case Direction::Up:
         return object->getCell()->up;
-    case Right:
+        case Direction::Right:
         return object->getCell()->right;
-    case Down:
+        case Direction::Down:
         return object->getCell()->down;
     default:
-        std::cout << "World: Unknown Direction: " << direction << "!" << std::endl;
+        std::cout << "World: Unknown Direction: " << static_cast<int>(direction) << "!" << std::endl;
         return nullptr;
     }
 }

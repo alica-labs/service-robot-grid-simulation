@@ -88,7 +88,7 @@ void Cell::update(std::vector<Object*> updateObjects) {
 std::string Cell::toString() const
 {
     std::stringstream ss;
-    ss << "Cell: (" << this->coordinate.x << ", " << this->coordinate.y << ") Type: " << this->type << std::endl;
+    ss << "Cell: (" << this->coordinate.x << ", " << this->coordinate.y << ") Type: " << static_cast<int>(this->type) << std::endl;
     return ss.str();
 }
 

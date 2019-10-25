@@ -196,7 +196,7 @@ void ContainerUtils::toMsg(srgsim::SimPerceptions sp, ::capnp::MallocMessageBuil
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::DOOR);
                 break;
             default:
-                std::cerr << "srgsim::ContainterUtils::toMsg(): Unknown object type perceived: " << sp.cellPerceptions[i].perceptions[j].type << "!" << std::endl;
+                std::cerr << "srgsim::ContainterUtils::toMsg(): Unknown object type perceived: " << static_cast<int>(sp.cellPerceptions[i].perceptions[j].type) << "!" << std::endl;
                 break;
             }
             switch (sp.cellPerceptions[i].perceptions[j].state) {
@@ -210,7 +210,7 @@ void ContainerUtils::toMsg(srgsim::SimPerceptions sp, ::capnp::MallocMessageBuil
                 pBuilder.setState(srgsim::SimPerceptionsMsg::Perception::State::UNDEFINED);
                 break;
             default:
-                std::cerr << "srgsim::ContainterUtils::toMsg(): Unknown object state perceived: " << sp.cellPerceptions[i].perceptions[j].state << "!" << std::endl;
+                std::cerr << "srgsim::ContainterUtils::toMsg(): Unknown object state perceived: " << static_cast<int>(sp.cellPerceptions[i].perceptions[j].state) << "!" << std::endl;
                 break;
             }
             capnzero::ID::Builder objectID = pBuilder.initObjectID();

@@ -18,7 +18,7 @@ namespace srgsim
 
         friend std::ostream& operator<<(std::ostream& os, const srgsim::Perception& obj)
         {
-            os << "Perception - Type: " << obj.type << " State: " << obj.state << " ID: " << (*obj.objectID) << " At: (" << obj.x << ", " << obj.y << ")" << std::endl;
+            os << "Perception - Type: " << static_cast<int>(obj.type) << " State: " << static_cast<int>(obj.state) << " ID: " << (*obj.objectID) << " At: (" << obj.x << ", " << obj.y << ")" << std::endl;
             return os;
         }
     };

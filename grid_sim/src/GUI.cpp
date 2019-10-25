@@ -25,7 +25,7 @@ GUI::GUI()
     this->texture->setRepeated(true);
     this->window = new sf::RenderWindow(sf::VideoMode(xResolution, yResolution), "Grid Simulator GUI");
     this->window->setActive(false);
-    for (int i = 0; i != Type::Last; i++) {
+    for (int i = 0; i != static_cast<int>(Type::Last); i++) {
         sf::Sprite sprite;
         sprite.setTexture(*this->texture);
         Type type = static_cast<Type>(i);
@@ -59,9 +59,9 @@ GUI::GUI()
             break;
         default:
             sprite.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
-            std::cout << "[GUI] Unknown cell type " << type << std::endl;
+            std::cout << "[GUI] Unknown cell type " << static_cast<int>(type) << std::endl;
         }
-        sprites[type] = sprite;
+        sprites[static_cast<int>(type)] = sprite;
     }
 }
 
@@ -93,7 +93,7 @@ void GUI::draw(World* world)
             for (Object *object : pair.second->getObjects()) {
                 sf::Sprite sprite;
                 switch (object->getType()) {
-                    case Door:
+                    case Type::Door:
                         if (static_cast<class Door *>(object)->isOpen()) {
                             sprite = getSprite(Type::DoorOpen);
                         } else {
@@ -179,6 +179,6 @@ void GUI::calculateSpriteSize(const World* world)
 
 sf::Sprite GUI::getSprite(Type type)
 {
-    return sprites[type];
+    return sprites[static_cast<int>(type)];
 }
 } // namespace srgsim
