@@ -11,9 +11,9 @@ class ManipulationHandler : public CommandHandler
 
 public:
     ManipulationHandler(World* world): CommandHandler(world) {}
-    ~ManipulationHandler() = default;
+    ~ManipulationHandler() override = default;
 
-    bool handle(SimCommand sc);
+    bool handle(SimCommand sc) override;
 };
 } // namespace communication
 } // namespace srgsim

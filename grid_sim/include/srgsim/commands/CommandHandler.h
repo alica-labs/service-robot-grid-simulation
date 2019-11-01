@@ -13,8 +13,8 @@ class CommandHandler
 {
 
 public:
-    CommandHandler(World* world): world(world){};
-    virtual ~CommandHandler() {}
+    explicit CommandHandler(World* world): world(world){};
+    virtual ~CommandHandler() = default;
     virtual bool handle(SimCommand sc) = 0;
 protected:
     World* world;
