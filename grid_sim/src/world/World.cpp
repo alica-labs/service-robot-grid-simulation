@@ -189,7 +189,8 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
     srand(time(NULL));
     const Cell* cell = nullptr;
     while (!cell || !isPlacementAllowed(cell, Type::Robot)) {
-        cell = this->getCell(Coordinate(rand() % this->sizeX, rand() % this->sizeY));
+        cell = this->getCell(Coordinate(5, 5));
+//        cell = this->getCell(Coordinate(rand() % this->sizeX, rand() % this->sizeY));
     }
 
     // place robot
