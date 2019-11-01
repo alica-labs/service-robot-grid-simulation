@@ -347,8 +347,13 @@ Cell* World::getNeighbourCell(const Direction& direction, Object* object)
 bool World::isPlacementAllowed(const Cell* cell, Type objectType) const
 {
     switch (objectType) {
-    case Type::Robot:
-        return cell->type == Type::Floor;
+    case Type::Robot:{
+        std::vector<Object*> objs = cell->getObjects();
+        for (unsigned int i = 0; i < objs.size(); ++i) {
+            if(objs[i]->getType() == Type::Door)
+                return objs[i]->getState() == State::Open;
+        }
+    }
     default:
         return !(cell->type == Type::DoorClosed || cell->type == Type::DoorOpen || cell->type == Type::Wall);
     }
