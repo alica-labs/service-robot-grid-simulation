@@ -36,4 +36,8 @@ bool operator<(Coordinate const& first, Coordinate const& second)
     }
 }
 
+Coordinate operator-(Coordinate const& first, Coordinate const& second) {
+    return Coordinate(first.x-second.x, first.y-second.y);
+}
+
 } // namespace srgsim
