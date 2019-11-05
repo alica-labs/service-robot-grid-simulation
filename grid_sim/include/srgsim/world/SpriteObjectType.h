@@ -1,11 +1,11 @@
 #pragma once
+#pragma once
 
 #include <iostream>
 
 namespace srgsim
 {
-
-enum class Type
+enum class SpriteObjectType
 {
     Dirt,       // 0
     Gras,       // 1
@@ -26,29 +26,5 @@ enum class Type
     Last        // has to be last for iterating with ints over this enum //16
 };
 
-enum class State
-{
-    Open,
-    Closed,
-    Undefined
-};
-
-enum class Direction
-{
-    Left,
-    Up,
-    Down,
-    Right,
-    None
-};
-
-enum class TaskType
-{
-    Move,
-    PickUp,
-    PutDown,
-    Open,
-    Close,
-    Idle
-};
-} // namespace srgsim
+std::ostream& operator<<(std::ostream& os, const SpriteObjectType& type);
+}

@@ -52,25 +52,25 @@ void Simulator::placeObjectsFromConf()
         int32_t intObjectID = std::stoi(objectSection);
         essentials::IdentifierConstPtr id = essentials::IdentifierConstPtr(this->idManager->getID<int32_t>(intObjectID));
         std::string stringObjectType = (*sc)["Objects"]->get<std::string>("Objects", objectSection.c_str(), "type", NULL);
-        Type type;
+        SpriteObjectType type;
         if (stringObjectType.compare("cup_blue") == 0) {
-            type = Type::CupBlue;
+            type = SpriteObjectType::CupBlue;
         } else if (stringObjectType.compare("cup_red") == 0) {
-            type = Type::CupRed;
+            type = SpriteObjectType::CupRed;
         } else if (stringObjectType.compare("cup_yellow") == 0) {
-            type = Type::CupYellow;
+            type = SpriteObjectType::CupYellow;
         } else if (stringObjectType.compare("door") == 0) {
-            type = Type::Door;
+            type = SpriteObjectType::Door;
         } else {
             continue;
         }
 
         Object* object;
-        if (type == Type::Door) {
+        if (type == SpriteObjectType::Door) {
             if ((*sc)["Objects"]->get<bool>("Objects", objectSection.c_str(), "open", NULL)) {
-                object = this->world->createOrUpdateObject(id, type, State::Open);
+                object = this->world->createOrUpdateObject(id, type, ObjectState::Open);
             } else {
-                object = this->world->createOrUpdateObject(id, type, State::Closed);
+                object = this->world->createOrUpdateObject(id, type, ObjectState::Closed);
             }
         } else {
             object = this->world->createOrUpdateObject(id, type);

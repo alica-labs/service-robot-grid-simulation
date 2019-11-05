@@ -121,19 +121,19 @@ SimPerceptions ContainerUtils::toSimPerceptions(::capnp::FlatArrayMessageReader&
             perception.y = perceptionMsg.getY();
             switch (perceptionMsg.getType()) {
             case srgsim::SimPerceptionsMsg::Perception::Type::ROBOT:
-                perception.type = Type::Robot;
+                perception.type = SpriteObjectType::Robot;
                 break;
             case srgsim::SimPerceptionsMsg::Perception::Type::DOOR:
-                perception.type = Type::Door;
+                perception.type = SpriteObjectType::Door;
                 break;
             case srgsim::SimPerceptionsMsg::Perception::Type::CUPRED:
-                perception.type = Type::CupRed;
+                perception.type = SpriteObjectType::CupRed;
                 break;
             case srgsim::SimPerceptionsMsg::Perception::Type::CUPBLUE:
-                perception.type = Type::CupBlue;
+                perception.type = SpriteObjectType::CupBlue;
                 break;
             case srgsim::SimPerceptionsMsg::Perception::Type::CUPYELLOW:
-                perception.type = Type::CupYellow;
+                perception.type = SpriteObjectType::CupYellow;
                 break;
             default:
                 std::cerr << "srgsim::ContainterUtils::toSimPerceptions(): Unknown object type in capnp message found!" << std::endl;
@@ -141,13 +141,13 @@ SimPerceptions ContainerUtils::toSimPerceptions(::capnp::FlatArrayMessageReader&
             }
             switch (perceptionMsg.getState()) {
             case srgsim::SimPerceptionsMsg::Perception::State::OPEN:
-                perception.state = State::Open;
+                perception.state = ObjectState::Open;
                 break;
             case srgsim::SimPerceptionsMsg::Perception::State::CLOSED:
-                perception.state = State::Closed;
+                perception.state = ObjectState::Closed;
                 break;
             case srgsim::SimPerceptionsMsg::Perception::State::UNDEFINED:
-                perception.state = State::Undefined;
+                perception.state = ObjectState::Undefined;
                 break;
             default:
                 std::cerr << "srgsim::ContainterUtils::toSimPerceptions(): Unknown object type in capnp message found!" << std::endl;
@@ -180,19 +180,19 @@ void ContainerUtils::toMsg(srgsim::SimPerceptions sp, ::capnp::MallocMessageBuil
             pBuilder.setY(sp.cellPerceptions[i].perceptions[j].y);
             pBuilder.setX(sp.cellPerceptions[i].perceptions[j].x);
             switch (sp.cellPerceptions[i].perceptions[j].type) {
-            case Type::Robot:
+            case SpriteObjectType::Robot:
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::ROBOT);
                 break;
-            case Type::CupRed:
+            case SpriteObjectType::CupRed:
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::CUPRED);
                 break;
-            case Type::CupBlue:
+            case SpriteObjectType::CupBlue:
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::CUPBLUE);
                 break;
-            case Type::CupYellow:
+            case SpriteObjectType::CupYellow:
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::CUPYELLOW);
                 break;
-            case Type::Door:
+            case SpriteObjectType::Door:
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::DOOR);
                 break;
             default:
@@ -200,13 +200,13 @@ void ContainerUtils::toMsg(srgsim::SimPerceptions sp, ::capnp::MallocMessageBuil
                 break;
             }
             switch (sp.cellPerceptions[i].perceptions[j].state) {
-            case State::Open:
+            case ObjectState::Open:
                 pBuilder.setState(srgsim::SimPerceptionsMsg::Perception::State::OPEN);
                 break;
-            case State::Closed:
+            case ObjectState::Closed:
                 pBuilder.setState(srgsim::SimPerceptionsMsg::Perception::State::CLOSED);
                 break;
-            case State::Undefined:
+            case ObjectState::Undefined:
                 pBuilder.setState(srgsim::SimPerceptionsMsg::Perception::State::UNDEFINED);
                 break;
             default:

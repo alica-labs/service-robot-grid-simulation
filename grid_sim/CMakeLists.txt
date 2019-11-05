@@ -34,11 +34,12 @@ add_executable(${PROJECT_NAME}
   src/Simulator.cpp
   src/GUI.cpp
   src/communication/Communication.cpp
-        src/commands/SpawnCommandHandler.cpp
-        src/commands/CommandHandler.cpp
-        src/commands/MoveCommandHandler.cpp
-        src/commands/ManipulationHandler.cpp
-        )
+  src/commands/SpawnCommandHandler.cpp
+  src/commands/CommandHandler.cpp
+  src/commands/MoveCommandHandler.cpp
+  src/commands/ManipulationHandler.cpp
+        src/world/TaskType.cpp
+)
 
 target_link_libraries(${PROJECT_NAME}
   ${SFML_LIBRARIES}
@@ -73,16 +74,20 @@ endforeach()
 
 ############### World
 add_library(${PROJECT_NAME}_world
-        src/world/World.cpp
-        src/world/Cell.cpp
-        src/container/Coordinate.cpp
-        src/world/Object.cpp
-        src/world/Door.cpp
-        src/world/ServiceRobot.cpp
-        src/world/Sensor.cpp
-        src/world/Actuator.cpp
-        src/world/Manipulation.cpp
-        src/world/ObjectDetection.cpp
+  src/world/World.cpp
+  src/world/Cell.cpp
+  src/container/Coordinate.cpp
+  src/world/Object.cpp
+  src/world/Door.cpp
+  src/world/ServiceRobot.cpp
+  src/world/Sensor.cpp
+  src/world/Actuator.cpp
+  src/world/Manipulation.cpp
+  src/world/ObjectDetection.cpp
+  src/world/SpriteObjectType.cpp
+  src/world/ObjectState.cpp
+  src/world/Direction.cpp
+  src/world/TaskType.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_world

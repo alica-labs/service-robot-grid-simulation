@@ -1,6 +1,6 @@
 #include "srgsim/GUI.h"
 
-#include "srgsim/SRGEnums.h"
+#include "srgsim/world/TaskType.h"
 #include "srgsim/world/Cell.h"
 #include "srgsim/world/Door.h"
 #include "srgsim/world/Object.h"
@@ -25,36 +25,36 @@ GUI::GUI()
     this->texture->setRepeated(true);
     this->window = new sf::RenderWindow(sf::VideoMode(xResolution, yResolution), "Grid Simulator GUI");
     this->window->setActive(false);
-    for (int i = 0; i != static_cast<int>(Type::Last); i++) {
+    for (int i = 0; i != static_cast<int>(SpriteObjectType::Last); i++) {
         sf::Sprite sprite;
         sprite.setTexture(*this->texture);
-        Type type = static_cast<Type>(i);
+        SpriteObjectType type = static_cast<SpriteObjectType>(i);
         switch (type) {
-        case Type::Wall:
+        case SpriteObjectType::Wall:
             sprite.setTextureRect(sf::IntRect(textureSize * 2, 0, textureSize, textureSize));
             break;
-        case Type::DoorOpen:
+        case SpriteObjectType::DoorOpen:
             sprite.setTextureRect(sf::IntRect(textureSize * 3, 0, textureSize, textureSize));
             break;
-        case Type::DoorClosed:
+        case SpriteObjectType::DoorClosed:
             sprite.setTextureRect(sf::IntRect(textureSize * 3, textureSize, textureSize, textureSize));
             break;
-        case Type::Floor:
+        case SpriteObjectType::Floor:
             sprite.setTextureRect(sf::IntRect(textureSize * 2, textureSize, textureSize, textureSize));
             break;
-        case Type::Unknown:
+        case SpriteObjectType::Unknown:
             sprite.setTextureRect(sf::IntRect(textureSize, textureSize, textureSize, textureSize));
             break;
-        case Type::Robot:
+        case SpriteObjectType::Robot:
             sprite.setTextureRect(sf::IntRect(0, textureSize * 2, textureSize, textureSize));
             break;
-        case Type::CupBlue:
+        case SpriteObjectType::CupBlue:
             sprite.setTextureRect(sf::IntRect(textureSize, textureSize * 3, textureSize, textureSize));
             break;
-        case Type::CupRed:
+        case SpriteObjectType::CupRed:
             sprite.setTextureRect(sf::IntRect(0, textureSize * 3, textureSize, textureSize));
             break;
-        case Type::CupYellow:
+        case SpriteObjectType::CupYellow:
             sprite.setTextureRect(sf::IntRect(textureSize * 2, textureSize * 3, textureSize, textureSize));
             break;
         default:
@@ -93,11 +93,11 @@ void GUI::draw(World* world)
             for (Object *object : pair.second->getObjects()) {
                 sf::Sprite sprite;
                 switch (object->getType()) {
-                    case Type::Door:
+                    case SpriteObjectType::Door:
                         if (static_cast<class Door *>(object)->isOpen()) {
-                            sprite = getSprite(Type::DoorOpen);
+                            sprite = getSprite(SpriteObjectType::DoorOpen);
                         } else {
-                            sprite = getSprite(Type::DoorClosed);
+                            sprite = getSprite(SpriteObjectType::DoorClosed);
                         }
                         break;
                     default:
@@ -177,7 +177,7 @@ void GUI::calculateSpriteSize(const World* world)
     }
 }
 
-sf::Sprite GUI::getSprite(Type type)
+sf::Sprite GUI::getSprite(SpriteObjectType type)
 {
     return sprites[static_cast<int>(type)];
 }

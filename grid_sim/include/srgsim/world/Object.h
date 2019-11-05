@@ -1,6 +1,7 @@
 #pragma once
 
-#include "srgsim/SRGEnums.h"
+#include "srgsim/world/SpriteObjectType.h"
+#include "srgsim/world/ObjectState.h"
 
 #include <essentials/IdentifierConstPtr.h>
 #include <essentials/Identifier.h>
@@ -13,14 +14,14 @@ class Cell;
 class Object
 {
 public:
-    Object(Type type, essentials::IdentifierConstPtr id,  State state = State::Undefined);
+    Object(SpriteObjectType type, essentials::IdentifierConstPtr id, ObjectState state = ObjectState::Undefined);
     virtual ~Object();
 
     essentials::IdentifierConstPtr getID() const;
-    Type getType() const;
-    void setType(Type type);
-    State getState() const;
-    void setState(State state);
+    SpriteObjectType getType() const;
+    void setType(SpriteObjectType type);
+    ObjectState getState() const;
+    void setState(ObjectState state);
 
     Cell* getCell();
     void setCell(Cell* cell);
@@ -28,13 +29,13 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const srgsim::Object& obj)
     {
-        os << "ID: " << obj.id << " Type: " << static_cast<int>(obj.type) << " State: " << static_cast<int>(obj.state) << std::endl;
+        os << "ID: " << obj.id << " Type: " << obj.type << " State: " << obj.state << std::endl;
         return os;
     }
 protected:
     Cell* cell;
-    Type type;
-    State state;
+    SpriteObjectType type;
+    ObjectState state;
     essentials::IdentifierConstPtr id;
 };
 

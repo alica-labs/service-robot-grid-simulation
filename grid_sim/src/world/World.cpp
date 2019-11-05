@@ -24,7 +24,7 @@ World::World(std::string tmxMapFile)
     map->ParseFile(tmxMapFile);
     for (int x = 0; x < map->GetTileLayer(0)->GetWidth(); x++) {
         for (int y = 0; y < map->GetTileLayer(0)->GetHeight(); y++) {
-            this->addCell(x, y)->type = static_cast<Type>(map->GetTileLayer(0)->GetTile(x, y).id);
+            this->addCell(x, y)->type = static_cast<SpriteObjectType>(map->GetTileLayer(0)->GetTile(x, y).id);
         }
     }
 }
@@ -66,7 +66,7 @@ Cell* World::addCell(uint32_t x, uint32_t y)
         }
     }
     // Up
-    auto it = this->cellGrid.find(Coordinate(x, y + 1));
+    auto it = this->cellGrid.find(Coordinate(x, y - 1));
     if (it != this->cellGrid.end()) {
         cell->up = it->second;
         it->second->down = cell;
@@ -83,7 +83,7 @@ Cell* World::addCell(uint32_t x, uint32_t y)
     }
     // Down
     if (y > 0) {
-        auto it = this->cellGrid.find(Coordinate(x, y - 1));
+        auto it = this->cellGrid.find(Coordinate(x, y + 1));
         if (it != this->cellGrid.end()) {
             cell->down = it->second;
             it->second->up = cell;
@@ -179,7 +179,7 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     // create robot
-    Object* object = this->createOrUpdateObject(id, Type::Robot);
+    Object* object = this->createOrUpdateObject(id, SpriteObjectType::Robot);
     if (object->getCell()) {
         // robot is already placed, maybe it was spawned already...
         return false;
@@ -188,7 +188,7 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
     // search for cell with valid spawn coordinates
     srand(time(NULL));
     const Cell* cell = nullptr;
-    while (!cell || !isPlacementAllowed(cell, Type::Robot)) {
+    while (!cell || !isPlacementAllowed(cell, SpriteObjectType::Robot)) {
         cell = this->getCell(Coordinate(5, 5));
 //        cell = this->getCell(Coordinate(rand() % this->sizeX, rand() % this->sizeY));
     }
@@ -203,16 +203,16 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
     }
 }
 
-Object* World::createOrUpdateObject(essentials::IdentifierConstPtr id, Type type, State state)
+Object* World::createOrUpdateObject(essentials::IdentifierConstPtr id, SpriteObjectType type, ObjectState state)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     Object* object = editObject(id);
     if (!object) {
         switch (type) {
-        case Type::Robot:
+        case SpriteObjectType::Robot:
             object = new ServiceRobot(id);
             break;
-        case Type::Door:
+        case SpriteObjectType::Door:
             object = new class Door(id, state);
             break;
         default:
@@ -243,12 +243,18 @@ bool World::removeObject(srgsim::Object* object)
 void World::moveObject(essentials::IdentifierConstPtr id, Direction direction)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    std::cout << "World::moveObject(): ID: " << *id << " Direction: " << direction << std::endl;
     Object* object = editObject(id);
+    if (!object) {
+        return;
+    }
     Cell* goalCell = getNeighbourCell(direction, object);
     if (!goalCell) {
+        std::cerr << "World::moveObject(): Cell does not exist! " << std::endl;
         return;
     }
     if (!isPlacementAllowed(goalCell, object->getType())) {
+        std::cerr << "World::moveObject(): Placement not allowed on " << goalCell->coordinate << " of type " << object->getType() << std::endl;
         return;
     }
     object->getCell()->removeObject(object);
@@ -271,7 +277,7 @@ void World::openDoor(essentials::IdentifierConstPtr id)
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     class Door* door = dynamic_cast<class Door*>(editObject(id));
     if (door) {
-        door->setState(State::Open);
+        door->setState(ObjectState::Open);
     } else {
         std::cout << "World::openDoor(): No suitable door found with ID: " << *id << std::endl;
     }
@@ -282,7 +288,7 @@ void World::closeDoor(essentials::IdentifierConstPtr id)
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     class Door* door = dynamic_cast<class Door*>(editObject(id));
     if (door) {
-        door->setState(State::Closed);
+        door->setState(ObjectState::Closed);
     } else {
         std::cout << "World::closeDoor(): No suitable door found with ID: " << *id << std::endl;
     }
@@ -340,24 +346,28 @@ Cell* World::getNeighbourCell(const Direction& direction, Object* object)
         case Direction::Down:
         return object->getCell()->down;
     default:
-        std::cout << "World: Unknown Direction: " << static_cast<int>(direction) << "!" << std::endl;
+        std::cout << "World: Unknown Direction: " << direction << "!" << std::endl;
         return nullptr;
     }
 }
 
-bool World::isPlacementAllowed(const Cell* cell, Type objectType) const
+bool World::isPlacementAllowed(const Cell* cell, SpriteObjectType objectType) const
 {
-    switch (objectType) {
-    case Type::Robot:{
-        std::vector<Object*> objs = cell->getObjects();
-        for (unsigned int i = 0; i < objs.size(); ++i) {
-            if(objs[i]->getType() == Type::Door)
-                return objs[i]->getState() == State::Open;
+    if (cell->type == SpriteObjectType::Wall) {
+        return false;
+    }
+
+    for (Object* object : cell->getObjects()) {
+        if(object->getType() == SpriteObjectType::Door) {
+            if (objectType == SpriteObjectType::Robot) {
+                return object->getState() == ObjectState::Open;
+            } else {
+                return false;
+            }
         }
     }
-    default:
-        return !(cell->type == Type::DoorClosed || cell->type == Type::DoorOpen || cell->type == Type::Wall);
-    }
+
+    return true;
 }
 
 Object* World::editObject(essentials::IdentifierConstPtr id)

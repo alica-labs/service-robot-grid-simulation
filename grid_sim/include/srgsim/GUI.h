@@ -1,7 +1,7 @@
 #pragma once
 
 #include "srgsim/world/World.h"
-#include "srgsim/SRGEnums.h"
+#include "srgsim/world/TaskType.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -18,7 +18,7 @@ public:
     void draw(srgsim::World* world);
 
 private:
-    sf::Sprite getSprite(Type type);
+    sf::Sprite getSprite(SpriteObjectType type);
     void scaleSprite(const World* world);
 
     void handleSFMLEvents(const World* world);
@@ -31,7 +31,7 @@ private:
     float scaleFactor = 0;
     float scaledSpriteSize = 0;
 
-    sf::Sprite sprites[static_cast<int>(Type::Last)];
+    sf::Sprite sprites[static_cast<int>(SpriteObjectType::Last)];
     sf::Texture* texture;
     sf::RenderWindow* window;
 

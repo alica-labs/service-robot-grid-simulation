@@ -1,5 +1,5 @@
 #include "srgsim/world/ObjectDetection.h"
-#include "srgsim/SRGEnums.h"
+#include "srgsim/world/TaskType.h"
 #include "srgsim/containers/Coordinate.h"
 #include "srgsim/world/Cell.h"
 #include "srgsim/world/ServiceRobot.h"
@@ -29,7 +29,7 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
         int32_t xDelta = round(sin(currentDegree) * sightLimit);
         int32_t yDelta = round(cos(currentDegree) * sightLimit);
         Perception p;
-        p.type = Type::CupRed;
+        p.type = SpriteObjectType::CupRed;
         p.x = ownCoord.x + xDelta;
         p.y = ownCoord.y + yDelta;
         world->addMarker(p);
@@ -49,7 +49,7 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
 
         // for debug purpose
         Perception p;
-        p.type = Type::Unknown;
+        p.type = SpriteObjectType::Unknown;
         p.x = entry.second->coordinate.x;
         p.y = entry.second->coordinate.y;
         world->addMarker(p);
@@ -101,7 +101,7 @@ std::vector<const Cell*> ObjectDetection::collectCells(Coordinate start, Coordin
         }
 
         const Cell* cell = world->getCell(currentPoint);
-        if (!cell || cell->type != Type::Floor) {
+        if (!cell || cell->type != SpriteObjectType::Floor) {
             break;
         }
         cells.push_back(cell);

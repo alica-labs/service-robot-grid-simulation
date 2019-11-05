@@ -2,7 +2,7 @@
 
 #include "containers/SimCommand.h"
 
-#include "SRGEnums.h"
+#include "srgsim/world/TaskType.h"
 
 #include <essentials/IdentifierConstPtr.h>
 

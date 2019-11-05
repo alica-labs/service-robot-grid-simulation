@@ -3,7 +3,7 @@
 #include "srgsim/containers/Coordinate.h"
 #include "srgsim/containers/CellPerceptions.h"
 
-#include "srgsim/SRGEnums.h"
+#include "TaskType.h"
 
 #include <string>
 #include <vector>
@@ -26,7 +26,7 @@ public:
     void update(std::vector<Object*> objects);
     std::string toString() const;
 
-    Type type;
+    SpriteObjectType type;
     std::string room;
     Coordinate coordinate;
     Cell* up;

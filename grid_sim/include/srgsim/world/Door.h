@@ -7,7 +7,7 @@ namespace srgsim
 class Door : public Object
 {
 public:
-    Door(essentials::IdentifierConstPtr id, State state = State::Closed);
+    Door(essentials::IdentifierConstPtr id, ObjectState state = ObjectState::Closed);
     bool isOpen();
 };
 } // namespace srgsim

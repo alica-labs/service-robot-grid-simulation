@@ -2,7 +2,7 @@
 
 #include "srgsim/containers/Coordinate.h"
 
-#include "srgsim/SRGEnums.h"
+#include "srgsim/world/Direction.h"
 #include "srgsim/containers/SimPerceptions.h"
 
 #include <essentials/IdentifierConstPtr.h>
@@ -53,7 +53,7 @@ public:
     // objects
     const Object* getObject(essentials::IdentifierConstPtr id);
     Object* editObject(essentials::IdentifierConstPtr id);
-    Object* createOrUpdateObject(essentials::IdentifierConstPtr id, Type type, State state = State::Undefined);
+    Object* createOrUpdateObject(essentials::IdentifierConstPtr id, SpriteObjectType type, ObjectState state = ObjectState::Undefined);
     bool removeObject(Object* object);
     bool placeObject(Object* object, Coordinate coordinate);
     void moveObject(essentials::IdentifierConstPtr id, Direction direction);
@@ -68,7 +68,7 @@ public:
     void closeDoor(essentials::IdentifierConstPtr id);
 
 private:
-    bool isPlacementAllowed(const Cell* cell, Type objectType) const;
+    bool isPlacementAllowed(const Cell* cell, SpriteObjectType objectType) const;
     Cell* getNeighbourCell(const Direction& direction, Object* object);
 
 

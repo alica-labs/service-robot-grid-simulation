@@ -14,7 +14,7 @@ Cell::Cell(uint32_t x, uint32_t y)
     this->down = nullptr;
     this->left = nullptr;
     this->right = nullptr;
-    this->type = Type::Unknown;
+    this->type = SpriteObjectType::Unknown;
 }
 
 Cell::Cell(const srgsim::Cell& cell)
