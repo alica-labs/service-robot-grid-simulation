@@ -27,7 +27,7 @@ namespace srgsim{
         this->manipulation->manipulate(sc, world);
     }
 
-    Object *ServiceRobot::getCarriedObject() {
+    const Object *ServiceRobot::getCarriedObject() const {
         return this->manipulation->getCarriedObject();
     }
 }

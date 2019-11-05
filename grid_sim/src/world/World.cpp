@@ -130,7 +130,7 @@ bool World::placeObject(Object* object, Coordinate coordinate)
     return true;
 }
 
-const Object* World::getObject(essentials::IdentifierConstPtr id)
+const Object* World::getObject(essentials::IdentifierConstPtr id) const
 {
     auto objectEntry = this->objects.find(id);
     if (objectEntry != this->objects.end()) {
@@ -140,7 +140,27 @@ const Object* World::getObject(essentials::IdentifierConstPtr id)
     }
 }
 
-ServiceRobot* World::getRobot(essentials::IdentifierConstPtr id)
+Object* World::editObject(essentials::IdentifierConstPtr id)
+{
+    auto objectEntry = this->objects.find(id);
+    if (objectEntry != this->objects.end()) {
+        return objectEntry->second;
+    } else {
+        return nullptr;
+    }
+}
+
+const ServiceRobot* World::getRobot(essentials::IdentifierConstPtr id) const
+{
+    auto robotEntry = this->robots.find(id);
+    if (robotEntry != this->robots.end()) {
+        return robotEntry->second;
+    } else {
+        return nullptr;
+    }
+}
+
+ServiceRobot* World::editRobot(essentials::IdentifierConstPtr id)
 {
     auto robotEntry = this->robots.find(id);
     if (robotEntry != this->robots.end()) {
@@ -190,7 +210,7 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
     const Cell* cell = nullptr;
     while (!cell || !isPlacementAllowed(cell, SpriteObjectType::Robot)) {
         cell = this->getCell(Coordinate(5, 5));
-//        cell = this->getCell(Coordinate(rand() % this->sizeX, rand() % this->sizeY));
+        //        cell = this->getCell(Coordinate(rand() % this->sizeX, rand() % this->sizeY));
     }
 
     // place robot
@@ -310,7 +330,8 @@ std::recursive_mutex& World::getDataMutex()
     return this->dataMutex;
 }
 
-std::vector<Object*> World::updateCell(CellPerceptions cellPerceptions) {
+std::vector<Object*> World::updateCell(CellPerceptions cellPerceptions)
+{
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     std::vector<Object*> objects;
 
@@ -337,13 +358,13 @@ std::vector<Object*> World::updateCell(CellPerceptions cellPerceptions) {
 Cell* World::getNeighbourCell(const Direction& direction, Object* object)
 {
     switch (direction) {
-        case Direction::Left:
+    case Direction::Left:
         return object->getCell()->left;
-        case Direction::Up:
+    case Direction::Up:
         return object->getCell()->up;
-        case Direction::Right:
+    case Direction::Right:
         return object->getCell()->right;
-        case Direction::Down:
+    case Direction::Down:
         return object->getCell()->down;
     default:
         std::cout << "World: Unknown Direction: " << direction << "!" << std::endl;
@@ -358,7 +379,7 @@ bool World::isPlacementAllowed(const Cell* cell, SpriteObjectType objectType) co
     }
 
     for (Object* object : cell->getObjects()) {
-        if(object->getType() == SpriteObjectType::Door) {
+        if (object->getType() == SpriteObjectType::Door) {
             if (objectType == SpriteObjectType::Robot) {
                 return object->getState() == ObjectState::Open;
             } else {
@@ -368,16 +389,6 @@ bool World::isPlacementAllowed(const Cell* cell, SpriteObjectType objectType) co
     }
 
     return true;
-}
-
-Object* World::editObject(essentials::IdentifierConstPtr id)
-{
-    auto objectEntry = this->objects.find(id);
-    if (objectEntry != this->objects.end()) {
-        return objectEntry->second;
-    } else {
-        return nullptr;
-    }
 }
 
 } // namespace srgsim

@@ -14,7 +14,7 @@ namespace srgsim {
         SimPerceptions createSimPerceptions(World* world);
         void executeAction(SimCommand sc, World* world);
 
-        Object *getCarriedObject();
+        const Object *getCarriedObject() const;
 
     private:
         ObjectDetection* objectDetection;

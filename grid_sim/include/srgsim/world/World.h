@@ -51,7 +51,7 @@ public:
     std::vector<Object*> updateCell(srgsim::CellPerceptions cellPerceptions);
 
     // objects
-    const Object* getObject(essentials::IdentifierConstPtr id);
+    const Object* getObject(essentials::IdentifierConstPtr id) const;
     Object* editObject(essentials::IdentifierConstPtr id);
     Object* createOrUpdateObject(essentials::IdentifierConstPtr id, SpriteObjectType type, ObjectState state = ObjectState::Undefined);
     bool removeObject(Object* object);
@@ -60,7 +60,8 @@ public:
 
     // robots
     bool spawnRobot(essentials::IdentifierConstPtr id);
-    ServiceRobot* getRobot(essentials::IdentifierConstPtr id);
+    const ServiceRobot* getRobot(essentials::IdentifierConstPtr id) const;
+    ServiceRobot* editRobot(essentials::IdentifierConstPtr id);
     bool addRobot(ServiceRobot* robot);
 
     // other

@@ -14,7 +14,7 @@ bool ManipulationHandler::handle(SimCommand sc)
         case SimCommand::CLOSE:
         case SimCommand::PUTDOWN:
         case SimCommand::PICKUP: {
-            ServiceRobot *robot = this->world->getRobot(sc.senderID);
+            ServiceRobot *robot = this->world->editRobot(sc.senderID);
             if (robot) {
                 robot->executeAction(sc, this->world);
             }

@@ -108,7 +108,7 @@ void GUI::draw(World* world)
                 this->window->draw(sprite);
 
                 if (ServiceRobot *robot = dynamic_cast<ServiceRobot *>(object)) {
-                    if (Object *carriedObject = robot->getCarriedObject()) {
+                    if (const Object *carriedObject = robot->getCarriedObject()) {
                         sprite = getSprite(carriedObject->getType());
                         sprite.setPosition((robot->getCell()->coordinate.x * scaledSpriteSize) + scaledSpriteSize / 2,
                                            (robot->getCell()->coordinate.y * scaledSpriteSize) + scaledSpriteSize / 2);
