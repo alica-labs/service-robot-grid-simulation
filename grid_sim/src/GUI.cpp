@@ -134,6 +134,7 @@ void GUI::draw(World* world)
         }
         world->getMarkers().clear();
     }
+
     this->window->display();
 }
 

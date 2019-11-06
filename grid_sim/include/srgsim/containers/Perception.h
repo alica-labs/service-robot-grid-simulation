@@ -14,12 +14,13 @@ namespace srgsim
         SpriteObjectType type;
         ObjectState state;
         essentials::IdentifierConstPtr objectID;
+        essentials::IdentifierConstPtr robotID;
         uint32_t x;
         uint32_t y;
 
         friend std::ostream& operator<<(std::ostream& os, const srgsim::Perception& obj)
         {
-            os << "Perception - Type: " << static_cast<int>(obj.type) << " State: " << static_cast<int>(obj.state) << " ID: " << (*obj.objectID) << " At: (" << obj.x << ", " << obj.y << ")" << std::endl;
+            os << "Perception - Type: " << static_cast<int>(obj.type) << " State: " << static_cast<int>(obj.state) << " ID: " << (*obj.objectID) << " At: (" << obj.x << ", " << obj.y << ")" << " RobotID: " << (*obj.robotID) << std::endl;
             return os;
         }
     };

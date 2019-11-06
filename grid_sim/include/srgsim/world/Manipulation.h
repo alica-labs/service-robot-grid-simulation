@@ -15,7 +15,7 @@ namespace srgsim {
         bool manipulate(SimCommand sc, srgsim::World* world);
 
         Object *getCarriedObject();
-
+        friend World;
     private:
         bool open(essentials::IdentifierConstPtr objectID, srgsim::World* world);
         bool close(essentials::IdentifierConstPtr objectID, srgsim::World* world);

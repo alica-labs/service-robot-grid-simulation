@@ -38,7 +38,7 @@ add_executable(${PROJECT_NAME}
   src/commands/CommandHandler.cpp
   src/commands/MoveCommandHandler.cpp
   src/commands/ManipulationHandler.cpp
-        src/world/TaskType.cpp
+  src/world/TaskType.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

@@ -4,6 +4,7 @@
 #include "srgsim/world/Door.h"
 #include "srgsim/world/Object.h"
 #include "srgsim/world/ServiceRobot.h"
+#include "srgsim/world/Manipulation.h"
 
 #include <FileSystem.h>
 #include <Tmx.h>
@@ -223,7 +224,7 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
     }
 }
 
-Object* World::createOrUpdateObject(essentials::IdentifierConstPtr id, SpriteObjectType type, ObjectState state)
+Object* World::createOrUpdateObject(essentials::IdentifierConstPtr id, SpriteObjectType type, ObjectState state, essentials::IdentifierConstPtr robotID)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     Object* object = editObject(id);
@@ -240,11 +241,20 @@ Object* World::createOrUpdateObject(essentials::IdentifierConstPtr id, SpriteObj
         }
         std::cout << "World::createOrUpdateObject(): Created " << *object;
         this->objects.emplace(object->getID(), object);
-        return object;
     }
 
     object->setType(type);
     object->setState(state);
+    // dirty hack, I know! :P
+    // TODO: Adapt messages from simulator and allow to set object accordingly
+    if (state == ObjectState::Carried) {
+        if (ServiceRobot* robot = this->editRobot(robotID)) {
+            std::cout << "World::createOrUpdateObject(): Robot " << robotID << " carries " << type << std::endl;
+            robot->manipulation->carriedObject = object;
+        } else {
+            std::cout << "World::createOrUpdateObject(): Robot unknown! " << robotID << std::endl;
+        }
+    }
     return object;
 }
 
@@ -344,7 +354,7 @@ std::vector<Object*> World::updateCell(CellPerceptions cellPerceptions)
 
     // update objects itself
     for (srgsim::Perception perception : cellPerceptions.perceptions) {
-        objects.push_back(this->createOrUpdateObject(perception.objectID, perception.type, perception.state));
+        objects.push_back(this->createOrUpdateObject(perception.objectID, perception.type, perception.state, perception.robotID));
     }
 
     // update association with cell

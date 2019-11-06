@@ -16,6 +16,7 @@ namespace srgsim {
 
         const Object *getCarriedObject() const;
 
+        friend World;
     private:
         ObjectDetection* objectDetection;
         Manipulation* manipulation;

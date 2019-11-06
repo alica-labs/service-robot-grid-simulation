@@ -66,6 +66,19 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
             p.x = cellPerceptions.x;
             p.y = cellPerceptions.y;
             cellPerceptions.perceptions.push_back(p);
+            if (ServiceRobot* robot = dynamic_cast<ServiceRobot*>(object)) {
+                const Object* carriedObject = robot->getCarriedObject();
+                if (carriedObject) {
+                    Perception carryPercept;
+                    carryPercept.objectID = carriedObject->getID();
+                    carryPercept.state = ObjectState::Carried;
+
+                    carryPercept.type = carriedObject->getType();
+                    carryPercept.x = cellPerceptions.x;
+                    carryPercept.y = cellPerceptions.y;
+                    cellPerceptions.perceptions.push_back(carryPercept);
+                }
+            }
         }
         cellPerceptionsList.push_back(cellPerceptions);
     }

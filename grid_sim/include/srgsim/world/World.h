@@ -53,7 +53,7 @@ public:
     // objects
     const Object* getObject(essentials::IdentifierConstPtr id) const;
     Object* editObject(essentials::IdentifierConstPtr id);
-    Object* createOrUpdateObject(essentials::IdentifierConstPtr id, SpriteObjectType type, ObjectState state = ObjectState::Undefined);
+    Object* createOrUpdateObject(essentials::IdentifierConstPtr id, SpriteObjectType type, ObjectState state = ObjectState::Undefined, essentials::IdentifierConstPtr robotID = nullptr);
     bool removeObject(Object* object);
     bool placeObject(Object* object, Coordinate coordinate);
     void moveObject(essentials::IdentifierConstPtr id, Direction direction);

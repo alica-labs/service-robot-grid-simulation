@@ -8,6 +8,7 @@ enum class ObjectState
 {
     Open,
     Closed,
+    Carried,
     Undefined
 };
 

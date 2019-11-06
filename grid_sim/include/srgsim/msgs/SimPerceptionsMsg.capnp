@@ -17,8 +17,9 @@ struct SimPerceptionsMsg {
       type @0: Type;
       state @1: State;
       objectID @2 :IDMsg.ID;
-      x @3: UInt32;
-      y @4: UInt32;
+      robotID @3 :IDMsg.ID;
+      x @4: UInt32;
+      y @5: UInt32;
 
     enum Type {
       door @0;
@@ -31,7 +32,8 @@ struct SimPerceptionsMsg {
     enum State {
       open @0;
       closed @1;
-      undefined @2;
+      carried @2;
+      undefined @3;
     }
   }
 }

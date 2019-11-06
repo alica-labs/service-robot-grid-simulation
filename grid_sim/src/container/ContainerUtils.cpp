@@ -117,6 +117,8 @@ SimPerceptions ContainerUtils::toSimPerceptions(::capnp::FlatArrayMessageReader&
             srgsim::Perception perception;
             perception.objectID = idManager->getIDFromBytes(perceptionMsg.getObjectID().getValue().asBytes().begin(),
                     perceptionMsg.getObjectID().getValue().size(), perceptionMsg.getObjectID().getType());
+            perception.robotID = idManager->getIDFromBytes(perceptionMsg.getRobotID().getValue().asBytes().begin(),
+                    perceptionMsg.getRobotID().getValue().size(), perceptionMsg.getRobotID().getType());
             perception.x = perceptionMsg.getX();
             perception.y = perceptionMsg.getY();
             switch (perceptionMsg.getType()) {
@@ -146,6 +148,9 @@ SimPerceptions ContainerUtils::toSimPerceptions(::capnp::FlatArrayMessageReader&
             case srgsim::SimPerceptionsMsg::Perception::State::CLOSED:
                 perception.state = ObjectState::Closed;
                 break;
+            case srgsim::SimPerceptionsMsg::Perception::State::CARRIED:
+                perception.state = ObjectState::Carried;
+                break;
             case srgsim::SimPerceptionsMsg::Perception::State::UNDEFINED:
                 perception.state = ObjectState::Undefined;
                 break;
@@ -174,7 +179,8 @@ void ContainerUtils::toMsg(srgsim::SimPerceptions sp, ::capnp::MallocMessageBuil
         cpBuilder.setX(sp.cellPerceptions[i].x);
         cpBuilder.setY(sp.cellPerceptions[i].y);
 
-        ::capnp::List<::srgsim::SimPerceptionsMsg::Perception>::Builder perceptionsBuilder = cpBuilder.initPerceptions(sp.cellPerceptions[i].perceptions.size());
+        ::capnp::List<::srgsim::SimPerceptionsMsg::Perception>::Builder perceptionsBuilder =
+                cpBuilder.initPerceptions(sp.cellPerceptions[i].perceptions.size());
         for (unsigned int j = 0; j < sp.cellPerceptions[i].perceptions.size(); j++) {
             srgsim::SimPerceptionsMsg::Perception::Builder pBuilder = perceptionsBuilder[j];
             pBuilder.setY(sp.cellPerceptions[i].perceptions[j].y);
@@ -196,7 +202,8 @@ void ContainerUtils::toMsg(srgsim::SimPerceptions sp, ::capnp::MallocMessageBuil
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::DOOR);
                 break;
             default:
-                std::cerr << "srgsim::ContainterUtils::toMsg(): Unknown object type perceived: " << static_cast<int>(sp.cellPerceptions[i].perceptions[j].type) << "!" << std::endl;
+                std::cerr << "srgsim::ContainterUtils::toMsg(): Unknown object type perceived: " << static_cast<int>(sp.cellPerceptions[i].perceptions[j].type)
+                          << "!" << std::endl;
                 break;
             }
             switch (sp.cellPerceptions[i].perceptions[j].state) {
@@ -206,16 +213,28 @@ void ContainerUtils::toMsg(srgsim::SimPerceptions sp, ::capnp::MallocMessageBuil
             case ObjectState::Closed:
                 pBuilder.setState(srgsim::SimPerceptionsMsg::Perception::State::CLOSED);
                 break;
+            case ObjectState::Carried:
+                pBuilder.setState(srgsim::SimPerceptionsMsg::Perception::State::CARRIED);
+                break;
             case ObjectState::Undefined:
                 pBuilder.setState(srgsim::SimPerceptionsMsg::Perception::State::UNDEFINED);
                 break;
             default:
-                std::cerr << "srgsim::ContainterUtils::toMsg(): Unknown object state perceived: " << static_cast<int>(sp.cellPerceptions[i].perceptions[j].state) << "!" << std::endl;
+                std::cerr << "srgsim::ContainterUtils::toMsg(): Unknown object state perceived: "
+                          << static_cast<int>(sp.cellPerceptions[i].perceptions[j].state) << "!" << std::endl;
                 break;
             }
             capnzero::ID::Builder objectID = pBuilder.initObjectID();
             objectID.setType(sp.cellPerceptions[i].perceptions[j].objectID->getType());
-            objectID.setValue(::capnp::Data::Reader(sp.cellPerceptions[i].perceptions[j].objectID->getRaw(), sp.cellPerceptions[i].perceptions[j].objectID->getSize()));
+            objectID.setValue(
+                    ::capnp::Data::Reader(sp.cellPerceptions[i].perceptions[j].objectID->getRaw(), sp.cellPerceptions[i].perceptions[j].objectID->getSize()));
+            capnzero::ID::Builder robotID = pBuilder.initRobotID();
+            if (sp.cellPerceptions[i].perceptions[j].robotID) {
+                robotID.setType(sp.cellPerceptions[i].perceptions[j].robotID->getType());
+                robotID.setValue(
+                        ::capnp::Data::Reader(sp.cellPerceptions[i].perceptions[j].robotID->getRaw(),
+                                              sp.cellPerceptions[i].perceptions[j].robotID->getSize()));
+            }
         }
     }
 }
