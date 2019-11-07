@@ -48,11 +48,11 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
     for (auto& entry : cellsInVision) {
 
         // for debug purpose
-        Perception p;
-        p.type = SpriteObjectType::Unknown;
-        p.x = entry.second->coordinate.x;
-        p.y = entry.second->coordinate.y;
-        world->addMarker(p);
+//        Perception p;
+//        p.type = SpriteObjectType::Unknown;
+//        p.x = entry.second->coordinate.x;
+//        p.y = entry.second->coordinate.y;
+//        world->addMarker(p);
 
         const std::vector<Object*>& objects = entry.second->getObjects();
         CellPerceptions cellPerceptions;

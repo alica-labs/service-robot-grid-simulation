@@ -229,7 +229,7 @@ void ContainerUtils::toMsg(srgsim::SimPerceptions sp, ::capnp::MallocMessageBuil
             objectID.setValue(
                     ::capnp::Data::Reader(sp.cellPerceptions[i].perceptions[j].objectID->getRaw(), sp.cellPerceptions[i].perceptions[j].objectID->getSize()));
             capnzero::ID::Builder robotID = pBuilder.initRobotID();
-            if (sp.cellPerceptions[i].perceptions[j].robotID) {
+            if (sp.cellPerceptions[i].perceptions[j].robotID.get()) {
                 robotID.setType(sp.cellPerceptions[i].perceptions[j].robotID->getType());
                 robotID.setValue(
                         ::capnp::Data::Reader(sp.cellPerceptions[i].perceptions[j].robotID->getRaw(),

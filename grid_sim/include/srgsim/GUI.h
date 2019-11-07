@@ -4,6 +4,7 @@
 #include "srgsim/world/TaskType.h"
 
 #include <SFML/Graphics.hpp>
+#include <SystemConfig.h>
 
 #include <string>
 #include <unordered_map>
@@ -18,6 +19,8 @@ public:
     void draw(srgsim::World* world);
 
 private:
+    void readWindowConfig();
+    void storeWindowConfig();
     sf::Sprite getSprite(SpriteObjectType type);
     void scaleSprite(const World* world);
 
@@ -25,8 +28,10 @@ private:
     void calculateScale();
     void calculateSpriteSize(const World* world);
 
-    uint32_t xResolution = 800;
-    uint32_t yResolution = 800;
+    essentials::Configuration* windowConfig;
+    static const std::string configFolder;
+    static const std::string windowConfigFile;
+
     uint32_t textureSize = 60;
     float scaleFactor = 0;
     float scaledSpriteSize = 0;

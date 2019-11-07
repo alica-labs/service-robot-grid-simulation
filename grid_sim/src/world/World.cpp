@@ -354,6 +354,7 @@ std::vector<Object*> World::updateCell(CellPerceptions cellPerceptions)
 
     // update objects itself
     for (srgsim::Perception perception : cellPerceptions.perceptions) {
+        std::cout << "World::updateCell(): " << perception << std::endl;
         objects.push_back(this->createOrUpdateObject(perception.objectID, perception.type, perception.state, perception.robotID));
     }
 

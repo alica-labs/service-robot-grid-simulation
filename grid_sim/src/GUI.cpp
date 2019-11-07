@@ -1,10 +1,10 @@
 #include "srgsim/GUI.h"
 
-#include "srgsim/world/TaskType.h"
 #include "srgsim/world/Cell.h"
 #include "srgsim/world/Door.h"
 #include "srgsim/world/Object.h"
 #include "srgsim/world/ServiceRobot.h"
+#include "srgsim/world/TaskType.h"
 
 #include <FileSystem.h>
 #include <iostream>
@@ -13,8 +13,11 @@
 
 namespace srgsim
 {
+const std::string GUI::configFolder = ".grid_sim";
+const std::string GUI::windowConfigFile = "Window.conf";
 GUI::GUI()
 {
+    this->readWindowConfig();
     std::string textureFile = essentials::FileSystem::getSelfPath() + "/textures/textures.png";
     std::cout << "[GUI] Info: loading textureFile '" << textureFile << "'" << std::endl;
     this->texture = new sf::Texture();
@@ -23,7 +26,11 @@ GUI::GUI()
     }
     this->texture->setSmooth(true);
     this->texture->setRepeated(true);
-    this->window = new sf::RenderWindow(sf::VideoMode(xResolution, yResolution), "Grid Simulator GUI");
+    this->window = new sf::RenderWindow(
+            sf::VideoMode(this->windowConfig->tryGet<uint32_t>(800, "xSize", NULL), this->windowConfig->tryGet<uint32_t>(800, "ySize", NULL)),
+            "Grid Simulator GUI");
+    this->window->setPosition(
+            sf::Vector2i(this->windowConfig->tryGet<uint32_t>(20, "xPosition", NULL), this->windowConfig->tryGet<uint32_t>(20, "yPosition", NULL)));
     this->window->setActive(false);
     for (int i = 0; i != static_cast<int>(SpriteObjectType::Last); i++) {
         sf::Sprite sprite;
@@ -67,8 +74,42 @@ GUI::GUI()
 
 GUI::~GUI()
 {
+    this->storeWindowConfig();
+    delete this->windowConfig;
     delete this->window;
     delete this->texture;
+}
+
+void GUI::storeWindowConfig()
+{
+    auto pos = this->window->getPosition();
+    this->windowConfig->setCreateIfNotExistent<uint32_t>(pos.x, "xPosition", NULL);
+    this->windowConfig->setCreateIfNotExistent<uint32_t>(pos.y, "yPosition", NULL);
+    auto size = this->window->getSize();
+    this->windowConfig->setCreateIfNotExistent<uint32_t>(size.x, "xSize", NULL);
+    this->windowConfig->setCreateIfNotExistent<uint32_t>(size.y, "ySize", NULL);
+    this->windowConfig->store();
+}
+
+void GUI::readWindowConfig()
+{
+    char* homeFolder;
+    homeFolder = getenv("HOME");
+    if (homeFolder == NULL) {
+        std::cerr << "[GUI] Unable to read the environment variable $HOME!" << std::endl;
+        return;
+    }
+    std::string absoluteConfigFolder = essentials::FileSystem::combinePaths(std::string(homeFolder), srgsim::GUI::configFolder);
+    if (!essentials::FileSystem::pathExists(absoluteConfigFolder)) {
+        essentials::FileSystem::createDirectory(absoluteConfigFolder, 755);
+    }
+
+    std::string absoluteWindowConfigFile = essentials::FileSystem::combinePaths(absoluteConfigFolder, srgsim::GUI::windowConfigFile);
+    if (!essentials::FileSystem::pathExists(absoluteWindowConfigFile)) {
+        this->windowConfig = new essentials::Configuration(absoluteWindowConfigFile, "");
+    } else {
+        this->windowConfig = new essentials::Configuration(absoluteWindowConfigFile);
+    }
 }
 
 void GUI::draw(World* world)
@@ -82,36 +123,34 @@ void GUI::draw(World* world)
     {
         std::recursive_mutex& dataMutex = world->getDataMutex();
         std::lock_guard<std::recursive_mutex> guard(dataMutex);
-        for (auto &pair : world->getGrid()) {
+        for (auto& pair : world->getGrid()) {
             // background sprite
             sf::Sprite sprite = getSprite(pair.second->type);
-            sprite.setPosition(pair.second->coordinate.x * scaledSpriteSize,
-                               pair.second->coordinate.y * scaledSpriteSize);
+            sprite.setPosition(pair.second->coordinate.x * scaledSpriteSize, pair.second->coordinate.y * scaledSpriteSize);
             this->window->draw(sprite);
 
             // object sprites
-            for (Object *object : pair.second->getObjects()) {
+            for (Object* object : pair.second->getObjects()) {
                 sf::Sprite sprite;
                 switch (object->getType()) {
-                    case SpriteObjectType::Door:
-                        if (static_cast<class Door *>(object)->isOpen()) {
-                            sprite = getSprite(SpriteObjectType::DoorOpen);
-                        } else {
-                            sprite = getSprite(SpriteObjectType::DoorClosed);
-                        }
-                        break;
-                    default:
-                        sprite = getSprite(object->getType());
+                case SpriteObjectType::Door:
+                    if (static_cast<class Door*>(object)->isOpen()) {
+                        sprite = getSprite(SpriteObjectType::DoorOpen);
+                    } else {
+                        sprite = getSprite(SpriteObjectType::DoorClosed);
+                    }
+                    break;
+                default:
+                    sprite = getSprite(object->getType());
                 }
-                sprite.setPosition(object->getCell()->coordinate.x * scaledSpriteSize,
-                                   object->getCell()->coordinate.y * scaledSpriteSize);
+                sprite.setPosition(object->getCell()->coordinate.x * scaledSpriteSize, object->getCell()->coordinate.y * scaledSpriteSize);
                 this->window->draw(sprite);
 
-                if (ServiceRobot *robot = dynamic_cast<ServiceRobot *>(object)) {
-                    if (const Object *carriedObject = robot->getCarriedObject()) {
+                if (ServiceRobot* robot = dynamic_cast<ServiceRobot*>(object)) {
+                    if (const Object* carriedObject = robot->getCarriedObject()) {
                         sprite = getSprite(carriedObject->getType());
                         sprite.setPosition((robot->getCell()->coordinate.x * scaledSpriteSize) + scaledSpriteSize / 2,
-                                           (robot->getCell()->coordinate.y * scaledSpriteSize) + scaledSpriteSize / 2);
+                                (robot->getCell()->coordinate.y * scaledSpriteSize) + scaledSpriteSize / 2);
                         sprite.setScale(0.25, 0.25);
                         this->window->draw(sprite);
                     }
@@ -127,8 +166,7 @@ void GUI::draw(World* world)
         for (Perception perception : world->getMarkers()) {
             sf::Sprite sprite;
             sprite = getSprite(perception.type);
-            sprite.setPosition((perception.x * scaledSpriteSize) + scaledSpriteSize / 4,
-                               (perception.y * scaledSpriteSize) + scaledSpriteSize / 4);
+            sprite.setPosition((perception.x * scaledSpriteSize) + scaledSpriteSize / 4, (perception.y * scaledSpriteSize) + scaledSpriteSize / 4);
             sprite.setScale(0.25, 0.25);
             this->window->draw(sprite);
         }
