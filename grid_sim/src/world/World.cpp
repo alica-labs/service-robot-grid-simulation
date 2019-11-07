@@ -2,9 +2,9 @@
 
 #include "srgsim/world/Cell.h"
 #include "srgsim/world/Door.h"
+#include "srgsim/world/Manipulation.h"
 #include "srgsim/world/Object.h"
 #include "srgsim/world/ServiceRobot.h"
-#include "srgsim/world/Manipulation.h"
 
 #include <FileSystem.h>
 #include <Tmx.h>
@@ -56,54 +56,39 @@ Cell* World::addCell(uint32_t x, uint32_t y)
     }
 
     Cell* cell = new Cell(x, y);
-    bool attached = false;
     // Left
-    if (x > 0) {
-        auto it = this->cellGrid.find(Coordinate(x - 1, y));
-        if (it != this->cellGrid.end()) {
-            cell->left = it->second;
-            it->second->right = cell;
-            attached = true;
-        }
+    auto it = this->cellGrid.find(Coordinate(x - 1, y));
+    if (it != this->cellGrid.end()) {
+        cell->left = it->second;
+        it->second->right = cell;
     }
     // Up
-    auto it = this->cellGrid.find(Coordinate(x, y - 1));
+    it = this->cellGrid.find(Coordinate(x, y - 1));
     if (it != this->cellGrid.end()) {
         cell->up = it->second;
         it->second->down = cell;
-        attached = true;
     }
     // Right
-    if (x > 0) {
-        auto it = this->cellGrid.find(Coordinate(x + 1, y));
-        if (it != this->cellGrid.end()) {
-            cell->right = it->second;
-            it->second->left = cell;
-            attached = true;
-        }
+    it = this->cellGrid.find(Coordinate(x + 1, y));
+    if (it != this->cellGrid.end()) {
+        cell->right = it->second;
+        it->second->left = cell;
     }
     // Down
-    if (y > 0) {
-        auto it = this->cellGrid.find(Coordinate(x, y + 1));
-        if (it != this->cellGrid.end()) {
-            cell->down = it->second;
-            it->second->up = cell;
-            attached = true;
-        }
+    it = this->cellGrid.find(Coordinate(x, y + 1));
+    if (it != this->cellGrid.end()) {
+        cell->down = it->second;
+        it->second->up = cell;
     }
-    if (attached) {
-        this->cellGrid.emplace(Coordinate(x, y), cell);
-        if (x + 1 > this->sizeX) {
-            this->sizeX = x + 1;
-        }
-        if (y + 1 > this->sizeY) {
-            this->sizeY = y + 1;
-        }
-        return cell;
-    } else {
-        delete cell;
-        return nullptr;
+
+    this->cellGrid.emplace(Coordinate(x, y), cell);
+    if (x + 1 > this->sizeX) {
+        this->sizeX = x + 1;
     }
+    if (y + 1 > this->sizeY) {
+        this->sizeY = y + 1;
+    }
+    return cell;
 }
 
 const Cell* World::getCell(Coordinate coordinate) const
@@ -249,10 +234,10 @@ Object* World::createOrUpdateObject(essentials::IdentifierConstPtr id, SpriteObj
     // TODO: Adapt messages from simulator and allow to set object accordingly
     if (state == ObjectState::Carried) {
         if (ServiceRobot* robot = this->editRobot(robotID)) {
-//            std::cout << "World::createOrUpdateObject(): Robot " << robotID << " carries " << type << std::endl;
+            //            std::cout << "World::createOrUpdateObject(): Robot " << robotID << " carries " << type << std::endl;
             robot->manipulation->carriedObject = object;
         } else {
-//            std::cout << "World::createOrUpdateObject(): Robot unknown! " << robotID << std::endl;
+            //            std::cout << "World::createOrUpdateObject(): Robot unknown! " << robotID << std::endl;
         }
     }
     return object;
@@ -354,7 +339,7 @@ std::vector<Object*> World::updateCell(CellPerceptions cellPerceptions)
 
     // update objects itself
     for (srgsim::Perception perception : cellPerceptions.perceptions) {
-//        std::cout << "World::updateCell(): " << perception << std::endl;
+        //        std::cout << "World::updateCell(): " << perception << std::endl;
         objects.push_back(this->createOrUpdateObject(perception.objectID, perception.type, perception.state, perception.robotID));
     }
 
