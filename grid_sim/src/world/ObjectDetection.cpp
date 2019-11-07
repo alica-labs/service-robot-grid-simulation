@@ -99,24 +99,31 @@ std::vector<const Cell*> ObjectDetection::collectCells(Coordinate start, Coordin
     Coordinate currentPoint(start.x, start.y);
     Coordinate pointStepX(start.x, start.y);
     Coordinate pointStepY(start.x, start.y);
-    while(true) {
-        if (currentPoint == end){
-            break;
-        }
+    while(currentPoint != end) {
+        // set next point
         pointStepX = Coordinate(currentPoint.x+sign_x,currentPoint.y);
         pointStepY = Coordinate(currentPoint.x,currentPoint.y+sign_y);
         double distanceStepX = geometry::distancePointToLineSegmentCalc(pointStepX.x, pointStepX.y, start.x, start.y, end.x, end.y);
         double distanceStepY = geometry::distancePointToLineSegmentCalc(pointStepY.x, pointStepY.y, start.x, start.y, end.x, end.y);
-
-//        std::cout << "CurrentPoint: " << currentPoint << " StepX: " << pointStepX << " StepY: " << pointStepY << " DistX: " << distanceStepX << " DistY: " << distanceStepY << std::endl;
         if (distanceStepX < distanceStepY) {
             currentPoint = pointStepX;
         } else {
             currentPoint = pointStepY;
         }
 
+        // check if sight is blocked in this cell
         const Cell* cell = world->getCell(currentPoint);
         if (!cell || cell->type != SpriteObjectType::Floor) {
+            break;
+        }
+        bool sightBlocked = false;
+        for (auto object : cell->getObjects()) {
+            if (object->getType() == srgsim::SpriteObjectType::Door && object->getState() == srgsim::ObjectState::Closed) {
+                sightBlocked = true;
+                break;
+            }
+        }
+        if (sightBlocked) {
             break;
         }
         cells.push_back(cell);

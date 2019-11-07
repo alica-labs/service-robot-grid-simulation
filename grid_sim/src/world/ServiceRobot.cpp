@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream& os, const srgsim::ServiceRobot& obj)
     Object* carriedObj = obj.manipulation->getCarriedObject();
     if (carriedObj) {
         os << "ID: " << obj.id << " Type: " << obj.type << " State: " << obj.state << " Carrying: "
-           << carriedObj << std::endl;
+           << *carriedObj << std::endl;
     } else {
         os << "ID: " << obj.id << " Type: " << obj.type << " State: " << obj.state << " doesnt carry anything! " << std::endl;
     }

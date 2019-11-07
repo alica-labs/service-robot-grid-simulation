@@ -23,7 +23,8 @@ public:
     ObjectState getState() const;
     void setState(ObjectState state);
 
-    Cell* getCell();
+    const Cell* getCell() const;
+    Cell* editCell();
     void setCell(Cell* cell);
     void deleteCell();
 

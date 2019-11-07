@@ -287,7 +287,7 @@ void World::moveObject(essentials::IdentifierConstPtr id, Direction direction)
         std::cerr << "World::moveObject(): Placement not allowed on " << goalCell->coordinate << " of type " << object->getType() << std::endl;
         return;
     }
-    object->getCell()->removeObject(object);
+    object->editCell()->removeObject(object);
     goalCell->addObject(object);
 }
 

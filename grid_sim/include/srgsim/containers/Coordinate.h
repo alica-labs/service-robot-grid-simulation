@@ -16,6 +16,8 @@ public:
     int32_t x;
     int32_t y;
 
+    Coordinate abs();
+
     friend std::ostream& operator<<(std::ostream& os, const srgsim::Coordinate& obj)
     {
         os << "(" << obj.x << ", " << obj.y << ")";

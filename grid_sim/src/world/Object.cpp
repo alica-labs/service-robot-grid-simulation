@@ -26,7 +26,12 @@ void Object::setCell(Cell* cell)
     this->cell->addObject(this);
 }
 
-Cell* Object::getCell()
+const Cell* Object::getCell() const
+{
+    return this->cell;
+}
+
+Cell* Object::editCell()
 {
     return this->cell;
 }
