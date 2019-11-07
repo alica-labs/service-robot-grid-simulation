@@ -249,10 +249,10 @@ Object* World::createOrUpdateObject(essentials::IdentifierConstPtr id, SpriteObj
     // TODO: Adapt messages from simulator and allow to set object accordingly
     if (state == ObjectState::Carried) {
         if (ServiceRobot* robot = this->editRobot(robotID)) {
-            std::cout << "World::createOrUpdateObject(): Robot " << robotID << " carries " << type << std::endl;
+//            std::cout << "World::createOrUpdateObject(): Robot " << robotID << " carries " << type << std::endl;
             robot->manipulation->carriedObject = object;
         } else {
-            std::cout << "World::createOrUpdateObject(): Robot unknown! " << robotID << std::endl;
+//            std::cout << "World::createOrUpdateObject(): Robot unknown! " << robotID << std::endl;
         }
     }
     return object;
@@ -354,7 +354,7 @@ std::vector<Object*> World::updateCell(CellPerceptions cellPerceptions)
 
     // update objects itself
     for (srgsim::Perception perception : cellPerceptions.perceptions) {
-        std::cout << "World::updateCell(): " << perception << std::endl;
+//        std::cout << "World::updateCell(): " << perception << std::endl;
         objects.push_back(this->createOrUpdateObject(perception.objectID, perception.type, perception.state, perception.robotID));
     }
 

@@ -15,6 +15,7 @@ namespace srgsim {
         void executeAction(SimCommand sc, World* world);
 
         const Object *getCarriedObject() const;
+        friend std::ostream& operator<<(std::ostream& os, const srgsim::ServiceRobot& obj);
 
         friend World;
     private:

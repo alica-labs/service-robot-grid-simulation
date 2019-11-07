@@ -28,11 +28,12 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
     for (double currentDegree = -M_PI; currentDegree < M_PI; currentDegree += M_PI / 90) { // PI/90 <=> 2 degree resolution
         int32_t xDelta = round(sin(currentDegree) * sightLimit);
         int32_t yDelta = round(cos(currentDegree) * sightLimit);
-        Perception p;
-        p.type = SpriteObjectType::CupRed;
-        p.x = ownCoord.x + xDelta;
-        p.y = ownCoord.y + yDelta;
-        world->addMarker(p);
+        // for debug purpose
+//        Perception p;
+//        p.type = SpriteObjectType::CupRed;
+//        p.x = ownCoord.x + xDelta;
+//        p.y = ownCoord.y + yDelta;
+//        world->addMarker(p);
 
         std::vector<const Cell*> currentCells = this->collectCells(ownCoord, Coordinate(ownCoord.x + xDelta, ownCoord.y + yDelta), world);
         for (const Cell* cell : currentCells) {
@@ -72,10 +73,11 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
                     Perception carryPercept;
                     carryPercept.objectID = carriedObject->getID();
                     carryPercept.state = ObjectState::Carried;
-
                     carryPercept.type = carriedObject->getType();
                     carryPercept.x = cellPerceptions.x;
                     carryPercept.y = cellPerceptions.y;
+                    carryPercept.robotID = robot->getID();
+//                    std::cout << "[ObjectDetection] Perceiving carried object " << carryPercept << std::endl;
                     cellPerceptions.perceptions.push_back(carryPercept);
                 }
             }
