@@ -33,7 +33,7 @@ Simulator::Simulator(bool headless)
 {
 
 
-    this->world = new World();
+    this->world = new World(this->idManager);
     this->placeObjectsFromConf();
 //    ObjectDetection od (nullptr);
 //    od.collectCells(Coordinate(5,26), Coordinate(-5,29), world);
@@ -52,21 +52,21 @@ void Simulator::placeObjectsFromConf()
         int32_t intObjectID = std::stoi(objectSection);
         essentials::IdentifierConstPtr id = essentials::IdentifierConstPtr(this->idManager->getID<int32_t>(intObjectID));
         std::string stringObjectType = (*sc)["Objects"]->get<std::string>("Objects", objectSection.c_str(), "type", NULL);
-        SpriteObjectType type;
+        ObjectType type;
         if (stringObjectType.compare("cup_blue") == 0) {
-            type = SpriteObjectType::CupBlue;
+            type = ObjectType::CupBlue;
         } else if (stringObjectType.compare("cup_red") == 0) {
-            type = SpriteObjectType::CupRed;
+            type = ObjectType::CupRed;
         } else if (stringObjectType.compare("cup_yellow") == 0) {
-            type = SpriteObjectType::CupYellow;
+            type = ObjectType::CupYellow;
         } else if (stringObjectType.compare("door") == 0) {
-            type = SpriteObjectType::Door;
+            type = ObjectType::Door;
         } else {
             continue;
         }
 
         Object* object;
-        if (type == SpriteObjectType::Door) {
+        if (type == ObjectType::Door) {
             if ((*sc)["Objects"]->get<bool>("Objects", objectSection.c_str(), "open", NULL)) {
                 object = this->world->createOrUpdateObject(id, type, ObjectState::Open);
             } else {

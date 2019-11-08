@@ -113,12 +113,12 @@ std::vector<const Cell*> ObjectDetection::collectCells(Coordinate start, Coordin
 
         // check if sight is blocked in this cell
         const Cell* cell = world->getCell(currentPoint);
-        if (!cell || cell->type != SpriteObjectType::Floor) {
+        if (!cell || cell->getType() != RoomType::Floor) {
             break;
         }
         bool sightBlocked = false;
         for (auto object : cell->getObjects()) {
-            if (object->getType() == srgsim::SpriteObjectType::Door && object->getState() == srgsim::ObjectState::Closed) {
+            if (object->getType() == srgsim::ObjectType::Door && object->getState() == srgsim::ObjectState::Closed) {
                 sightBlocked = true;
                 break;
             }

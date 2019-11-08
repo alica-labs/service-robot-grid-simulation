@@ -1,6 +1,6 @@
 #pragma once
 
-#include "srgsim/world/SpriteObjectType.h"
+#include "srgsim/world/ObjectType.h"
 #include "srgsim/world/ObjectState.h"
 
 #include <essentials/IdentifierConstPtr.h>
@@ -11,7 +11,7 @@ namespace srgsim
 {
     struct Perception
     {
-        SpriteObjectType type;
+        ObjectType type;
         ObjectState state;
         essentials::IdentifierConstPtr objectID;
         essentials::IdentifierConstPtr robotID;

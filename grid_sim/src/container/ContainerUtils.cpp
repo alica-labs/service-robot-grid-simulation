@@ -123,19 +123,19 @@ SimPerceptions ContainerUtils::toSimPerceptions(::capnp::FlatArrayMessageReader&
             perception.y = perceptionMsg.getY();
             switch (perceptionMsg.getType()) {
             case srgsim::SimPerceptionsMsg::Perception::Type::ROBOT:
-                perception.type = SpriteObjectType::Robot;
+                perception.type = ObjectType::Robot;
                 break;
             case srgsim::SimPerceptionsMsg::Perception::Type::DOOR:
-                perception.type = SpriteObjectType::Door;
+                perception.type = ObjectType::Door;
                 break;
             case srgsim::SimPerceptionsMsg::Perception::Type::CUPRED:
-                perception.type = SpriteObjectType::CupRed;
+                perception.type = ObjectType::CupRed;
                 break;
             case srgsim::SimPerceptionsMsg::Perception::Type::CUPBLUE:
-                perception.type = SpriteObjectType::CupBlue;
+                perception.type = ObjectType::CupBlue;
                 break;
             case srgsim::SimPerceptionsMsg::Perception::Type::CUPYELLOW:
-                perception.type = SpriteObjectType::CupYellow;
+                perception.type = ObjectType::CupYellow;
                 break;
             default:
                 std::cerr << "srgsim::ContainterUtils::toSimPerceptions(): Unknown object type in capnp message found!" << std::endl;
@@ -186,19 +186,19 @@ void ContainerUtils::toMsg(srgsim::SimPerceptions sp, ::capnp::MallocMessageBuil
             pBuilder.setY(sp.cellPerceptions[i].perceptions[j].y);
             pBuilder.setX(sp.cellPerceptions[i].perceptions[j].x);
             switch (sp.cellPerceptions[i].perceptions[j].type) {
-            case SpriteObjectType::Robot:
+            case ObjectType::Robot:
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::ROBOT);
                 break;
-            case SpriteObjectType::CupRed:
+            case ObjectType::CupRed:
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::CUPRED);
                 break;
-            case SpriteObjectType::CupBlue:
+            case ObjectType::CupBlue:
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::CUPBLUE);
                 break;
-            case SpriteObjectType::CupYellow:
+            case ObjectType::CupYellow:
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::CUPYELLOW);
                 break;
-            case SpriteObjectType::Door:
+            case ObjectType::Door:
                 pBuilder.setType(srgsim::SimPerceptionsMsg::Perception::Type::DOOR);
                 break;
             default:

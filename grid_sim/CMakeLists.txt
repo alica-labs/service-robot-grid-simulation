@@ -84,10 +84,12 @@ add_library(${PROJECT_NAME}_world
   src/world/Actuator.cpp
   src/world/Manipulation.cpp
   src/world/ObjectDetection.cpp
-  src/world/SpriteObjectType.cpp
   src/world/ObjectState.cpp
   src/world/Direction.cpp
   src/world/TaskType.cpp
+  src/world/Room.cpp
+  src/world/ObjectType.cpp
+  src/world/RoomType.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_world

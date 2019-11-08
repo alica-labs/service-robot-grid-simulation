@@ -9,7 +9,7 @@ namespace srgsim
 {
 
 ServiceRobot::ServiceRobot(essentials::IdentifierConstPtr id)
-        : Object(SpriteObjectType::Robot, id)
+        : Object(ObjectType::Robot, id)
 {
     this->objectDetection = new ObjectDetection(this);
     this->manipulation = new Manipulation(this);

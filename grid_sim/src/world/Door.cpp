@@ -6,11 +6,11 @@
 namespace srgsim
 {
 Door::Door(essentials::IdentifierConstPtr id, ObjectState state)
-        : Object(SpriteObjectType::Door, id, state)
+        : Object(ObjectType::Door, id, state)
 {
 }
 
-bool Door::isOpen() {
+bool Door::isOpen() const {
     return this->state == ObjectState::Open;
 };
 

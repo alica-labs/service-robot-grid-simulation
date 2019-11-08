@@ -5,7 +5,7 @@
 namespace srgsim
 {
 
-Object::Object(SpriteObjectType type, essentials::IdentifierConstPtr id, ObjectState state)
+Object::Object(ObjectType type, essentials::IdentifierConstPtr id, ObjectState state)
         : type(type)
         , state(state)
         , id(id)
@@ -45,12 +45,12 @@ void Object::deleteCell()
     tmp->removeObject(this);
 }
 
-SpriteObjectType Object::getType() const
+ObjectType Object::getType() const
 {
     return type;
 }
 
-void Object::setType(SpriteObjectType type)
+void Object::setType(ObjectType type)
 {
     this->type = type;
 }

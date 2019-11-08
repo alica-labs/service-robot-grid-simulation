@@ -1,32 +1,36 @@
 #include "srgsim/world/Cell.h"
 
 #include "srgsim/world/Object.h"
+#include "srgsim/world/Room.h"
 
 #include <iostream>
-#include <sstream>
 
 namespace srgsim
 {
 Cell::Cell(uint32_t x, uint32_t y)
         : coordinate(x, y)
+        , up(nullptr)
+        , down(nullptr)
+        , left(nullptr)
+        , right(nullptr)
+        , room(nullptr)
 {
-    this->up = nullptr;
-    this->down = nullptr;
-    this->left = nullptr;
-    this->right = nullptr;
-    this->type = SpriteObjectType::Unknown;
 }
 
 Cell::Cell(const srgsim::Cell& cell)
         : coordinate(cell.coordinate)
 {
     this->room = cell.room;
-    this->type = cell.type;
     this->up = cell.up;
     this->down = cell.down;
     this->left = cell.left;
     this->right = cell.right;
     this->objects = cell.objects;
+}
+
+RoomType Cell::getType() const
+{
+    return this->room->getType();
 }
 
 const std::vector<Object*>& Cell::getObjects() const
@@ -55,7 +59,8 @@ void Cell::removeObject(Object* object)
     }
 }
 
-void Cell::update(std::vector<Object*> updateObjects) {
+void Cell::update(std::vector<Object*> updateObjects)
+{
     // remove unseen objects
     for (Object* cellObject : this->objects) {
         bool found = false;
@@ -85,11 +90,9 @@ void Cell::update(std::vector<Object*> updateObjects) {
     }
 }
 
-std::string Cell::toString() const
+std::ostream& operator<<(std::ostream& os, const srgsim::Cell& obj)
 {
-    std::stringstream ss;
-    ss << "Cell: (" << this->coordinate.x << ", " << this->coordinate.y << ") Type: " << static_cast<int>(this->type) << std::endl;
-    return ss.str();
+    os << obj.coordinate << " Type: " << obj.getType() << *(obj.room) << std::endl;
+    return os;
 }
-
 } // namespace srgsim

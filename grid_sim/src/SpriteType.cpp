@@ -1,4 +1,4 @@
-#include "srgsim/world/SpriteObjectType.h"
+#include "srgsim/SpriteType.h"
 
 #include <iostream>
 
@@ -11,58 +11,55 @@ namespace srgsim
  * @param type Type of a sprite or object.
  * @return Outputstream
  */
-std::ostream& operator<<(std::ostream& os, const SpriteObjectType& type)
+std::ostream& operator<<(std::ostream& os, const SpriteType& type)
 {
     switch (type) {
-    case SpriteObjectType::Dirt:
-        os << "Dirt";
-        break;
-    case SpriteObjectType::Gras:
-        os << "Gras";
-        break;
-    case SpriteObjectType::Wall:
-        os << "Wall";
-        break;
-    case SpriteObjectType::DoorOpen:
-        os << "DoorOpen";
-        break;
-    case SpriteObjectType::Black:
-        os << "Black";
-        break;
-    case SpriteObjectType::Unknown:
-        os << "Unknown";
-        break;
-    case SpriteObjectType::Floor:
-        os << "Floor";
-        break;
-    case SpriteObjectType::DoorClosed:
-        os << "DoorClosed";
-        break;
-    case SpriteObjectType::Robot:
-        os << "Robot";
-        break;
-    case SpriteObjectType::White:
-        os << "White";
-        break;
-    case SpriteObjectType::Default:
+    case SpriteType::Default:
         os << "Default";
         break;
-    case SpriteObjectType::White2:
+    case SpriteType::Gras:
+        os << "Gras";
+        break;
+    case SpriteType::Wall:
+        os << "Wall";
+        break;
+    case SpriteType::DoorOpen:
+        os << "DoorOpen";
+        break;
+    case SpriteType::Black:
+        os << "Black";
+        break;
+    case SpriteType::Unknown:
+        os << "Unknown";
+        break;
+    case SpriteType::Floor:
+        os << "Floor";
+        break;
+    case SpriteType::DoorClosed:
+        os << "DoorClosed";
+        break;
+    case SpriteType::Robot:
+        os << "Robot";
+        break;
+    case SpriteType::White:
+        os << "White";
+        break;
+    case SpriteType::Dirt:
+        os << "Dirt";
+        break;
+    case SpriteType::White2:
         os << "White2";
         break;
-    case SpriteObjectType::CupRed:
+    case SpriteType::CupRed:
         os << "CupRed";
         break;
-    case SpriteObjectType::CupBlue:
+    case SpriteType::CupBlue:
         os << "CupBlue";
         break;
-    case SpriteObjectType::CupYellow:
+    case SpriteType::CupYellow:
         os << "CupYellow";
         break;
-    case SpriteObjectType::Door:
-        os << "Door";
-        break;
-    case SpriteObjectType::Last:
+    case SpriteType::Last:
         os << "Last";
         break;
     default:

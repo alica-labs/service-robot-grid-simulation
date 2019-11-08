@@ -1,7 +1,7 @@
 #pragma once
 
-#include "srgsim/world/SpriteObjectType.h"
 #include "srgsim/world/ObjectState.h"
+#include "srgsim/world/ObjectType.h"
 
 #include <essentials/IdentifierConstPtr.h>
 #include <essentials/Identifier.h>
@@ -14,12 +14,14 @@ class Cell;
 class Object
 {
 public:
-    Object(SpriteObjectType type, essentials::IdentifierConstPtr id, ObjectState state = ObjectState::Undefined);
+    Object(ObjectType type, essentials::IdentifierConstPtr id, ObjectState state = ObjectState::Undefined);
     virtual ~Object();
 
     essentials::IdentifierConstPtr getID() const;
-    SpriteObjectType getType() const;
-    void setType(SpriteObjectType type);
+
+    virtual ObjectType getType() const;
+    void setType(ObjectType type);
+
     ObjectState getState() const;
     void setState(ObjectState state);
 
@@ -35,7 +37,7 @@ public:
     }
 protected:
     Cell* cell;
-    SpriteObjectType type;
+    ObjectType type;
     ObjectState state;
     essentials::IdentifierConstPtr id;
 };

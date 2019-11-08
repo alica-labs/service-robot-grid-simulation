@@ -4,14 +4,17 @@
 #include "srgsim/containers/CellPerceptions.h"
 
 #include "TaskType.h"
+#include "RoomType.h"
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 namespace srgsim
 {
 class World;
 class Object;
+class Room;
 
 class Cell
 {
@@ -24,11 +27,12 @@ public:
     void addObject(Object* object);
     void removeObject(Object* object);
     void update(std::vector<Object*> objects);
-    std::string toString() const;
+    RoomType getType() const;
+    friend std::ostream& operator<<(std::ostream& os, const srgsim::Cell& obj);
 
-    SpriteObjectType type;
-    std::string room;
+
     Coordinate coordinate;
+    Room* room;
     Cell* up;
     Cell* down;
     Cell* left;

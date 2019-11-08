@@ -32,36 +32,36 @@ GUI::GUI()
     this->window->setPosition(
             sf::Vector2i(this->windowConfig->tryGet<uint32_t>(20, "xPosition", NULL), this->windowConfig->tryGet<uint32_t>(20, "yPosition", NULL)));
     this->window->setActive(false);
-    for (int i = 0; i != static_cast<int>(SpriteObjectType::Last); i++) {
+    for (int i = 0; i != static_cast<int>(SpriteType::Last); i++) {
         sf::Sprite sprite;
         sprite.setTexture(*this->texture);
-        SpriteObjectType type = static_cast<SpriteObjectType>(i);
+        SpriteType type = static_cast<SpriteType>(i);
         switch (type) {
-        case SpriteObjectType::Wall:
+        case SpriteType::Wall:
             sprite.setTextureRect(sf::IntRect(textureSize * 2, 0, textureSize, textureSize));
             break;
-        case SpriteObjectType::DoorOpen:
+        case SpriteType::DoorOpen:
             sprite.setTextureRect(sf::IntRect(textureSize * 3, 0, textureSize, textureSize));
             break;
-        case SpriteObjectType::DoorClosed:
+        case SpriteType::DoorClosed:
             sprite.setTextureRect(sf::IntRect(textureSize * 3, textureSize, textureSize, textureSize));
             break;
-        case SpriteObjectType::Floor:
+        case SpriteType::Floor:
             sprite.setTextureRect(sf::IntRect(textureSize * 2, textureSize, textureSize, textureSize));
             break;
-        case SpriteObjectType::Unknown:
+        case SpriteType::Unknown:
             sprite.setTextureRect(sf::IntRect(textureSize, textureSize, textureSize, textureSize));
             break;
-        case SpriteObjectType::Robot:
+        case SpriteType::Robot:
             sprite.setTextureRect(sf::IntRect(0, textureSize * 2, textureSize, textureSize));
             break;
-        case SpriteObjectType::CupBlue:
+        case SpriteType::CupBlue:
             sprite.setTextureRect(sf::IntRect(textureSize, textureSize * 3, textureSize, textureSize));
             break;
-        case SpriteObjectType::CupRed:
+        case SpriteType::CupRed:
             sprite.setTextureRect(sf::IntRect(0, textureSize * 3, textureSize, textureSize));
             break;
-        case SpriteObjectType::CupYellow:
+        case SpriteType::CupYellow:
             sprite.setTextureRect(sf::IntRect(textureSize * 2, textureSize * 3, textureSize, textureSize));
             break;
         default:
@@ -125,30 +125,20 @@ void GUI::draw(World* world)
         std::lock_guard<std::recursive_mutex> guard(dataMutex);
         for (auto& pair : world->getGrid()) {
             // background sprite
-            sf::Sprite sprite = getSprite(pair.second->type);
+            sf::Sprite sprite = getSprite(pair.second->getType());
             sprite.setPosition(pair.second->coordinate.x * scaledSpriteSize, pair.second->coordinate.y * scaledSpriteSize);
             this->window->draw(sprite);
 
             // object sprites
             for (Object* object : pair.second->getObjects()) {
                 sf::Sprite sprite;
-                switch (object->getType()) {
-                case SpriteObjectType::Door:
-                    if (static_cast<class Door*>(object)->isOpen()) {
-                        sprite = getSprite(SpriteObjectType::DoorOpen);
-                    } else {
-                        sprite = getSprite(SpriteObjectType::DoorClosed);
-                    }
-                    break;
-                default:
-                    sprite = getSprite(object->getType());
-                }
+                sprite = getSprite(object);
                 sprite.setPosition(object->getCell()->coordinate.x * scaledSpriteSize, object->getCell()->coordinate.y * scaledSpriteSize);
                 this->window->draw(sprite);
 
                 if (ServiceRobot* robot = dynamic_cast<ServiceRobot*>(object)) {
                     if (const Object* carriedObject = robot->getCarriedObject()) {
-                        sprite = getSprite(carriedObject->getType());
+                        sprite = getSprite(carriedObject);
                         sprite.setPosition((robot->getCell()->coordinate.x * scaledSpriteSize) + scaledSpriteSize / 2,
                                 (robot->getCell()->coordinate.y * scaledSpriteSize) + scaledSpriteSize / 2);
                         sprite.setScale(0.25, 0.25);
@@ -165,7 +155,7 @@ void GUI::draw(World* world)
         // for debug purposes
         for (Perception perception : world->getMarkers()) {
             sf::Sprite sprite;
-            sprite = getSprite(perception.type);
+            sprite = getSprite(SpriteType::Default);
             sprite.setPosition((perception.x * scaledSpriteSize) + scaledSpriteSize / 4, (perception.y * scaledSpriteSize) + scaledSpriteSize / 4);
             sprite.setScale(0.25, 0.25);
             this->window->draw(sprite);
@@ -216,8 +206,41 @@ void GUI::calculateSpriteSize(const World* world)
     }
 }
 
-sf::Sprite GUI::getSprite(SpriteObjectType type)
+sf::Sprite GUI::getSprite(SpriteType type)
 {
     return sprites[static_cast<int>(type)];
 }
+
+sf::Sprite GUI::getSprite(RoomType type)
+{
+    if (type == RoomType::Wall) {
+        return getSprite(SpriteType::Wall);
+    }
+    return getSprite(SpriteType::Floor);
+}
+
+sf::Sprite GUI::getSprite(const Object* object)
+{
+    switch (object->getType()) {
+        case ObjectType::Door:
+            if (static_cast<const Door*>(object)->isOpen()) {
+                return getSprite(SpriteType::DoorOpen);
+            } else {
+                return getSprite(SpriteType::DoorClosed);
+            }
+        case ObjectType::CupBlue:
+            return getSprite(SpriteType::CupBlue);
+        case ObjectType::CupYellow:
+            return getSprite(SpriteType::CupYellow);
+        case ObjectType::CupRed:
+            return getSprite(SpriteType::CupRed);
+        case ObjectType::Robot:
+            return getSprite(SpriteType::Robot);
+        default:
+            std::cerr << "[GUI] Unknown object type encountered!" << object->getType() << std::endl;
+            return getSprite(SpriteType::Unknown);
+    }
+
+}
+
 } // namespace srgsim
