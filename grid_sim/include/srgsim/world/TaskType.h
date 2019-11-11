@@ -11,6 +11,7 @@ enum class TaskType
     PutDown,
     Open,
     Close,
+    Transport,
     Idle
 };
 
