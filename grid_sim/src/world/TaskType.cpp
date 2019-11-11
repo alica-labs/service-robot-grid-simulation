@@ -31,6 +31,9 @@ std::ostream& operator<<(std::ostream& os, const TaskType& taskType)
     case TaskType::Close:
         os << "Close";
         break;
+    case TaskType::Transport:
+        os << "Transport";
+        break;
     default:
         os.setstate(std::ios_base::failbit);
     }
