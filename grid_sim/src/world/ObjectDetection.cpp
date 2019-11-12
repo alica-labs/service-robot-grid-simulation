@@ -25,7 +25,8 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
     // collect cells in vision
     Coordinate ownCoord = this->robot->getCell()->coordinate;
     std::map<Coordinate, const Cell*> cellsInVision;
-    for (double currentDegree = -M_PI; currentDegree < M_PI; currentDegree += M_PI / 90) { // PI/90 <=> 2 degree resolution
+    double increment = atan2(1,sightLimit+1);
+    for (double currentDegree = -M_PI; currentDegree < M_PI; currentDegree += increment) { // PI/90 <=> 2 degree resolution
         int32_t xDelta = round(sin(currentDegree) * sightLimit);
         int32_t yDelta = round(cos(currentDegree) * sightLimit);
         // for debug purpose
