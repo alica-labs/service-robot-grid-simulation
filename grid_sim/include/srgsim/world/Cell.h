@@ -29,7 +29,7 @@ public:
     void update(std::vector<Object*> objects);
     RoomType getType() const;
     friend std::ostream& operator<<(std::ostream& os, const srgsim::Cell& obj);
-
+    static bool sortByCoordinates(const Cell* first, const Cell* second);
 
     Coordinate coordinate;
     Room* room;
@@ -42,5 +42,9 @@ private:
     Cell(uint32_t x, uint32_t y);
     std::vector<Object*> objects;
 };
+
+bool operator==(const Cell& first,const Cell& second);
+bool operator!=(const Cell& first,const Cell& second);
+bool operator<(const Cell& first,const Cell& second);
 
 } // namespace srgsim
