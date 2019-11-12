@@ -19,7 +19,7 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const srgsim::Room& obj)
     {
-        os << "Room: " << obj.name << " ID: " << obj.id << " Type: " << obj.type;
+        os << "[Room] " << obj.name << " ID: " << obj.id << " Type: " << obj.type;
         return os;
     }
     friend World;

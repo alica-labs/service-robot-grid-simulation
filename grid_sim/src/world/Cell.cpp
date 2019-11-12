@@ -90,9 +90,27 @@ void Cell::update(std::vector<Object*> updateObjects)
     }
 }
 
+bool Cell::sortByCoordinates(const Cell* first, const Cell* second) {
+    return first->coordinate < second->coordinate;
+}
+
 std::ostream& operator<<(std::ostream& os, const srgsim::Cell& obj)
 {
-    os << obj.coordinate << " Type: " << obj.getType() << *(obj.room) << std::endl;
+    os << "[Cell] " << obj.coordinate << " Type: " << obj.getType() << " " << *(obj.room) << std::endl;
     return os;
+}
+
+bool operator==(Cell const& first, Cell const& second)
+{
+    return first.coordinate == second.coordinate;
+}
+
+bool operator!=(Cell const& first, Cell const& second)
+{
+    return !(first == second);
+}
+
+bool operator<(const Cell& lhs,const Cell& rhs) {
+    return lhs.coordinate < rhs.coordinate;
 }
 } // namespace srgsim
