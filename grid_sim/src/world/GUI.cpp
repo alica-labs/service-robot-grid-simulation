@@ -1,4 +1,4 @@
-#include "srgsim/GUI.h"
+#include "srgsim/world/GUI.h"
 
 #include "srgsim/world/Cell.h"
 #include "srgsim/world/Door.h"
@@ -7,6 +7,7 @@
 #include "srgsim/world/TaskType.h"
 
 #include <FileSystem.h>
+#include <SystemConfig.h>
 #include <iostream>
 
 //#define GUI_DEBUG
@@ -15,10 +16,10 @@ namespace srgsim
 {
 const std::string GUI::configFolder = ".grid_sim";
 const std::string GUI::windowConfigFile = "Window.conf";
-GUI::GUI()
+GUI::GUI(std::string windowName)
 {
     this->readWindowConfig();
-    std::string textureFile = essentials::FileSystem::getSelfPath() + "/textures/textures.png";
+    std::string textureFile = essentials::SystemConfig::getInstance()->getConfigPath() + "/textures/textures.png";
     std::cout << "[GUI] Info: loading textureFile '" << textureFile << "'" << std::endl;
     this->texture = new sf::Texture();
     if (!this->texture->loadFromFile(textureFile)) {
@@ -28,7 +29,7 @@ GUI::GUI()
     this->texture->setRepeated(true);
     this->window = new sf::RenderWindow(
             sf::VideoMode(this->windowConfig->tryGet<uint32_t>(800, "xSize", NULL), this->windowConfig->tryGet<uint32_t>(800, "ySize", NULL)),
-            "Grid Simulator GUI");
+            windowName);
     this->window->setPosition(
             sf::Vector2i(this->windowConfig->tryGet<uint32_t>(20, "xPosition", NULL), this->windowConfig->tryGet<uint32_t>(20, "yPosition", NULL)));
     this->window->setActive(false);
@@ -128,6 +129,7 @@ void GUI::draw(World* world)
             sf::Sprite sprite = getSprite(pair.second->getType());
             sprite.setPosition(pair.second->coordinate.x * scaledSpriteSize, pair.second->coordinate.y * scaledSpriteSize);
             this->window->draw(sprite);
+//            std::cout << "GUI: Background Sprite: " << pair.second->getType() << " at " << pair.second->coordinate << std::endl;
 
             // object sprites
             for (Object* object : pair.second->getObjects()) {
@@ -155,7 +157,11 @@ void GUI::draw(World* world)
         // for debug purposes
         for (Perception perception : world->getMarkers()) {
             sf::Sprite sprite;
-            sprite = getSprite(SpriteType::Default);
+            if (perception.type == ObjectType::CupRed)
+                sprite = getSprite(SpriteType::Unknown);
+            else {
+                sprite = getSprite(SpriteType::Default);
+            }
             sprite.setPosition((perception.x * scaledSpriteSize) + scaledSpriteSize / 4, (perception.y * scaledSpriteSize) + scaledSpriteSize / 4);
             sprite.setScale(0.25, 0.25);
             this->window->draw(sprite);

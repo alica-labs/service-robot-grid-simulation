@@ -4,9 +4,10 @@
 #include "srgsim/world/Door.h"
 #include "srgsim/world/Manipulation.h"
 #include "srgsim/world/Object.h"
-#include "srgsim/world/ServiceRobot.h"
 #include "srgsim/world/Room.h"
+#include "srgsim/world/ServiceRobot.h"
 
+#include <SystemConfig.h>
 #include <essentials/IDManager.h>
 
 #include <FileSystem.h>
@@ -17,13 +18,13 @@
 namespace srgsim
 {
 World::World(essentials::IDManager* idManager)
-        : World(essentials::FileSystem::getSelfPath() + "/textures/Department.tmx", idManager)
+        : World(essentials::SystemConfig::getInstance()->getConfigPath() + "/textures/Department.tmx", idManager)
 {
 }
 
-World::World(std::string tmxMapFile, essentials::IDManager* idManager)
+World::World(std::string tmxMapFile, essentials::IDManager* idManager) : sizeX(0), sizeY(0)
 {
-    std::cout << "srgsim::World(): Loading '" << tmxMapFile << "' world file!" << std::endl;
+    std::cout << "[World] Loading '" << tmxMapFile << "' world file!" << std::endl;
     Tmx::Map* map = new Tmx::Map();
     map->ParseFile(tmxMapFile);
     for (auto layer : map->GetTileLayers()) {
@@ -37,7 +38,7 @@ World::World(std::string tmxMapFile, essentials::IDManager* idManager)
         for (int x = 0; x < layer->GetWidth(); x++) {
             for (int y = 0; y < layer->GetHeight(); y++) {
                 if (layer->GetTile(x, y).gid > 0) {
-                    roomType = layer->GetTile(x, y).gid-17;
+                    roomType = layer->GetTile(x, y).gid - 17;
                     Cell* cell = this->addCell(x, y, room);
                 }
             }
@@ -63,7 +64,8 @@ World::~World()
     }
 }
 
-Room* World::addRoom(std::string name, essentials::IdentifierConstPtr id) {
+Room* World::addRoom(std::string name, essentials::IdentifierConstPtr id)
+{
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     Room* room = new Room(name, id);
     this->rooms.emplace(id, room);
@@ -73,20 +75,15 @@ Room* World::addRoom(std::string name, essentials::IdentifierConstPtr id) {
 Cell* World::addCell(uint32_t x, uint32_t y, Room* room)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    if (this->cellGrid.size() == 0) {
-        Cell* cell = new Cell(x, y);
-        this->cellGrid.emplace(Coordinate(x, y), cell);
-        this->sizeX = 1;
-        this->sizeY = 1;
-        room->addCell(cell);
-        return cell;
-    }
+    Coordinate cellCoordinate = Coordinate(x, y);
 
-    if (this->cellGrid.find(Coordinate(x, y)) != this->cellGrid.end()) {
-        return this->cellGrid.at(Coordinate(x, y));
+    if (this->cellGrid.find(cellCoordinate) != this->cellGrid.end()) {
+        return this->cellGrid.at(cellCoordinate);
     }
 
     Cell* cell = new Cell(x, y);
+    this->cellGrid.emplace(cell->coordinate, cell);
+
     // Left
     auto it = this->cellGrid.find(Coordinate(x - 1, y));
     if (it != this->cellGrid.end()) {
@@ -112,7 +109,6 @@ Cell* World::addCell(uint32_t x, uint32_t y, Room* room)
         it->second->up = cell;
     }
 
-    this->cellGrid.emplace(Coordinate(x, y), cell);
     if (x + 1 > this->sizeX) {
         this->sizeX = x + 1;
     }
@@ -258,7 +254,7 @@ Object* World::createOrUpdateObject(essentials::IdentifierConstPtr id, ObjectTyp
         default:
             object = new Object(type, id, state);
         }
-        std::cout << "World::createOrUpdateObject(): Created " << *object;
+        std::cout << "[World] Created " << *object;
         this->objects.emplace(object->getID(), object);
     }
 
@@ -292,7 +288,6 @@ bool World::removeObject(srgsim::Object* object)
 void World::moveObject(essentials::IdentifierConstPtr id, Direction direction)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    std::cout << "World::moveObject(): ID: " << *id << " Direction: " << direction << std::endl;
     Object* object = editObject(id);
     if (!object) {
         return;
@@ -397,7 +392,7 @@ Cell* World::getNeighbourCell(const Direction& direction, Object* object)
     case Direction::Down:
         return object->getCell()->down;
     default:
-        std::cout << "World: Unknown Direction: " << direction << "!" << std::endl;
+        std::cout << "[World] Unknown Direction: " << direction << std::endl;
         return nullptr;
     }
 }

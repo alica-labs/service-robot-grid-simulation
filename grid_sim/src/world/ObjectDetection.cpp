@@ -23,20 +23,21 @@ ObjectDetection::ObjectDetection(srgsim::ServiceRobot* robot)
 std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
 {
     // collect cells in vision
-    Coordinate ownCoord = this->robot->getCell()->coordinate;
+    Coordinate from = this->robot->getCell()->coordinate;
     std::map<Coordinate, const Cell*> cellsInVision;
     double increment = atan2(1,sightLimit+1);
     for (double currentDegree = -M_PI; currentDegree < M_PI; currentDegree += increment) { // PI/90 <=> 2 degree resolution
         int32_t xDelta = round(sin(currentDegree) * sightLimit);
         int32_t yDelta = round(cos(currentDegree) * sightLimit);
+        Coordinate to = Coordinate(from.x + xDelta, from.y + yDelta);
         // for debug purpose
-//        Perception p;
-//        p.type = SpriteObjectType::CupRed;
-//        p.x = ownCoord.x + xDelta;
-//        p.y = ownCoord.y + yDelta;
-//        world->addMarker(p);
+        Perception p;
+        p.type = ObjectType::CupRed;
+        p.x = to.x;
+        p.y = to.y;
+        world->addMarker(p);
 
-        std::vector<const Cell*> currentCells = this->collectCells(ownCoord, Coordinate(ownCoord.x + xDelta, ownCoord.y + yDelta), world);
+        std::vector<const Cell*> currentCells = this->collectCells(from, to, world);
         for (const Cell* cell : currentCells) {
             // add only cells that are not already collected
             if (cellsInVision.find(cell->coordinate) == cellsInVision.end()) {
@@ -50,11 +51,11 @@ std::vector<CellPerceptions> ObjectDetection::createPerceptions(World* world)
     for (auto& entry : cellsInVision) {
 
         // for debug purpose
-//        Perception p;
-//        p.type = SpriteObjectType::Unknown;
-//        p.x = entry.second->coordinate.x;
-//        p.y = entry.second->coordinate.y;
-//        world->addMarker(p);
+        Perception p;
+        p.type = ObjectType::CupBlue;
+        p.x = entry.second->coordinate.x;
+        p.y = entry.second->coordinate.y;
+        world->addMarker(p);
 
         const std::vector<Object*>& objects = entry.second->getObjects();
         CellPerceptions cellPerceptions;
@@ -114,7 +115,7 @@ std::vector<const Cell*> ObjectDetection::collectCells(Coordinate start, Coordin
 
         // check if sight is blocked in this cell
         const Cell* cell = world->getCell(currentPoint);
-        if (!cell || cell->getType() != RoomType::Floor) {
+        if (!cell || cell->getType() == RoomType::Wall) {
             break;
         }
         bool sightBlocked = false;

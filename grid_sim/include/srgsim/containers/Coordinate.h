@@ -10,7 +10,7 @@ class Coordinate
 {
 public:
     Coordinate(int32_t x, int32_t y);
-    virtual ~Coordinate() = default;
+    virtual ~Coordinate();
     Coordinate(const Coordinate& coordinate);
 
     int32_t x;

@@ -5,11 +5,11 @@
 #include "srgsim/commands/MoveCommandHandler.h"
 #include "srgsim/commands/SpawnCommandHandler.h"
 
-#include "srgsim/GUI.h"
 #include "srgsim/communication/Communication.h"
 #include "srgsim/world/Cell.h"
-#include "srgsim/world/ServiceRobot.h"
 #include "srgsim/world/Door.h"
+#include "srgsim/world/GUI.h"
+#include "srgsim/world/ServiceRobot.h"
 #include "srgsim/world/World.h"
 
 #include <SystemConfig.h>
@@ -17,9 +17,9 @@
 
 #include <iostream>
 #include <signal.h>
+#include <srgsim/world/ObjectDetection.h>
 #include <string>
 #include <thread>
-#include <srgsim/world/ObjectDetection.h>
 
 //#define SIM_DEBUG
 
@@ -31,13 +31,8 @@ Simulator::Simulator(bool headless)
         : headless(headless)
         , idManager(new essentials::IDManager())
 {
-
-
     this->world = new World(this->idManager);
     this->placeObjectsFromConf();
-//    ObjectDetection od (nullptr);
-//    od.collectCells(Coordinate(5,26), Coordinate(-5,29), world);
-//    return;
     this->communicationHandlers.push_back(new commands::MoveCommandHandler(world));
     this->communicationHandlers.push_back(new commands::ManipulationHandler(world));
     this->communicationHandlers.push_back(new commands::SpawnCommandHandler(world));
@@ -81,10 +76,10 @@ void Simulator::placeObjectsFromConf()
             continue;
         }
 
-        uint32_t x = (*sc)["Objects"]->get<uint32_t>("Objects", objectSection.c_str(), "x", NULL);
-        uint32_t y = (*sc)["Objects"]->get<uint32_t>("Objects", objectSection.c_str(), "y", NULL);
-        if (!this->world->placeObject(object, Coordinate(x, y))) {
-            std::cout << "Simulator::placeObjectsFromConf(): Placement of " << stringObjectType << " to (" << x << ", " << y << ") not allowed!" << std::endl;
+        Coordinate coord((*sc)["Objects"]->get<uint32_t>("Objects", objectSection.c_str(), "x", NULL),
+                (*sc)["Objects"]->get<uint32_t>("Objects", objectSection.c_str(), "y", NULL));
+        if (!this->world->placeObject(object, coord)) {
+            std::cout << "[Simulator] Placement of " << type << " to " << coord << " not allowed!" << std::endl;
         }
     }
 }
@@ -112,7 +107,7 @@ void Simulator::start()
 void Simulator::run()
 {
     if (!this->headless) {
-        this->gui = new GUI();
+        this->gui = new GUI("Grid Simulator GUI");
     }
     while (Simulator::running) {
 #ifdef SIM_DEBUG
@@ -185,7 +180,7 @@ bool Simulator::isRunning()
  */
 void Simulator::simSigintHandler(int sig)
 {
-    std::cout << "Simulator: Caught SIGINT! Terminating ..." << std::endl;
+    std::cout << "[Simulator] Caught SIGINT! Terminating ..." << std::endl;
     running = false;
 }
 
