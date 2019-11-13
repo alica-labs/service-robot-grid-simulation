@@ -9,6 +9,8 @@ Coordinate::Coordinate(int32_t x, int32_t y)
     this->y = y;
 }
 
+Coordinate::~Coordinate() {}
+
 Coordinate::Coordinate(const srgsim::Coordinate& coordinate)
 {
     this->x = coordinate.x;

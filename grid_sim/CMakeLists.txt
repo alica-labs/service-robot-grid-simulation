@@ -32,45 +32,20 @@ include_directories(
 ############### Simulator
 add_executable(${PROJECT_NAME}
   src/Simulator.cpp
-  src/GUI.cpp
   src/communication/Communication.cpp
   src/commands/SpawnCommandHandler.cpp
   src/commands/CommandHandler.cpp
   src/commands/MoveCommandHandler.cpp
   src/commands/ManipulationHandler.cpp
-  src/world/TaskType.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
-  ${SFML_LIBRARIES}
-  ${SFML_DEPENDENCIES}
   ${CMAKE_THREAD_LIBS_INIT}
   ${PROJECT_NAME}_msgs
   ${PROJECT_NAME}_world
   ${catkin_LIBRARIES}
   tmxparser
 )
-
-#copy the resource(e.g.texture files)
-file(GLOB ResourceFiles
-  ${CMAKE_SOURCE_DIR}/textures/*.png
-  ${CMAKE_SOURCE_DIR}/textures/*.tmx
-  ${CMAKE_SOURCE_DIR}/textures/*.tsx
-)
-add_custom_target(copy ALL
-  DEPENDS
-  ${ResourceFiles}
-)
-foreach(ResourceFile ${ResourceFiles})
-  get_filename_component(file ${ResourceFile} NAME)
-  add_custom_command(TARGET copy
-    PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E
-    copy ${ResourceFile} $<TARGET_FILE_DIR:grid_sim>/textures/${file}
-    COMMAND ${CMAKE_COMMAND} -E
-    make_directory $<TARGET_FILE_DIR:grid_sim>/textures/
-  )
-endforeach()
 
 ############### World
 add_library(${PROJECT_NAME}_world
@@ -90,11 +65,14 @@ add_library(${PROJECT_NAME}_world
   src/world/Room.cpp
   src/world/ObjectType.cpp
   src/world/RoomType.cpp
+  src/world/GUI.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}_world
   tmxparser
   ${catkin_LIBRARIES}
+  ${SFML_LIBRARIES}
+  ${SFML_DEPENDENCIES}
 )
 
 ############### Sim Messages

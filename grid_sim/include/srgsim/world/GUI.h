@@ -17,7 +17,7 @@ namespace srgsim
 class GUI
 {
 public:
-    GUI();
+    GUI(std::string windowName);
     ~GUI();
     void draw(srgsim::World* world);
 

@@ -17,17 +17,6 @@ Cell::Cell(uint32_t x, uint32_t y)
 {
 }
 
-Cell::Cell(const srgsim::Cell& cell)
-        : coordinate(cell.coordinate)
-{
-    this->room = cell.room;
-    this->up = cell.up;
-    this->down = cell.down;
-    this->left = cell.left;
-    this->right = cell.right;
-    this->objects = cell.objects;
-}
-
 RoomType Cell::getType() const
 {
     return this->room->getType();
@@ -90,13 +79,19 @@ void Cell::update(std::vector<Object*> updateObjects)
     }
 }
 
-bool Cell::operator<(const Cell* other) {
+bool Cell::operator<(const Cell* other)
+{
     return this->coordinate < other->coordinate;
 }
 
 bool operator==(Cell const& first, Cell const& second)
 {
     return first.coordinate == second.coordinate;
+}
+
+bool Cell::operator==(Cell const* other)
+{
+    return this->coordinate == other->coordinate;
 }
 
 bool operator!=(Cell const& first, Cell const& second)

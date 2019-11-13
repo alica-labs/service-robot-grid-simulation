@@ -21,7 +21,6 @@ class Cell
 public:
     friend World;
     virtual ~Cell() = default;
-    Cell(const Cell& cell);
 
     const std::vector<Object *> &getObjects() const;
     void addObject(Object* object);
@@ -30,6 +29,7 @@ public:
     RoomType getType() const;
     friend std::ostream& operator<<(std::ostream& os, const srgsim::Cell& obj);
     bool operator<(const Cell* other);
+    bool operator==(Cell const* other);
     static bool sortByCoordinates(const Cell* first, const Cell* second);
 
     Coordinate coordinate;
