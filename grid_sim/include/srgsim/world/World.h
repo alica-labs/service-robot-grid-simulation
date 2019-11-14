@@ -54,6 +54,7 @@ public:
     std::vector<Object*> updateCell(srgsim::CellPerceptions cellPerceptions);
 
     // objects
+    const Object* getObject(ObjectType type) const;
     const Object* getObject(essentials::IdentifierConstPtr id) const;
     Object* editObject(essentials::IdentifierConstPtr id);
     Object* createOrUpdateObject(essentials::IdentifierConstPtr id, ObjectType type, ObjectState state = ObjectState::Undefined,

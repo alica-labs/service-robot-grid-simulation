@@ -121,6 +121,15 @@ Cell* World::addCell(uint32_t x, uint32_t y, Room* room)
     return cell;
 }
 
+const Object* World::getObject(ObjectType type) const {
+    for (auto& object : this->objects) {
+        if (object.second->getType() == type) {
+            return object.second;
+        }
+    }
+    return nullptr;
+}
+
 const Cell* World::getCell(const Coordinate& coordinate) const
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
