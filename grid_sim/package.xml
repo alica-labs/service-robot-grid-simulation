@@ -15,6 +15,7 @@
   <depend>fsystem</depend>
   <depend>system_config</depend>
   <depend>cnc_geometry</depend>
+  <depend>srg_world</depend>
 
   <buildtool_depend>catkin</buildtool_depend>
 
