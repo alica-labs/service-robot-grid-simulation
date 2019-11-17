@@ -340,7 +340,8 @@ void World::closeDoor(essentials::IdentifierConstPtr id)
     }
 }
 
-void World::updateCell(world::Coordinate coordinate, std::vector<world::Object*> objects) {
+void World::updateCell(world::Coordinate coordinate, std::vector<world::Object*> objects)
+{
     auto cellEntry = this->cellGrid.find(coordinate);
     if (cellEntry == this->cellGrid.end()) {
         return;
@@ -384,6 +385,10 @@ bool World::isPlacementAllowed(const world::Cell* cell, world::ObjectType object
     }
 
     return true;
+}
+
+std::recursive_mutex& World::getDataMutex() {
+    return this->dataMutex;
 }
 
 } // namespace srg
