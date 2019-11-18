@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(srg_world)
 
 add_compile_options(-std=c++11)
+set(CMAKE_BUILD_TYPE Debug)
 
 #SFML(until 2.5 you need an extra FindSFML.cmake aside your project...)
 #https: // github.com/SFML/SFML/wiki/Tutorial:-Build-your-SFML-project-with-CMake

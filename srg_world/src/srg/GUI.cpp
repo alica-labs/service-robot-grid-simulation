@@ -228,7 +228,7 @@ sf::Sprite GUI::getSprite(const world::Object* object)
 {
     switch (object->getType()) {
     case world::ObjectType::Door:
-        if (static_cast<const world::Door*>(object)->isOpen()) {
+        if (dynamic_cast<const world::Door*>(object)->isOpen()) {
             return getSprite(viz::SpriteType::DoorOpen);
         } else {
             return getSprite(viz::SpriteType::DoorClosed);

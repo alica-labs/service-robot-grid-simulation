@@ -24,6 +24,34 @@ RoomType Cell::getType() const
     return this->room->getType();
 }
 
+bool Cell::isBlocked() const
+{
+    if (this->getType() == srg::world::RoomType::Wall) {
+        return true;
+    }
+    for (auto object : this->objects) {
+        if (object->getType() == srg::world::ObjectType::Door) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Cell::contains(essentials::IdentifierConstPtr objectID) const
+{
+    for (const Object* object : this->objects) {
+        if (object->getID() == objectID) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Cell::contains(const Object* object) const
+{
+    return this->contains(object->getID());
+}
+
 const std::vector<Object*>& Cell::getObjects() const
 {
     return objects;

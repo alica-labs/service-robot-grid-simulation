@@ -52,6 +52,7 @@ public:
     void run();
     void addMarker(viz::Marker marker);
     srg::World* getWorld();
+    void addRobot(world::ServiceRobot* serviceRobot);
     sim::SimulatedRobot* getRobot(essentials::IdentifierConstPtr id);
     static bool isRunning();
     static void simSigintHandler(int sig);

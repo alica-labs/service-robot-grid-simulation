@@ -8,9 +8,11 @@ namespace world
 {
 ServiceRobot::ServiceRobot(essentials::IdentifierConstPtr id)
         : Object(ObjectType::Robot, id)
+        , carriedObject(nullptr)
 {
 }
-bool ServiceRobot::isCarrying(essentials::IdentifierConstPtr id) const {
+bool ServiceRobot::isCarrying(essentials::IdentifierConstPtr id) const
+{
     return carriedObject && carriedObject->getID() == id;
 }
 

@@ -62,7 +62,7 @@ public:
     void moveObject(essentials::IdentifierConstPtr id, world::Direction direction);
 
     // robots
-    bool spawnRobot(essentials::IdentifierConstPtr id);
+    world::ServiceRobot* spawnRobot(essentials::IdentifierConstPtr id);
     const world::ServiceRobot* getRobot(essentials::IdentifierConstPtr id) const;
     world::ServiceRobot* editRobot(essentials::IdentifierConstPtr id);
     bool addRobot(world::ServiceRobot* robot);

@@ -1,11 +1,18 @@
 #include "srg/sim/SimulatedRobot.h"
 
 #include <srg/world/Cell.h>
+#include <srg/world/ServiceRobot.h>
 
 namespace srg
 {
 namespace sim
 {
+SimulatedRobot::SimulatedRobot(world::ServiceRobot* serviceRobot)
+        : serviceRobot(serviceRobot)
+{
+    this->manipulation = new Arm(this);
+    this->objectDetection = new Sensor(this);
+}
 
 world::Coordinate SimulatedRobot::getCoordinate()
 {
@@ -17,7 +24,8 @@ world::Object* SimulatedRobot::getCarriedObject()
     return this->serviceRobot->getCarriedObject();
 }
 
-void SimulatedRobot::setCarriedObject(world::Object* object) {
+void SimulatedRobot::setCarriedObject(world::Object* object)
+{
     this->serviceRobot->setCarriedObject(object);
 }
 

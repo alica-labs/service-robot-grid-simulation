@@ -35,7 +35,7 @@ std::vector<containers::CellPerceptions> Sensor::createPerceptions(srg::Simulato
         world::Coordinate to = world::Coordinate(from.x + xDelta, from.y + yDelta);
         // for debug purpose
         viz::Marker marker(to);
-        marker.type = viz::SpriteType::CupBlue;
+        marker.type = viz::SpriteType::Default;
         simulator->addMarker(marker);
 
         std::vector<const world::Cell*> currentCells = this->collectCells(from, to, simulator->getWorld());
@@ -53,7 +53,7 @@ std::vector<containers::CellPerceptions> Sensor::createPerceptions(srg::Simulato
 
         // for debug purpose
         viz::Marker marker(entry.second->coordinate);
-        marker.type = viz::SpriteType::CupBlue;
+        marker.type = viz::SpriteType::Unknown;
         simulator->addMarker(marker);
 
         const std::vector<world::Object*>& objects = entry.second->getObjects();

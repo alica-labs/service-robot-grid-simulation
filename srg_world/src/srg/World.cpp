@@ -212,14 +212,14 @@ uint32_t World::getSizeY() const
     return sizeY;
 }
 
-bool World::spawnRobot(essentials::IdentifierConstPtr id)
+world::ServiceRobot* World::spawnRobot(essentials::IdentifierConstPtr id)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     // create robot
     world::Object* object = this->createOrUpdateObject(id, world::ObjectType::Robot);
     if (object->getCell()) {
         // robot is already placed, maybe it was spawned already...
-        return false;
+        return dynamic_cast<world::ServiceRobot*>(object);
     }
 
     // search for cell with valid spawn coordinates
@@ -233,10 +233,11 @@ bool World::spawnRobot(essentials::IdentifierConstPtr id)
     // place robot
     if (this->placeObject(object, cell->coordinate)) {
         // only add robot into list, if it was placed correctly
-        this->addRobot(static_cast<world::ServiceRobot*>(object));
-        return true;
+        world::ServiceRobot* robot = dynamic_cast<world::ServiceRobot*>(object);
+        this->addRobot(robot);
+        return robot;
     } else {
-        return false;
+        return nullptr;
     }
 }
 
