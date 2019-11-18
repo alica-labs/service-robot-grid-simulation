@@ -1,19 +1,24 @@
 #pragma once
 
-#include "srg/sim/containers/SimPerceptions.h"
 #include "srg/sim/Arm.h"
 #include "srg/sim/Sensor.h"
+#include "srg/sim/containers/SimPerceptions.h"
 
 #include <srg/world/ServiceRobot.h>
 
 namespace srg
 {
 class Simulator;
+namespace world
+{
+class ServiceRobot;
+}
 namespace sim
 {
 class SimulatedRobot
 {
 public:
+    SimulatedRobot(srg::world::ServiceRobot* serviceRobot);
     world::Coordinate getCoordinate();
     world::Object* getCarriedObject();
     void setCarriedObject(world::Object* object);

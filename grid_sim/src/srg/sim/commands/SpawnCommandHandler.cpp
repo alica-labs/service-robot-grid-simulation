@@ -18,7 +18,7 @@ SpawnCommandHandler::SpawnCommandHandler(srg::Simulator* simulator)
 bool SpawnCommandHandler::handle(containers::SimCommand sc)
 {
     if (sc.action == containers::SimCommand::SPAWN) {
-        simulator->getWorld()->spawnRobot(sc.senderID);
+        simulator->addRobot(simulator->getWorld()->spawnRobot(sc.senderID));
         return true;
     } else {
         return false;

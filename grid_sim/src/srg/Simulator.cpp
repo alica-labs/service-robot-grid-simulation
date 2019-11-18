@@ -99,7 +99,15 @@ srg::World* Simulator::getWorld()
     return this->world;
 }
 
-sim::SimulatedRobot* Simulator::getRobot(essentials::IdentifierConstPtr id) {
+void Simulator::addRobot(world::ServiceRobot* serviceRobot)
+{
+    if (!serviceRobot)
+        return;
+    this->simulatedRobots.push_back(new sim::SimulatedRobot(serviceRobot));
+}
+
+sim::SimulatedRobot* Simulator::getRobot(essentials::IdentifierConstPtr id)
+{
     for (sim::SimulatedRobot* robot : simulatedRobots) {
         if (robot->getID() == id) {
             return robot;
@@ -108,7 +116,8 @@ sim::SimulatedRobot* Simulator::getRobot(essentials::IdentifierConstPtr id) {
     return nullptr;
 }
 
-void Simulator::addMarker(viz::Marker marker) {
+void Simulator::addMarker(viz::Marker marker)
+{
     this->gui->addMarker(marker);
 }
 

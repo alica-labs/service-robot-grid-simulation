@@ -3,6 +3,8 @@
 #include "srg/world/Coordinate.h"
 #include "srg/world/RoomType.h"
 
+#include <essentials/IdentifierConstPtr.h>
+
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -25,10 +27,12 @@ public:
     void removeObject(Object* object);
     void update(std::vector<Object*> objects);
     RoomType getType() const;
+    bool isBlocked() const;
+    bool contains(const Object* object) const;
+    bool contains(essentials::IdentifierConstPtr objectID) const;
 
     bool operator<(const Cell* other);
     bool operator==(Cell const* other);
-    static bool sortByCoordinates(const Cell* first, const Cell* second);
 
     // friend declaration
     friend ::srg::World;
