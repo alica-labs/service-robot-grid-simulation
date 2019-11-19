@@ -59,7 +59,6 @@ bool Arm::pickUp(essentials::IdentifierConstPtr objectID, World* world)
         std::cout << "[Arm] Object does not exist! ID: " << *objectID << std::endl;
         return false;
     }
-    object->deleteCell();
     robot->setCarriedObject(object);
     return true;
 }

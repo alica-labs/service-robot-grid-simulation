@@ -16,7 +16,7 @@ SimulatedRobot::SimulatedRobot(world::ServiceRobot* serviceRobot)
 
 world::Coordinate SimulatedRobot::getCoordinate()
 {
-    return this->serviceRobot->getCell()->coordinate;
+    return dynamic_cast<const world::Cell*>(this->serviceRobot->getParentContainer())->coordinate;
 }
 
 world::Object* SimulatedRobot::getCarriedObject()

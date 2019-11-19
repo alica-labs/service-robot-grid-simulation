@@ -20,7 +20,6 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const ServiceRobot& obj);
 
 private:
-    Object* carriedObject;
 };
 } // namespace world
 } // namespace srg

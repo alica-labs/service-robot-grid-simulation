@@ -113,7 +113,8 @@ void GUI::readWindowConfig()
     }
 }
 
-void GUI::addMarker(viz::Marker marker) {
+void GUI::addMarker(viz::Marker marker)
+{
     this->markers.push_back(marker);
 }
 
@@ -136,17 +137,20 @@ void GUI::draw(World* world)
             //            std::cout << "GUI: Background Sprite: " << pair.second->getType() << " at " << pair.second->coordinate << std::endl;
 
             // object sprites
-            for (world::Object* object : pair.second->getObjects()) {
+            for (auto& objectEntry : pair.second->getObjects()) {
                 sf::Sprite sprite;
-                sprite = getSprite(object);
-                sprite.setPosition(object->getCell()->coordinate.x * scaledSpriteSize, object->getCell()->coordinate.y * scaledSpriteSize);
+                sprite = getSprite(objectEntry.second);
+                const world::Cell* cell = dynamic_cast<const world::Cell*>(objectEntry.second->getParentContainer());
+                sprite.setPosition(cell->coordinate.x * scaledSpriteSize, cell->coordinate.y * scaledSpriteSize);
                 this->window->draw(sprite);
 
-                if (world::ServiceRobot* robot = dynamic_cast<world::ServiceRobot*>(object)) {
+                cell = nullptr;
+                if (world::ServiceRobot* robot = dynamic_cast<world::ServiceRobot*>(objectEntry.second)) {
                     if (const world::Object* carriedObject = robot->getCarriedObject()) {
                         sprite = getSprite(carriedObject);
-                        sprite.setPosition((robot->getCell()->coordinate.x * scaledSpriteSize) + scaledSpriteSize / 2,
-                                (robot->getCell()->coordinate.y * scaledSpriteSize) + scaledSpriteSize / 2);
+                        cell = dynamic_cast<const world::Cell*>(robot->getParentContainer());
+                        sprite.setPosition(
+                                (cell->coordinate.x * scaledSpriteSize) + scaledSpriteSize / 2, (cell->coordinate.y * scaledSpriteSize) + scaledSpriteSize / 2);
                         sprite.setScale(0.25, 0.25);
                         this->window->draw(sprite);
                     }
@@ -161,7 +165,8 @@ void GUI::draw(World* world)
         // for debug purposes
         for (viz::Marker marker : markers) {
             sf::Sprite sprite = getSprite(marker.type);
-            sprite.setPosition((marker.coordinate.x * scaledSpriteSize) + scaledSpriteSize / 4, (marker.coordinate.y * scaledSpriteSize) + scaledSpriteSize / 4);
+            sprite.setPosition(
+                    (marker.coordinate.x * scaledSpriteSize) + scaledSpriteSize / 4, (marker.coordinate.y * scaledSpriteSize) + scaledSpriteSize / 4);
             sprite.setScale(0.25, 0.25);
             this->window->draw(sprite);
         }

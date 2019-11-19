@@ -1,13 +1,13 @@
 #include "srg/sim/Sensor.h"
 
 #include "srg/Simulator.h"
-#include "srg/sim/containers/CellPerceptions.h"
 #include "srg/sim/SimulatedRobot.h"
+#include "srg/sim/containers/CellPerceptions.h"
 
 #include <srg/World.h>
 #include <srg/world/Cell.h>
+#include <srg/world/Door.h>
 #include <srg/world/Coordinate.h>
-
 
 #include <SystemConfig.h>
 #include <cnc_geometry/Calculator.h>
@@ -56,19 +56,19 @@ std::vector<containers::CellPerceptions> Sensor::createPerceptions(srg::Simulato
         marker.type = viz::SpriteType::Unknown;
         simulator->addMarker(marker);
 
-        const std::vector<world::Object*>& objects = entry.second->getObjects();
+        auto& objects = entry.second->getObjects();
         containers::CellPerceptions cellPerceptions;
         cellPerceptions.x = entry.second->coordinate.x;
         cellPerceptions.y = entry.second->coordinate.y;
-        for (world::Object* object : objects) {
+        for (auto& objectEntry : objects) {
             containers::Perception p;
-            p.objectID = object->getID();
-            p.type = object->getType();
-            p.state = object->getState();
+            p.objectID = objectEntry.second->getID();
+            p.type = objectEntry.second->getType();
+            p.state = objectEntry.second->getState();
             p.x = cellPerceptions.x;
             p.y = cellPerceptions.y;
             cellPerceptions.perceptions.push_back(p);
-            if (world::ServiceRobot* robot = dynamic_cast<world::ServiceRobot*>(object)) {
+            if (world::ServiceRobot* robot = dynamic_cast<world::ServiceRobot*>(objectEntry.second)) {
                 const world::Object* carriedObject = robot->getCarriedObject();
                 if (carriedObject) {
                     containers::Perception carryPercept;
@@ -117,10 +117,9 @@ std::vector<const world::Cell*> Sensor::collectCells(world::Coordinate start, wo
             break;
         }
         bool sightBlocked = false;
-        for (auto object : cell->getObjects()) {
-            if (object->getType() == srg::world::ObjectType::Door && object->getState() == srg::world::ObjectState::Closed) {
-                sightBlocked = true;
-                break;
+        for (auto& objectEntry : cell->getObjects()) {
+            if (const srg::world::Door* door = dynamic_cast<const srg::world::Door*>(objectEntry.second)) {
+                sightBlocked = !door->isOpen();
             }
         }
         if (sightBlocked) {

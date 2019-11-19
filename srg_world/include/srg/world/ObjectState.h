@@ -11,6 +11,7 @@ enum class ObjectState
     Open,
     Closed,
     Carried,
+    Placed,
     Undefined
 };
 

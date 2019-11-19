@@ -2,6 +2,7 @@
 
 #include "srg/world/ObjectState.h"
 #include "srg/world/ObjectType.h"
+#include "srg/world/ObjectSet.h"
 
 #include <essentials/Identifier.h>
 #include <essentials/IdentifierConstPtr.h>
@@ -10,38 +11,27 @@ namespace srg
 {
 namespace world
 {
-
-class Cell;
-
-class Object
+class Object : public ObjectSet
 {
 public:
-    Object(ObjectType type, essentials::IdentifierConstPtr id, ObjectState state = ObjectState::Undefined);
-
-    virtual ~Object();
+    Object(ObjectType type, essentials::IdentifierConstPtr id, ObjectState state = ObjectState::Undefined, int32_t capacity = INT32_MAX);
+    ~Object() override;
 
     essentials::IdentifierConstPtr getID() const;
 
     virtual ObjectType getType() const;
-
     void setType(ObjectType type);
 
     ObjectState getState() const;
-
     void setState(ObjectState state);
 
-    const Cell* getCell() const;
-
-    Cell* editCell();
-
-    void setCell(Cell* cell);
-
-    void deleteCell();
+    const ObjectSet* getParentContainer() const;
+    void setParentContainer(ObjectSet* parentContainer);
+//    void deleteCell();
 
     friend std::ostream& operator<<(std::ostream& os, const Object& obj);
-
 protected:
-    Cell* cell;
+    ObjectSet* parentContainer; /**< ServiceRobot, Cell, etc.*/
     ObjectType type;
     ObjectState state;
     essentials::IdentifierConstPtr id;
