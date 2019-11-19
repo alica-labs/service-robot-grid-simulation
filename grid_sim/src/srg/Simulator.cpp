@@ -69,7 +69,7 @@ void Simulator::placeObjectsFromConf()
             object = this->world->createOrUpdateObject(id, type);
         }
 
-        if (object->getCell()) {
+        if (object->getParentContainer()) {
             // object is already placed, maybe it was created already...
             continue;
         }

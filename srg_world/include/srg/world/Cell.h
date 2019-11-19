@@ -2,6 +2,7 @@
 
 #include "srg/world/Coordinate.h"
 #include "srg/world/RoomType.h"
+#include "srg/world/ObjectSet.h"
 
 #include <essentials/IdentifierConstPtr.h>
 
@@ -17,19 +18,11 @@ namespace world
 class Object;
 class Room;
 
-class Cell
+class Cell : public ObjectSet
 {
 public:
-    virtual ~Cell() = default;
-
-    const std::vector<Object*>& getObjects() const;
-    void addObject(Object* object);
-    void removeObject(Object* object);
-    void update(std::vector<Object*> objects);
     RoomType getType() const;
     bool isBlocked() const;
-    bool contains(const Object* object) const;
-    bool contains(essentials::IdentifierConstPtr objectID) const;
 
     bool operator<(const Cell* other);
     bool operator==(Cell const* other);
@@ -47,8 +40,6 @@ public:
 
 private:
     Cell(uint32_t x, uint32_t y);
-
-    std::vector<Object*> objects;
 };
 
 bool operator==(const Cell& first, const Cell& second);

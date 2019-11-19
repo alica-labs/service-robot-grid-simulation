@@ -39,7 +39,7 @@ add_library(${PROJECT_NAME}
   src/srg/world/ObjectType.cpp
   src/srg/world/RoomType.cpp
   src/srg/world/Direction.cpp
-)
+        src/srg/world/ObjectSet.cpp include/srg/world/ObjectSet.h)
 target_link_libraries(${PROJECT_NAME}
   tmxparser
   ${catkin_LIBRARIES}

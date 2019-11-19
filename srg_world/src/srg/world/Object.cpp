@@ -1,50 +1,46 @@
 #include "srg/world/Object.h"
 
-#include "srg/world/Cell.h"
-
 namespace srg
 {
 namespace world
 {
-Object::Object(ObjectType type, essentials::IdentifierConstPtr id, ObjectState state)
-        : type(type)
+Object::Object(ObjectType type, essentials::IdentifierConstPtr id, ObjectState state, int32_t capacity)
+        : ObjectSet(capacity)
+        , type(type)
         , state(state)
         , id(id)
-        , cell(nullptr)
+        , parentContainer(nullptr)
 {
 }
 
 Object::~Object() {}
 
-void Object::setCell(Cell* cell)
+void Object::setParentContainer(ObjectSet* parentContainer)
 {
-    if (this->cell != nullptr) {
-        if (this->cell == cell)
+    if (this->parentContainer != nullptr) {
+        if (this->parentContainer == parentContainer)
             return;
-        this->cell->removeObject(this);
+        this->parentContainer->removeObject(this);
     }
-    this->cell = cell;
-    this->cell->addObject(this);
+    this->parentContainer = parentContainer;
+    if (this->parentContainer) {
+        this->parentContainer->addObject(this);
+    }
 }
 
-const Cell* Object::getCell() const
+const ObjectSet* Object::getParentContainer() const
 {
-    return this->cell;
+    return this->parentContainer;
 }
 
-Cell* Object::editCell()
-{
-    return this->cell;
-}
-
-void Object::deleteCell()
-{
-    if (!this->cell)
-        return;
-    Cell* tmp = this->cell;
-    this->cell = nullptr;
-    tmp->removeObject(this);
-}
+//void Object::deleteCell()
+//{
+//    if (!this->parentContainer)
+//        return;
+//    ObjectSet* tmp = this->parentContainer;
+//    this->parentContainer = nullptr;
+//    tmp->removeObject(this);
+//}
 
 ObjectType Object::getType() const
 {
@@ -68,12 +64,15 @@ void Object::setState(ObjectState state)
 
 essentials::IdentifierConstPtr Object::getID() const
 {
-    return essentials::IdentifierConstPtr(this->id);
+    return this->id;
 }
 
 std::ostream& operator<<(std::ostream& os, const Object& obj)
 {
-    os << "ID: " << obj.id << " Type: " << obj.type << " State: " << obj.state << std::endl;
+    os << "[Object] " << obj.type << "(" << obj.id << ") State: " << obj.state << " Contained Objects (Size " << obj.containingObjects.size() << "):" << std::endl;
+    for (auto& objectEntry : obj.containingObjects) {
+        os << "\t" << *objectEntry.second << std::endl;
+    }
     return os;
 }
 } // namespace world

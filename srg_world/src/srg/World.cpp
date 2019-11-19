@@ -124,6 +124,7 @@ world::Cell* World::addCell(uint32_t x, uint32_t y, world::Room* room)
 
 const world::Object* World::getObject(world::ObjectType type) const
 {
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     for (auto& object : this->objects) {
         if (object.second->getType() == type) {
             return object.second;
@@ -153,12 +154,13 @@ bool World::placeObject(world::Object* object, world::Coordinate coordinate)
         return false;
     }
 
-    object->setCell(cellIter->second);
+    object->setParentContainer(cellIter->second);
     return true;
 }
 
 const world::Object* World::getObject(essentials::IdentifierConstPtr id) const
 {
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto objectEntry = this->objects.find(id);
     if (objectEntry != this->objects.end()) {
         return objectEntry->second;
@@ -169,6 +171,7 @@ const world::Object* World::getObject(essentials::IdentifierConstPtr id) const
 
 world::Object* World::editObject(essentials::IdentifierConstPtr id)
 {
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto objectEntry = this->objects.find(id);
     if (objectEntry != this->objects.end()) {
         return objectEntry->second;
@@ -179,6 +182,7 @@ world::Object* World::editObject(essentials::IdentifierConstPtr id)
 
 const world::ServiceRobot* World::getRobot(essentials::IdentifierConstPtr id) const
 {
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto robotEntry = this->robots.find(id);
     if (robotEntry != this->robots.end()) {
         return robotEntry->second;
@@ -189,6 +193,7 @@ const world::ServiceRobot* World::getRobot(essentials::IdentifierConstPtr id) co
 
 world::ServiceRobot* World::editRobot(essentials::IdentifierConstPtr id)
 {
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto robotEntry = this->robots.find(id);
     if (robotEntry != this->robots.end()) {
         return robotEntry->second;
@@ -217,7 +222,7 @@ world::ServiceRobot* World::spawnRobot(essentials::IdentifierConstPtr id)
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     // create robot
     world::Object* object = this->createOrUpdateObject(id, world::ObjectType::Robot);
-    if (object->getCell()) {
+    if (object->getParentContainer()) {
         // robot is already placed, maybe it was spawned already...
         return dynamic_cast<world::ServiceRobot*>(object);
     }
@@ -263,30 +268,16 @@ world::Object* World::createOrUpdateObject(
 
     object->setType(type);
     object->setState(state);
-    // dirty hack, I know! :P
-    // TODO: Adapt messages from simulator and allow to set object accordingly
-    // TODO: Handle information that object is not carried anymore...
+
     if (state == world::ObjectState::Carried) {
-        if (world::ServiceRobot* robot = this->editRobot(robotID)) {
+        if (world::ObjectSet* container = this->editRobot(robotID)) {
             //            std::cout << "World::createOrUpdateObject(): Robot " << robotID << " carries " << type << std::endl;
-            robot->carriedObject = object;
+            container->addObject(object);
         } else {
             //            std::cout << "World::createOrUpdateObject(): Robot unknown! " << robotID << std::endl;
         }
     }
     return object;
-}
-
-bool World::removeObject(world::Object* object)
-{
-    std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    auto entry = this->objects.find(object->getID());
-    if (entry == this->objects.end()) {
-        return false;
-    }
-    this->objects.erase(object->getID());
-    object->deleteCell();
-    return true;
 }
 
 void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direction)
@@ -305,12 +296,12 @@ void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direc
         std::cerr << "World::moveObject(): Placement not allowed on " << goalCell->coordinate << " of type " << object->getType() << std::endl;
         return;
     }
-    object->editCell()->removeObject(object);
     goalCell->addObject(object);
 }
 
 bool World::addRobot(world::ServiceRobot* robot)
 {
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto robotEntry = this->robots.find(robot->getID());
     if (robotEntry == this->robots.end()) {
         this->robots.emplace(robot->getID(), robot);
@@ -344,10 +335,12 @@ void World::closeDoor(essentials::IdentifierConstPtr id)
 
 void World::updateCell(world::Coordinate coordinate, std::vector<world::Object*> objects)
 {
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto cellEntry = this->cellGrid.find(coordinate);
     if (cellEntry == this->cellGrid.end()) {
         return;
     }
+    std::cout << "[World]" << *cellEntry->second << std::endl;
     cellEntry->second->update(objects);
 }
 
@@ -355,15 +348,16 @@ void World::updateCell(world::Coordinate coordinate, std::vector<world::Object*>
 
 world::Cell* World::getNeighbourCell(const world::Direction& direction, world::Object* object)
 {
+    const world::Cell* cell = dynamic_cast<const world::Cell*>(object->getParentContainer());
     switch (direction) {
     case world::Direction::Left:
-        return object->getCell()->left;
+        return cell->left;
     case world::Direction::Up:
-        return object->getCell()->up;
+        return cell->up;
     case world::Direction::Right:
-        return object->getCell()->right;
+        return cell->right;
     case world::Direction::Down:
-        return object->getCell()->down;
+        return cell->down;
     default:
         std::cout << "[World] Unknown Direction: " << direction << std::endl;
         return nullptr;
@@ -376,10 +370,10 @@ bool World::isPlacementAllowed(const world::Cell* cell, world::ObjectType object
         return false;
     }
 
-    for (world::Object* object : cell->getObjects()) {
-        if (object->getType() == world::ObjectType::Door) {
+    for (auto& objectEntry : cell->getObjects()) {
+        if (objectEntry.second->getType() == world::ObjectType::Door) {
             if (objectType == world::ObjectType::Robot) {
-                return object->getState() == world::ObjectState::Open;
+                return objectEntry.second->getState() == world::ObjectState::Open;
             } else {
                 return false;
             }
