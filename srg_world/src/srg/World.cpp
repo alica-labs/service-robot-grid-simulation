@@ -265,6 +265,7 @@ world::Object* World::createOrUpdateObject(
     object->setState(state);
     // dirty hack, I know! :P
     // TODO: Adapt messages from simulator and allow to set object accordingly
+    // TODO: Handle information that object is not carried anymore...
     if (state == world::ObjectState::Carried) {
         if (world::ServiceRobot* robot = this->editRobot(robotID)) {
             //            std::cout << "World::createOrUpdateObject(): Robot " << robotID << " carries " << type << std::endl;
