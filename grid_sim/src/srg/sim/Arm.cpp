@@ -71,7 +71,7 @@ bool Arm::putDown(srg::sim::containers::SimCommand sc, World* world)
     }
 
     if (world->placeObject(robot->getCarriedObject(), world::Coordinate(sc.x, sc.y))) {
-        robot->setCarriedObject(nullptr);
+        std::cout << "[Arm] Object placed at (" << sc.x << ", " << sc.y << ")" << std::endl;
         return true;
     } else {
         std::cout << "[Arm] Could not place the object here (" << sc.x << ", " << sc.y << ")" << std::endl;

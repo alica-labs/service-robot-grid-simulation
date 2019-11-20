@@ -50,7 +50,7 @@ set(CAPNPC_OUTPUT_DIR ${${PROJECT_NAME}_msgdir})
 capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${capnp_messages})
 
 add_library(${PROJECT_NAME}_msgs
-        src/srg/sim/ContainerUtils.cpp
+  src/srg/sim/ContainerUtils.cpp
   ${CAPNP_SRCS}
 )
 target_link_libraries(${PROJECT_NAME}_msgs

@@ -3,6 +3,7 @@
 #include "srg/world/ObjectState.h"
 #include "srg/world/ObjectType.h"
 #include "srg/world/ObjectSet.h"
+#include "Coordinate.h"
 
 #include <essentials/Identifier.h>
 #include <essentials/IdentifierConstPtr.h>
@@ -14,7 +15,7 @@ namespace world
 class Object : public ObjectSet
 {
 public:
-    Object(ObjectType type, essentials::IdentifierConstPtr id, ObjectState state = ObjectState::Undefined, int32_t capacity = INT32_MAX);
+    Object(essentials::IdentifierConstPtr id, ObjectType type, ObjectState state = ObjectState::Undefined, int32_t capacity = INT32_MAX);
     ~Object() override;
 
     essentials::IdentifierConstPtr getID() const;
@@ -25,9 +26,11 @@ public:
     ObjectState getState() const;
     void setState(ObjectState state);
 
+    Coordinate getCoordinate() const;
+
     const ObjectSet* getParentContainer() const;
     void setParentContainer(ObjectSet* parentContainer);
-//    void deleteCell();
+    void deleteParentContainer();
 
     friend std::ostream& operator<<(std::ostream& os, const Object& obj);
 protected:

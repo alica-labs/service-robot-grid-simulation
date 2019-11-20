@@ -40,27 +40,33 @@ bool ObjectSet::addObject(Object* object)
 void ObjectSet::removeObject(Object* object)
 {
     if (this->containingObjects.erase(object->getID()) > 0) {
-        object->setParentContainer(nullptr);
+        object->deleteParentContainer();
     }
+}
+
+std::unordered_map<essentials::IdentifierConstPtr, srg::world::Object*>::iterator ObjectSet::removeObject(
+        std::unordered_map<essentials::IdentifierConstPtr, srg::world::Object*>::iterator iter)
+{
+    std::unordered_map<essentials::IdentifierConstPtr, srg::world::Object*>::iterator iterator = this->containingObjects.erase(iter);
+    if (iterator != this->containingObjects.end()) {
+        iter->second->deleteParentContainer();
+    }
+    return iterator;
 }
 
 void ObjectSet::update(std::vector<Object*> updateObjects)
 {
     // remove unseen objects
     for (auto it = this->containingObjects.begin(); it != this->containingObjects.end();) {
-        std::cout << "[ObjectSet] Size " << this->containingObjects.size() << std::endl;
         bool found = false;
         for (Object* updateObject : updateObjects) {
-            std::cout << "[ObjectSet] " << *updateObject << std::endl;
             if (updateObject->getID() == it->second->getID()) {
                 found = true;
                 break;
             }
         }
         if (!found) {
-            // this already deletes the object from this container... :D
-            it->second->setParentContainer(nullptr);
-            it = this->containingObjects.erase(it);
+            it = this->removeObject(it);
         } else {
             it++;
         }
@@ -72,7 +78,8 @@ void ObjectSet::update(std::vector<Object*> updateObjects)
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const ObjectSet& objectSet) {
+std::ostream& operator<<(std::ostream& os, const ObjectSet& objectSet)
+{
     for (auto& objectEntry : objectSet.containingObjects) {
         os << *objectEntry.second << std::endl;
     }

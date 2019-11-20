@@ -18,11 +18,14 @@ public:
     const std::unordered_map<essentials::IdentifierConstPtr, Object*>& getObjects() const;
     virtual bool addObject(Object* object);
     virtual void removeObject(Object* object);
+    virtual std::unordered_map<essentials::IdentifierConstPtr, srg::world::Object*>::iterator removeObject(
+            std::unordered_map<essentials::IdentifierConstPtr, Object*>::iterator iter);
     virtual void update(std::vector<Object*> objects);
     virtual bool contains(const Object* object) const;
     virtual bool contains(essentials::IdentifierConstPtr objectID) const;
     friend ::srg::World;
     friend std::ostream& operator<<(std::ostream& os, const ObjectSet& objectSet);
+
 protected:
     explicit ObjectSet(int32_t capacity = INT32_MAX);
     int32_t capacity;
