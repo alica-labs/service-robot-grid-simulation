@@ -21,12 +21,16 @@ world::Coordinate SimulatedRobot::getCoordinate()
 
 world::Object* SimulatedRobot::getCarriedObject()
 {
-    return this->serviceRobot->getCarriedObject();
+    if(this->serviceRobot->getObjects().size() > 0) {
+        return this->serviceRobot->getObjects().begin()->second;
+    } else {
+        return nullptr;
+    }
 }
 
 void SimulatedRobot::setCarriedObject(world::Object* object)
 {
-    this->serviceRobot->setCarriedObject(object);
+    this->serviceRobot->addObject(object);
 }
 
 essentials::IdentifierConstPtr SimulatedRobot::getID()
@@ -40,7 +44,7 @@ containers::SimPerceptions SimulatedRobot::createSimPerceptions(Simulator* simul
     sps.receiverID = this->getID();
 
     // objects
-    std::vector<containers::CellPerceptions> objectPerceptions = this->objectDetection->createPerceptions(simulator);
+    std::vector<containers::CellPerception> objectPerceptions = this->objectDetection->createPerceptions(simulator);
     sps.cellPerceptions.insert(sps.cellPerceptions.end(), objectPerceptions.begin(), objectPerceptions.end());
 
     return sps;

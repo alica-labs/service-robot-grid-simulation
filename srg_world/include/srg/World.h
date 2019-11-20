@@ -55,8 +55,7 @@ public:
     const world::Object* getObject(essentials::IdentifierConstPtr id) const;
     world::Object* editObject(essentials::IdentifierConstPtr id);
     void updateCell(world::Coordinate coordinate, std::vector<world::Object*> objects);
-    world::Object* createOrUpdateObject(essentials::IdentifierConstPtr id, world::ObjectType type, world::ObjectState state = world::ObjectState::Undefined,
-            essentials::IdentifierConstPtr robotID = nullptr);
+    world::Object* createOrUpdateObject(world::Object* tmpObject);
     bool placeObject(world::Object* object, world::Coordinate coordinate);
     void moveObject(essentials::IdentifierConstPtr id, world::Direction direction);
 

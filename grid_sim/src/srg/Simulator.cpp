@@ -61,12 +61,12 @@ void Simulator::placeObjectsFromConf()
         world::Object* object;
         if (type == world::ObjectType::Door) {
             if ((*sc)["Objects"]->get<bool>("Objects", objectSection.c_str(), "open", NULL)) {
-                object = this->world->createOrUpdateObject(id, type, world::ObjectState::Open);
+                object = this->world->createOrUpdateObject(new srg::world::Object( id, type, world::ObjectState::Open));
             } else {
-                object = this->world->createOrUpdateObject(id, type, world::ObjectState::Closed);
+                object = this->world->createOrUpdateObject(new srg::world::Object(id, type, world::ObjectState::Closed));
             }
         } else {
-            object = this->world->createOrUpdateObject(id, type);
+            object = this->world->createOrUpdateObject(new srg::world::Object(id, type));
         }
 
         if (object->getParentContainer()) {

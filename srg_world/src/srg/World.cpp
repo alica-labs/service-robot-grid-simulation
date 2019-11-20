@@ -221,7 +221,7 @@ world::ServiceRobot* World::spawnRobot(essentials::IdentifierConstPtr id)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     // create robot
-    world::Object* object = this->createOrUpdateObject(id, world::ObjectType::Robot);
+    world::Object* object = this->createOrUpdateObject(new srg::world::Object(id, world::ObjectType::Robot));
     if (object->getParentContainer()) {
         // robot is already placed, maybe it was spawned already...
         return dynamic_cast<world::ServiceRobot*>(object);
@@ -246,38 +246,45 @@ world::ServiceRobot* World::spawnRobot(essentials::IdentifierConstPtr id)
     }
 }
 
-world::Object* World::createOrUpdateObject(
-        essentials::IdentifierConstPtr id, world::ObjectType type, world::ObjectState state, essentials::IdentifierConstPtr robotID)
+world::Object* World::createOrUpdateObject(world::Object* tmpObject)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    world::Object* object = editObject(id);
+    world::Object* object = editObject(tmpObject->getID());
     if (!object) {
-        switch (type) {
+        switch (tmpObject->getType()) {
         case world::ObjectType::Robot:
-            object = new world::ServiceRobot(id);
+            object = new world::ServiceRobot(tmpObject->getID());
             break;
         case world::ObjectType::Door:
-            object = new class world::Door(id, state);
+            object = new class world::Door(tmpObject->getID(), tmpObject->getState());
             break;
         default:
-            object = new world::Object(type, id, state);
+            object = new world::Object(tmpObject->getID(), tmpObject->getType(), tmpObject->getState());
         }
         std::cout << "[World] Created " << *object;
         this->objects.emplace(object->getID(), object);
     }
 
-    object->setType(type);
-    object->setState(state);
+    object->setType(tmpObject->getType());
+    object->setState(tmpObject->getState());
 
-    if (state == world::ObjectState::Carried) {
-        if (world::ObjectSet* container = this->editRobot(robotID)) {
-            //            std::cout << "World::createOrUpdateObject(): Robot " << robotID << " carries " << type << std::endl;
-            container->addObject(object);
-        } else {
-            //            std::cout << "World::createOrUpdateObject(): Robot unknown! " << robotID << std::endl;
-        }
+    for (auto& childMsgObjectEntry : tmpObject->getObjects()) {
+        object->addObject(createOrUpdateObject(childMsgObjectEntry.second));
     }
+
+    delete tmpObject; /**< because tmpObject is temporary (life time e.g. from 'receiving msg' until 'integration into world'*/
     return object;
+}
+
+void World::updateCell(world::Coordinate coordinate, std::vector<world::Object*> objects)
+{
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    auto cellEntry = this->cellGrid.find(coordinate);
+    if (cellEntry == this->cellGrid.end()) {
+        return;
+    }
+    //    std::cout << "[World]" << *cellEntry->second << std::endl;
+    cellEntry->second->update(objects);
 }
 
 void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direction)
@@ -289,11 +296,11 @@ void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direc
     }
     world::Cell* goalCell = getNeighbourCell(direction, object);
     if (!goalCell) {
-        std::cerr << "World::moveObject(): Cell does not exist! " << std::endl;
+        std::cerr << "[World] Cell does not exist! " << std::endl;
         return;
     }
     if (!isPlacementAllowed(goalCell, object->getType())) {
-        std::cerr << "World::moveObject(): Placement not allowed on " << goalCell->coordinate << " of type " << object->getType() << std::endl;
+        std::cerr << "[World] Placement not allowed on " << goalCell->coordinate << " of type " << object->getType() << std::endl;
         return;
     }
     goalCell->addObject(object);
@@ -318,7 +325,7 @@ void World::openDoor(essentials::IdentifierConstPtr id)
     if (door) {
         door->setState(world::ObjectState::Open);
     } else {
-        std::cout << "World::openDoor(): No suitable door found with ID: " << *id << std::endl;
+        std::cout << "[World] No suitable door found with ID: " << *id << std::endl;
     }
 }
 
@@ -329,19 +336,8 @@ void World::closeDoor(essentials::IdentifierConstPtr id)
     if (door) {
         door->setState(world::ObjectState::Closed);
     } else {
-        std::cout << "World::closeDoor(): No suitable door found with ID: " << *id << std::endl;
+        std::cout << "[World] No suitable door found with ID: " << *id << std::endl;
     }
-}
-
-void World::updateCell(world::Coordinate coordinate, std::vector<world::Object*> objects)
-{
-    std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    auto cellEntry = this->cellGrid.find(coordinate);
-    if (cellEntry == this->cellGrid.end()) {
-        return;
-    }
-    std::cout << "[World]" << *cellEntry->second << std::endl;
-    cellEntry->second->update(objects);
 }
 
 // INTERNAL METHODS
@@ -383,7 +379,8 @@ bool World::isPlacementAllowed(const world::Cell* cell, world::ObjectType object
     return true;
 }
 
-std::recursive_mutex& World::getDataMutex() {
+std::recursive_mutex& World::getDataMutex()
+{
     return this->dataMutex;
 }
 

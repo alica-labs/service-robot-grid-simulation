@@ -2,7 +2,7 @@
 
 #include "srg/Simulator.h"
 #include "srg/sim/SimulatedRobot.h"
-#include "srg/sim/containers/CellPerceptions.h"
+#include "srg/sim/containers/CellPerception.h"
 
 #include <srg/World.h>
 #include <srg/world/Cell.h>
@@ -23,7 +23,7 @@ Sensor::Sensor(srg::sim::SimulatedRobot* robot)
     this->sightLimit = (*sc)["ObjectDetection"]->get<uint32_t>("sightLimit", NULL);
 }
 
-std::vector<containers::CellPerceptions> Sensor::createPerceptions(srg::Simulator* simulator)
+std::vector<containers::CellPerception> Sensor::createPerceptions(srg::Simulator* simulator)
 {
     // collect cells in vision
     world::Coordinate from = this->robot->getCoordinate();
@@ -34,9 +34,9 @@ std::vector<containers::CellPerceptions> Sensor::createPerceptions(srg::Simulato
         int32_t yDelta = round(cos(currentDegree) * sightLimit);
         world::Coordinate to = world::Coordinate(from.x + xDelta, from.y + yDelta);
         // for debug purpose
-        viz::Marker marker(to);
-        marker.type = viz::SpriteType::Default;
-        simulator->addMarker(marker);
+//        viz::Marker marker(to);
+//        marker.type = viz::SpriteType::Default;
+//        simulator->addMarker(marker);
 
         std::vector<const world::Cell*> currentCells = this->collectCells(from, to, simulator->getWorld());
         for (const world::Cell* cell : currentCells) {
@@ -48,39 +48,19 @@ std::vector<containers::CellPerceptions> Sensor::createPerceptions(srg::Simulato
     }
 
     // collect objects as perceptions
-    std::vector<containers::CellPerceptions> cellPerceptionsList;
+    std::vector<containers::CellPerception> cellPerceptionsList;
     for (auto& entry : cellsInVision) {
-
         // for debug purpose
-        viz::Marker marker(entry.second->coordinate);
-        marker.type = viz::SpriteType::Unknown;
-        simulator->addMarker(marker);
+//        viz::Marker marker(entry.second->coordinate);
+//        marker.type = viz::SpriteType::Unknown;
+//        simulator->addMarker(marker);
 
         auto& objects = entry.second->getObjects();
-        containers::CellPerceptions cellPerceptions;
+        containers::CellPerception cellPerceptions;
         cellPerceptions.x = entry.second->coordinate.x;
         cellPerceptions.y = entry.second->coordinate.y;
         for (auto& objectEntry : objects) {
-            containers::Perception p;
-            p.objectID = objectEntry.second->getID();
-            p.type = objectEntry.second->getType();
-            p.state = objectEntry.second->getState();
-            p.x = cellPerceptions.x;
-            p.y = cellPerceptions.y;
-            cellPerceptions.perceptions.push_back(p);
-            if (world::ServiceRobot* robot = dynamic_cast<world::ServiceRobot*>(objectEntry.second)) {
-                const world::Object* carriedObject = robot->getCarriedObject();
-                if (carriedObject) {
-                    containers::Perception carryPercept;
-                    carryPercept.objectID = carriedObject->getID();
-                    carryPercept.state = world::ObjectState::Carried;
-                    carryPercept.type = carriedObject->getType();
-                    carryPercept.x = cellPerceptions.x;
-                    carryPercept.y = cellPerceptions.y;
-                    carryPercept.robotID = robot->getID();
-                    cellPerceptions.perceptions.push_back(carryPercept);
-                }
-            }
+            cellPerceptions.objects.push_back(objectEntry.second);
         }
         cellPerceptionsList.push_back(cellPerceptions);
     }

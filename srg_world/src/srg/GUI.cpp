@@ -146,8 +146,8 @@ void GUI::draw(World* world)
 
                 cell = nullptr;
                 if (world::ServiceRobot* robot = dynamic_cast<world::ServiceRobot*>(objectEntry.second)) {
-                    if (const world::Object* carriedObject = robot->getCarriedObject()) {
-                        sprite = getSprite(carriedObject);
+                    if (robot->getObjects().size() > 0) {
+                        sprite = getSprite(robot->getObjects().begin()->second);
                         cell = dynamic_cast<const world::Cell*>(robot->getParentContainer());
                         sprite.setPosition(
                                 (cell->coordinate.x * scaledSpriteSize) + scaledSpriteSize / 2, (cell->coordinate.y * scaledSpriteSize) + scaledSpriteSize / 2);

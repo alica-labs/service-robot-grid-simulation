@@ -1,10 +1,12 @@
 #include "srg/world/Object.h"
 
+#include "srg/world/Cell.h"
+
 namespace srg
 {
 namespace world
 {
-Object::Object(ObjectType type, essentials::IdentifierConstPtr id, ObjectState state, int32_t capacity)
+Object::Object(essentials::IdentifierConstPtr id, ObjectType type, ObjectState state, int32_t capacity)
         : ObjectSet(capacity)
         , type(type)
         , state(state)
@@ -15,32 +17,48 @@ Object::Object(ObjectType type, essentials::IdentifierConstPtr id, ObjectState s
 
 Object::~Object() {}
 
+Coordinate Object::getCoordinate() const {
+    const ObjectSet* parentContainer = this->parentContainer;
+    const srg::world::Cell* cell = nullptr;
+    const srg::world::Object* object = nullptr;
+
+    cell = dynamic_cast<const srg::world::Cell*>(parentContainer);
+    if (cell){
+        return cell->coordinate;
+    } else {
+        object = dynamic_cast<const srg::world::Object*>(parentContainer);
+        if (object) {
+            return object->getCoordinate();
+        }
+    }
+    std::cerr << "[Object] Object has no coordinates! " << *this << std::endl;
+    return Coordinate(-1,-1);
+}
+
+void Object::deleteParentContainer()
+{
+    if (this->parentContainer == nullptr) {
+        return;
+    }
+    ObjectSet* tmpContainer = this->parentContainer;
+    this->parentContainer = nullptr;
+    tmpContainer->removeObject(this);
+}
+
 void Object::setParentContainer(ObjectSet* parentContainer)
 {
-    if (this->parentContainer != nullptr) {
-        if (this->parentContainer == parentContainer)
-            return;
-        this->parentContainer->removeObject(this);
+    if (parentContainer == nullptr || this->parentContainer == parentContainer) {
+        return;
     }
+    this->deleteParentContainer();
     this->parentContainer = parentContainer;
-    if (this->parentContainer) {
-        this->parentContainer->addObject(this);
-    }
+    this->parentContainer->addObject(this);
 }
 
 const ObjectSet* Object::getParentContainer() const
 {
     return this->parentContainer;
 }
-
-//void Object::deleteCell()
-//{
-//    if (!this->parentContainer)
-//        return;
-//    ObjectSet* tmp = this->parentContainer;
-//    this->parentContainer = nullptr;
-//    tmp->removeObject(this);
-//}
 
 ObjectType Object::getType() const
 {
@@ -69,7 +87,8 @@ essentials::IdentifierConstPtr Object::getID() const
 
 std::ostream& operator<<(std::ostream& os, const Object& obj)
 {
-    os << "[Object] " << obj.type << "(" << obj.id << ") State: " << obj.state << " Contained Objects (Size " << obj.containingObjects.size() << "):" << std::endl;
+    os << "[Object] " << obj.type << "(" << obj.id << ") State: " << obj.state << " Contained Objects (Size " << obj.containingObjects.size()
+       << "):" << std::endl;
     for (auto& objectEntry : obj.containingObjects) {
         os << "\t" << *objectEntry.second << std::endl;
     }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "srg/sim/Sensor.h"
-#include "srg/sim/containers/CellPerceptions.h"
+#include "srg/sim/containers/CellPerception.h"
 
 #include <srg/world/Coordinate.h>
 
@@ -30,7 +30,7 @@ class Sensor
 {
 public:
     Sensor(srg::sim::SimulatedRobot* robot);
-    std::vector<containers::CellPerceptions> createPerceptions(srg::Simulator* simulator);
+    std::vector<containers::CellPerception> createPerceptions(srg::Simulator* simulator);
 
 private:
     std::vector<const world::Cell*>collectCells(world::Coordinate start, world::Coordinate end, srg::World* world);

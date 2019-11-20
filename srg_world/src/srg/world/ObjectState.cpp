@@ -24,12 +24,6 @@ std::ostream& operator<<(std::ostream& os, const ObjectState& state)
     case ObjectState::Undefined:
         os << "Undefined";
         break;
-    case ObjectState::Carried:
-        os << "Carried";
-        break;
-    case ObjectState::Placed:
-        os << "Placed";
-        break;
     default:
         os.setstate(std::ios_base::failbit);
     }
