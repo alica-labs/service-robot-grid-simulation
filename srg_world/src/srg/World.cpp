@@ -17,7 +17,7 @@
 namespace srg
 {
 World::World(essentials::IDManager* idManager)
-        : World(essentials::SystemConfig::getInstance()->getConfigPath() + "/textures/Department.tmx", idManager)
+        : World(essentials::SystemConfig::getInstance()->getConfigPath() + "textures/Department.tmx", idManager)
 {
 }
 
