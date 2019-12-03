@@ -23,6 +23,7 @@ enum class SpriteType
     CupRed = 12,
     CupBlue = 13,
     CupYellow = 14,
+    Human = 15,
     Last // has to be last for iterating with ints over this enum
 };
 

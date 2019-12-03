@@ -31,6 +31,9 @@ std::ostream& operator<<(std::ostream& os, const ObjectType& type)
     case ObjectType::Robot:
         os << "Robot";
         break;
+    case ObjectType::Human:
+        os << "Human";
+        break;
     case ObjectType::Unknown:
         os << "Unknown";
         break;

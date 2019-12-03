@@ -65,6 +65,9 @@ GUI::GUI(std::string windowName)
         case viz::SpriteType::CupYellow:
             sprite.setTextureRect(sf::IntRect(textureSize * 2, textureSize * 3, textureSize, textureSize));
             break;
+        case viz::SpriteType::Human:
+            sprite.setTextureRect(sf::IntRect(textureSize * 3, textureSize * 3, textureSize, textureSize));
+            break;
         default:
             sprite.setTextureRect(sf::IntRect(0, 0, textureSize, textureSize));
             std::cout << "[GUI] Unknown cell type " << static_cast<int>(type) << std::endl;

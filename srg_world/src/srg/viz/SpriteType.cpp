@@ -61,6 +61,9 @@ std::ostream& operator<<(std::ostream& os, const SpriteType& type)
     case SpriteType::CupYellow:
         os << "CupYellow";
         break;
+    case SpriteType::Human:
+        os << "Human";
+        break;
     case SpriteType::Last:
         os << "Last";
         break;
