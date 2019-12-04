@@ -3,7 +3,7 @@
 #include "srg/world/Cell.h"
 #include "srg/world/Door.h"
 #include "srg/world/Object.h"
-#include "srg/world/ServiceRobot.h"
+#include "srg/world/Agent.h"
 
 #include <FileSystem.h>
 #include <SystemConfig.h>
@@ -148,7 +148,7 @@ void GUI::draw(World* world)
                 this->window->draw(sprite);
 
                 cell = nullptr;
-                if (world::ServiceRobot* robot = dynamic_cast<world::ServiceRobot*>(objectEntry.second)) {
+                if (world::Agent* robot = dynamic_cast<world::Agent*>(objectEntry.second)) {
                     if (robot->getObjects().size() > 0) {
                         sprite = getSprite(robot->getObjects().begin()->second);
                         cell = dynamic_cast<const world::Cell*>(robot->getParentContainer());
@@ -249,6 +249,8 @@ sf::Sprite GUI::getSprite(const world::Object* object)
         return getSprite(viz::SpriteType::CupRed);
     case world::ObjectType::Robot:
         return getSprite(viz::SpriteType::Robot);
+    case world::ObjectType::Human:
+        return getSprite(viz::SpriteType::Human);
     default:
         std::cerr << "[GUI] Unknown object type encountered!" << object->getType() << std::endl;
         return getSprite(viz::SpriteType::Unknown);

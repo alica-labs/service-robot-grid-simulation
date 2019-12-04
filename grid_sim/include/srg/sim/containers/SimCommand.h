@@ -14,7 +14,8 @@ struct SimCommand
 {
     enum Action
     {
-        SPAWN,
+        SPAWNROBOT,
+        SPAWNHUMAN,
         GOLEFT,
         GORIGHT,
         GOUP,

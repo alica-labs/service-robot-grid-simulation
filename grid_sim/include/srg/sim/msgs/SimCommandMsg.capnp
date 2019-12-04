@@ -11,14 +11,15 @@ struct SimCommandMsg {
   y @4: UInt32;
 
   enum Action {
-      spawn @0;
-      goleft @1;
-      goright @2;
-      goup @3;
-      godown @4;
-      pickup @5;
-      putdown @6;
-      open @7;
-      close @8;
+      spawnrobot @0;
+      spawnhuman @1;
+      goleft @2;
+      goright @3;
+      goup @4;
+      godown @5;
+      pickup @6;
+      putdown @7;
+      open @8;
+      close @9;
   }
 }

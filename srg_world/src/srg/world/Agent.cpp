@@ -1,4 +1,4 @@
-#include "srg/world/ServiceRobot.h"
+#include "srg/world/Agent.h"
 
 #include <essentials/IdentifierConstPtr.h>
 
@@ -6,12 +6,12 @@ namespace srg
 {
 namespace world
 {
-ServiceRobot::ServiceRobot(essentials::IdentifierConstPtr id)
-        : Object(id, ObjectType::Robot, ObjectState::Undefined, 1)
+Agent::Agent(essentials::IdentifierConstPtr id, ObjectType type)
+        : Object(id, type, ObjectState::Undefined, 1)
 {
 }
 
-std::ostream& operator<<(std::ostream& os, const ServiceRobot& obj)
+std::ostream& operator<<(std::ostream& os, const Agent& obj)
 {
     if (obj.containingObjects.size() > 0) {
         os << "ID: " << obj.id << " Type: " << obj.type << " State: " << obj.state << " Carrying: " << *obj.containingObjects.begin()->second;

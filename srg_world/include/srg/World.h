@@ -24,7 +24,7 @@ namespace world
 {
 class Cell;
 class Object;
-class ServiceRobot;
+class Agent;
 class Room;
 } // namespace world
 
@@ -60,10 +60,10 @@ public:
     void moveObject(essentials::IdentifierConstPtr id, world::Direction direction);
 
     // robots
-    world::ServiceRobot* spawnRobot(essentials::IdentifierConstPtr id);
-    const world::ServiceRobot* getRobot(essentials::IdentifierConstPtr id) const;
-    world::ServiceRobot* editRobot(essentials::IdentifierConstPtr id);
-    bool addRobot(world::ServiceRobot* robot);
+    world::Agent* spawnAgent(essentials::IdentifierConstPtr id,  world::ObjectType agentType);
+    const world::Agent* getAgent(essentials::IdentifierConstPtr id) const;
+    world::Agent* editAgent(essentials::IdentifierConstPtr id);
+    bool addAgent(world::Agent* agent);
 
     // other
     void openDoor(essentials::IdentifierConstPtr id);
@@ -86,7 +86,7 @@ private:
 
     mutable std::recursive_mutex dataMutex;
     std::unordered_map<essentials::IdentifierConstPtr, world::Object*> objects;
-    std::unordered_map<essentials::IdentifierConstPtr, world::ServiceRobot*> robots;
+    std::unordered_map<essentials::IdentifierConstPtr, world::Agent*> agents;
     std::unordered_map<essentials::IdentifierConstPtr, world::Room*> rooms;
 };
 } // namespace srg

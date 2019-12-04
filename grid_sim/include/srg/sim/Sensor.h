@@ -23,19 +23,19 @@ namespace world {
 namespace sim
 {
 class Cell;
-class SimulatedRobot;
+class SimulatedAgent;
 class Coordinate;
 
 class Sensor
 {
 public:
-    Sensor(srg::sim::SimulatedRobot* robot);
+    Sensor(srg::sim::SimulatedAgent* robot);
     std::vector<containers::CellPerception> createPerceptions(srg::Simulator* simulator);
 
 private:
     std::vector<const world::Cell*>collectCells(world::Coordinate start, world::Coordinate end, srg::World* world);
 
-    SimulatedRobot* robot;
+    SimulatedAgent* robot;
     essentials::SystemConfig* sc;
     uint32_t sightLimit;
 };

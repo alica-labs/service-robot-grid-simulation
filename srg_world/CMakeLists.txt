@@ -33,7 +33,7 @@ add_library(${PROJECT_NAME}
   src/srg/world/Coordinate.cpp
   src/srg/world/Object.cpp
   src/srg/world/Door.cpp
-  src/srg/world/ServiceRobot.cpp
+        src/srg/world/Agent.cpp
   src/srg/world/ObjectState.cpp
   src/srg/world/Room.cpp
   src/srg/world/ObjectType.cpp

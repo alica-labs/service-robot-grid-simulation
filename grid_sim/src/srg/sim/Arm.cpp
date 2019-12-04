@@ -1,6 +1,6 @@
 #include "srg/sim/Arm.h"
 
-#include "srg/sim/SimulatedRobot.h"
+#include "srg/sim/SimulatedAgent.h"
 
 #include <srg/world/Cell.h>
 #include <srg/World.h>
@@ -9,7 +9,7 @@ namespace srg
 {
 namespace sim
 {
-Arm::Arm(srg::sim::SimulatedRobot* robot)
+Arm::Arm(srg::sim::SimulatedAgent* robot)
         : robot(robot)
 {
 }

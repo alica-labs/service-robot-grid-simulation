@@ -1,6 +1,6 @@
 #pragma once
 
-#include "srg/sim/SimulatedRobot.h"
+#include "srg/sim/SimulatedAgent.h"
 #include "srg/sim/containers/SimCommand.h"
 
 #include <essentials/IdentifierConstPtr.h>
@@ -52,8 +52,8 @@ public:
     void run();
     void addMarker(viz::Marker marker);
     srg::World* getWorld();
-    void addRobot(world::ServiceRobot* serviceRobot);
-    sim::SimulatedRobot* getRobot(essentials::IdentifierConstPtr id);
+    void addSimulatedAgent(world::Agent* agent);
+    sim::SimulatedAgent* getAgent(essentials::IdentifierConstPtr id);
     static bool isRunning();
     static void simSigintHandler(int sig);
     void processSimCommand(sim::containers::SimCommand sc);
@@ -67,7 +67,7 @@ private:
     World* world;
     GUI* gui;
     sim::communication::Communication* communication;
-    std::vector<sim::SimulatedRobot*> simulatedRobots;
+    std::vector<sim::SimulatedAgent*> simulatedAgents;
 
     essentials::IDManager* idManager;
     std::thread* mainThread;

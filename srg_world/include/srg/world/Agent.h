@@ -7,13 +7,13 @@ namespace srg
 class World;
 namespace world
 {
-class ServiceRobot : public Object
+class Agent : public Object
 {
 public:
-    explicit ServiceRobot(essentials::IdentifierConstPtr id);
+    explicit Agent(essentials::IdentifierConstPtr id, ObjectType type);
     // friend declarations
     friend World;
-    friend std::ostream& operator<<(std::ostream& os, const ServiceRobot& obj);
+    friend std::ostream& operator<<(std::ostream& os, const Agent& obj);
 
 private:
 };
