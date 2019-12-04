@@ -13,6 +13,7 @@
 #include <mutex>
 #include <unordered_map>
 #include <vector>
+#include <srg/world/RoomType.h>
 
 namespace essentials
 {
@@ -59,7 +60,7 @@ public:
     bool placeObject(world::Object* object, world::Coordinate coordinate);
     void moveObject(essentials::IdentifierConstPtr id, world::Direction direction);
 
-    // robots
+    // agents
     world::Agent* spawnAgent(essentials::IdentifierConstPtr id,  world::ObjectType agentType);
     const world::Agent* getAgent(essentials::IdentifierConstPtr id) const;
     world::Agent* editAgent(essentials::IdentifierConstPtr id);
@@ -68,6 +69,8 @@ public:
     // other
     void openDoor(essentials::IdentifierConstPtr id);
     void closeDoor(essentials::IdentifierConstPtr id);
+    const std::unordered_map<essentials::IdentifierConstPtr, world::Room*> getRooms() const;
+    const std::vector<world::Room*> getRooms(world::RoomType type) const;
 
 private:
     bool isPlacementAllowed(const world::Cell* cell, world::ObjectType objectType) const;

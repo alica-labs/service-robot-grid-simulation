@@ -1,10 +1,10 @@
 #include "srg/World.h"
 
+#include "srg/world/Agent.h"
 #include "srg/world/Cell.h"
 #include "srg/world/Door.h"
 #include "srg/world/Object.h"
 #include "srg/world/Room.h"
-#include "srg/world/Agent.h"
 
 #include <SystemConfig.h>
 #include <essentials/IDManager.h>
@@ -339,6 +339,20 @@ void World::closeDoor(essentials::IdentifierConstPtr id)
     } else {
         std::cout << "[World] No suitable door found with ID: " << *id << std::endl;
     }
+}
+
+const std::unordered_map<essentials::IdentifierConstPtr, world::Room*> World::getRooms() const {
+    return this->rooms;
+}
+
+const std::vector<world::Room*> World::getRooms(world::RoomType type) const {
+    std::vector<world::Room*> rooms;
+    for (auto& room : this->rooms) {
+        if (room.second->getType() == type) {
+            rooms.push_back((world::Room *const) room.second);
+        }
+    }
+    return rooms;
 }
 
 // INTERNAL METHODS
