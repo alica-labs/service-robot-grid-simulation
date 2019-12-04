@@ -18,8 +18,11 @@ containers::SimCommand ContainerUtils::toSimCommand(::capnp::FlatArrayMessageRea
             reader.getObjectID().getValue().asBytes().begin(), reader.getObjectID().getValue().size(), reader.getObjectID().getType());
 
     switch (reader.getAction()) {
-    case srg::sim::SimCommandMsg::Action::SPAWN:
-        sc.action = containers::SimCommand::SPAWN;
+    case srg::sim::SimCommandMsg::Action::SPAWNROBOT:
+        sc.action = containers::SimCommand::SPAWNROBOT;
+        break;
+    case srg::sim::SimCommandMsg::Action::SPAWNHUMAN:
+        sc.action = containers::SimCommand::SPAWNHUMAN;
         break;
     case srg::sim::SimCommandMsg::Action::CLOSE:
         sc.action = containers::SimCommand::CLOSE;
@@ -68,8 +71,11 @@ void ContainerUtils::toMsg(srg::sim::containers::SimCommand sc, ::capnp::MallocM
     objectID.setType(sc.objectID->getType());
 
     switch (sc.action) {
-    case containers::SimCommand::SPAWN:
-        msg.setAction(srg::sim::SimCommandMsg::Action::SPAWN);
+    case containers::SimCommand::SPAWNROBOT:
+        msg.setAction(srg::sim::SimCommandMsg::Action::SPAWNROBOT);
+        break;
+    case containers::SimCommand::SPAWNHUMAN:
+        msg.setAction(srg::sim::SimCommandMsg::Action::SPAWNHUMAN);
         break;
     case containers::SimCommand::CLOSE:
         msg.setAction(srg::sim::SimCommandMsg::Action::CLOSE);
@@ -132,6 +138,9 @@ srg::world::Object* ContainerUtils::createObject(srg::sim::SimPerceptionMsg::Obj
     switch (objectReader.getType()) {
     case srg::sim::SimPerceptionMsg::Object::Type::ROBOT:
         type = srg::world::ObjectType::Robot;
+        break;
+    case srg::sim::SimPerceptionMsg::Object::Type::HUMAN:
+        type = srg::world::ObjectType::Human;
         break;
     case srg::sim::SimPerceptionMsg::Object::Type::DOOR:
         type = srg::world::ObjectType::Door;
@@ -209,6 +218,9 @@ void ContainerUtils::toObjectListMsg(
         switch (objects[j]->getType()) {
         case srg::world::ObjectType::Robot:
             objectBuilder.setType(srg::sim::SimPerceptionMsg::Object::Type::ROBOT);
+            break;
+        case srg::world::ObjectType::Human:
+            objectBuilder.setType(srg::sim::SimPerceptionMsg::Object::Type::HUMAN);
             break;
         case srg::world::ObjectType::CupRed:
             objectBuilder.setType(srg::sim::SimPerceptionMsg::Object::Type::CUPRED);

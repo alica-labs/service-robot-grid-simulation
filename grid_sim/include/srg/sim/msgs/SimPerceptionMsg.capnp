@@ -25,6 +25,7 @@ struct SimPerceptionMsg {
       cupblue @2;
       cupyellow @3;
       robot @4;
+      human @5;
     }
 
     enum State {

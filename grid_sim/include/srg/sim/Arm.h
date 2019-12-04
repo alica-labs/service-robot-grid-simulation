@@ -11,11 +11,11 @@ namespace srg
 class World;
 namespace sim
 {
-class SimulatedRobot;
+class SimulatedAgent;
 class Arm
 {
 public:
-    Arm(SimulatedRobot* robot);
+    Arm(SimulatedAgent* robot);
     bool execute(containers::SimCommand sc, srg::World* world);
 
 private:
@@ -23,7 +23,7 @@ private:
     bool close(essentials::IdentifierConstPtr objectID, srg::World* world);
     bool pickUp(essentials::IdentifierConstPtr objectID, srg::World* world);
     bool putDown(containers::SimCommand sc, srg::World* world);
-    SimulatedRobot* robot;
+    SimulatedAgent* robot;
 };
 } // namespace sim
 } // namespace srg

@@ -1,7 +1,7 @@
 #include "srg/Simulator.h"
 
 #include "srg/sim/Sensor.h"
-#include "srg/sim/SimulatedRobot.h"
+#include "srg/sim/SimulatedAgent.h"
 #include "srg/sim/commands/CommandHandler.h"
 #include "srg/sim/commands/ManipulationHandler.h"
 #include "srg/sim/commands/MoveCommandHandler.h"
@@ -99,16 +99,16 @@ srg::World* Simulator::getWorld()
     return this->world;
 }
 
-void Simulator::addRobot(world::ServiceRobot* serviceRobot)
+void Simulator::addSimulatedAgent(world::Agent* agent)
 {
-    if (!serviceRobot)
+    if (!agent)
         return;
-    this->simulatedRobots.push_back(new sim::SimulatedRobot(serviceRobot));
+    this->simulatedAgents.push_back(new sim::SimulatedAgent(agent));
 }
 
-sim::SimulatedRobot* Simulator::getRobot(essentials::IdentifierConstPtr id)
+sim::SimulatedAgent* Simulator::getAgent(essentials::IdentifierConstPtr id)
 {
-    for (sim::SimulatedRobot* robot : simulatedRobots) {
+    for (sim::SimulatedAgent* robot : simulatedAgents) {
         if (robot->getID() == id) {
             return robot;
         }
@@ -167,8 +167,8 @@ void Simulator::run()
         std::cout << "[Simulator] Create and send perceptions..." << std::endl;
 #endif
         // 3. Produce and send perceptions for each robot
-        for (auto& robot : this->simulatedRobots) {
-            this->communication->sendSimPerceptions(robot->createSimPerceptions(this));
+        for (auto& simulatedAgent : this->simulatedAgents) {
+            this->communication->sendSimPerceptions(simulatedAgent->createSimPerceptions(this));
         }
 
         // 4. Sleep in order to keep the cpu effort low

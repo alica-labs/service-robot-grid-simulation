@@ -4,7 +4,7 @@
 #include "srg/world/Door.h"
 #include "srg/world/Object.h"
 #include "srg/world/Room.h"
-#include "srg/world/ServiceRobot.h"
+#include "srg/world/Agent.h"
 
 #include <SystemConfig.h>
 #include <essentials/IDManager.h>
@@ -180,23 +180,23 @@ world::Object* World::editObject(essentials::IdentifierConstPtr id)
     }
 }
 
-const world::ServiceRobot* World::getRobot(essentials::IdentifierConstPtr id) const
+const world::Agent* World::getAgent(essentials::IdentifierConstPtr id) const
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    auto robotEntry = this->robots.find(id);
-    if (robotEntry != this->robots.end()) {
-        return robotEntry->second;
+    auto agentEntry = this->agents.find(id);
+    if (agentEntry != this->agents.end()) {
+        return agentEntry->second;
     } else {
         return nullptr;
     }
 }
 
-world::ServiceRobot* World::editRobot(essentials::IdentifierConstPtr id)
+world::Agent* World::editAgent(essentials::IdentifierConstPtr id)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    auto robotEntry = this->robots.find(id);
-    if (robotEntry != this->robots.end()) {
-        return robotEntry->second;
+    auto agentEntry = this->agents.find(id);
+    if (agentEntry != this->agents.end()) {
+        return agentEntry->second;
     } else {
         return nullptr;
     }
@@ -217,20 +217,20 @@ uint32_t World::getSizeY() const
     return sizeY;
 }
 
-world::ServiceRobot* World::spawnRobot(essentials::IdentifierConstPtr id)
+world::Agent* World::spawnAgent(essentials::IdentifierConstPtr id, world::ObjectType agentType)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     // create robot
-    world::Object* object = this->createOrUpdateObject(new srg::world::Object(id, world::ObjectType::Robot));
+    world::Object* object = this->createOrUpdateObject(new srg::world::Object(id, agentType));
     if (object->getParentContainer()) {
         // robot is already placed, maybe it was spawned already...
-        return dynamic_cast<world::ServiceRobot*>(object);
+        return dynamic_cast<world::Agent*>(object);
     }
 
     // search for cell with valid spawn coordinates
     srand(time(NULL));
     const world::Cell* cell = nullptr;
-    while (!cell || !isPlacementAllowed(cell, world::ObjectType::Robot)) {
+    while (!cell || !isPlacementAllowed(cell, agentType)) {
         cell = this->getCell(world::Coordinate(5, 5));
         //        cell = this->getCell(Coordinate(rand() % this->sizeX, rand() % this->sizeY));
     }
@@ -238,8 +238,8 @@ world::ServiceRobot* World::spawnRobot(essentials::IdentifierConstPtr id)
     // place robot
     if (this->placeObject(object, cell->coordinate)) {
         // only add robot into list, if it was placed correctly
-        world::ServiceRobot* robot = dynamic_cast<world::ServiceRobot*>(object);
-        this->addRobot(robot);
+        world::Agent* robot = dynamic_cast<world::Agent*>(object);
+        this->addAgent(robot);
         return robot;
     } else {
         return nullptr;
@@ -253,7 +253,8 @@ world::Object* World::createOrUpdateObject(world::Object* tmpObject)
     if (!object) {
         switch (tmpObject->getType()) {
         case world::ObjectType::Robot:
-            object = new world::ServiceRobot(tmpObject->getID());
+        case world::ObjectType::Human:
+            object = new world::Agent(tmpObject->getID(), tmpObject->getType());
             break;
         case world::ObjectType::Door:
             object = new class world::Door(tmpObject->getID(), tmpObject->getState());
@@ -306,12 +307,12 @@ void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direc
     goalCell->addObject(object);
 }
 
-bool World::addRobot(world::ServiceRobot* robot)
+bool World::addAgent(world::Agent* agent)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    auto robotEntry = this->robots.find(robot->getID());
-    if (robotEntry == this->robots.end()) {
-        this->robots.emplace(robot->getID(), robot);
+    auto agentEntry = this->agents.find(agent->getID());
+    if (agentEntry == this->agents.end()) {
+        this->agents.emplace(agent->getID(), agent);
         return true;
     } else {
         return false;
@@ -368,7 +369,7 @@ bool World::isPlacementAllowed(const world::Cell* cell, world::ObjectType object
 
     for (auto& objectEntry : cell->getObjects()) {
         if (objectEntry.second->getType() == world::ObjectType::Door) {
-            if (objectType == world::ObjectType::Robot) {
+            if (objectType == world::ObjectType::Robot || objectType == world::ObjectType::Human) {
                 return objectEntry.second->getState() == world::ObjectState::Open;
             } else {
                 return false;

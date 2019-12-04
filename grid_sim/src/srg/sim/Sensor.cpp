@@ -1,7 +1,7 @@
 #include "srg/sim/Sensor.h"
 
 #include "srg/Simulator.h"
-#include "srg/sim/SimulatedRobot.h"
+#include "srg/sim/SimulatedAgent.h"
 #include "srg/sim/containers/CellPerception.h"
 
 #include <srg/World.h>
@@ -16,7 +16,7 @@ namespace srg
 {
 namespace sim
 {
-Sensor::Sensor(srg::sim::SimulatedRobot* robot)
+Sensor::Sensor(srg::sim::SimulatedAgent* robot)
         : robot(robot)
 {
     this->sc = essentials::SystemConfig::getInstance();

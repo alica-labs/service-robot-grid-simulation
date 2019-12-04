@@ -1,7 +1,7 @@
 #include "srg/sim/commands/ManipulationHandler.h"
 
 #include "srg/Simulator.h"
-#include "srg/sim/SimulatedRobot.h"
+#include "srg/sim/SimulatedAgent.h"
 
 #include <srg/World.h>
 
@@ -23,7 +23,7 @@ bool ManipulationHandler::handle(containers::SimCommand sc)
     case containers::SimCommand::CLOSE:
     case containers::SimCommand::PUTDOWN:
     case containers::SimCommand::PICKUP: {
-        srg::sim::SimulatedRobot* robot = simulator->getRobot(sc.senderID);
+        srg::sim::SimulatedAgent* robot = simulator->getAgent(sc.senderID);
         if (!robot) {
             return false;
         }

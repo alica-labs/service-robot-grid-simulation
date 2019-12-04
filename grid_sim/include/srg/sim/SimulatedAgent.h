@@ -4,21 +4,19 @@
 #include "srg/sim/Sensor.h"
 #include "srg/sim/containers/SimPerceptions.h"
 
-#include <srg/world/ServiceRobot.h>
-
 namespace srg
 {
 class Simulator;
 namespace world
 {
-class ServiceRobot;
+class Agent;
 }
 namespace sim
 {
-class SimulatedRobot
+class SimulatedAgent
 {
 public:
-    SimulatedRobot(srg::world::ServiceRobot* serviceRobot);
+    SimulatedAgent(srg::world::Agent* agent);
     world::Coordinate getCoordinate();
     world::Object* getCarriedObject();
     void setCarriedObject(world::Object* object);
@@ -29,7 +27,7 @@ public:
 private:
     Sensor* objectDetection;
     Arm* manipulation;
-    srg::world::ServiceRobot* serviceRobot;
+    srg::world::Agent* agent;
 };
 
 } // namespace sim
