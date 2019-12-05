@@ -20,6 +20,7 @@ public:
     Room(std::string name, essentials::IdentifierConstPtr id);
     void addCell(Cell* cell);
     const Cell* getCell(const Coordinate& coord) const;
+    const std::map<Coordinate, Cell*>& getCells() const;
     RoomType getType() const;
 
     // friend declaration

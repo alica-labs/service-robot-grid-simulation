@@ -35,6 +35,10 @@ const Cell* Room::getCell(const Coordinate& coordinate) const
     return nullptr;
 }
 
+const std::map<Coordinate, Cell*>& Room::getCells() const {
+    return this->cells;
+}
+
 std::ostream& operator<<(std::ostream& os, const Room& obj)
 {
     os << "[Room] " << obj.name << " ID: " << obj.id << " Type: " << obj.type;
