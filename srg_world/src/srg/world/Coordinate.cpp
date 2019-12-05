@@ -53,7 +53,7 @@ Coordinate operator-(Coordinate const& first, Coordinate const& second)
 
 std::ostream& operator<<(std::ostream& os, const Coordinate& obj)
 {
-    os << "(" << obj.x << ", " << obj.y << ")";
+    os << obj.x << "," << obj.y;
     return os;
 }
 } // namespace world
