@@ -22,6 +22,7 @@ public:
     const Cell* getCell(const Coordinate& coord) const;
     const std::map<Coordinate, Cell*>& getCells() const;
     RoomType getType() const;
+    essentials::IdentifierConstPtr getID() const;
 
     // friend declaration
     friend std::ostream& operator<<(std::ostream& os, const Room& obj);
