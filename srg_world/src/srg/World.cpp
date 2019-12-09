@@ -262,7 +262,7 @@ world::Object* World::createOrUpdateObject(world::Object* tmpObject)
         default:
             object = new world::Object(tmpObject->getID(), tmpObject->getType(), tmpObject->getState());
         }
-        std::cout << "[World] Created " << *object;
+//        std::cout << "[World] Created " << *object;
         this->objects.emplace(object->getID(), object);
     }
 
