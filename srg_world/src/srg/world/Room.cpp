@@ -17,6 +17,11 @@ RoomType Room::getType() const
     return this->type;
 }
 
+essentials::IdentifierConstPtr Room::getID() const
+{
+    return this->id;
+}
+
 void Room::addCell(Cell* cell)
 {
     cell->room = this;
@@ -35,7 +40,8 @@ const Cell* Room::getCell(const Coordinate& coordinate) const
     return nullptr;
 }
 
-const std::map<Coordinate, Cell*>& Room::getCells() const {
+const std::map<Coordinate, Cell*>& Room::getCells() const
+{
     return this->cells;
 }
 
