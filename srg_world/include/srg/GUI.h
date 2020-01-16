@@ -50,7 +50,6 @@ private:
     sf::Texture* texture;
     sf::RenderWindow* window;
     sf::View* view;
-
     std::vector<viz::Marker> markers;
 };
 } // namespace srg
