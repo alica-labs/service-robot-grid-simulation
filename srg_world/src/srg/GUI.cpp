@@ -189,6 +189,9 @@ void GUI::handleSFMLEvents(const World* world)
         } else if (event.type == sf::Event::Resized) {
             window->setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
             scaleSprite(world);
+        } else if (event.type == sf::Event::MouseWheelMoved){
+            this->zoomFactor += event.mouseWheel.delta * 0.5;
+            this->view->zoom(this->zoomFactor);
         }
     }
 }
