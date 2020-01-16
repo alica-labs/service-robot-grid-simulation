@@ -43,15 +43,12 @@ private:
     uint32_t textureSize = 60;
     float scaleFactor = 0;
     float scaledSpriteSize = 0;
+    float zoomFactor = 0;
 
     sf::Sprite sprites[static_cast<int>(viz::SpriteType::Last)];
 
     sf::Texture* texture;
     sf::RenderWindow* window;
-<<<<<<< HEAD
-    sf::View* view;
-=======
->>>>>>> parent of 9355321... fixes
     std::vector<viz::Marker> markers;
 };
 } // namespace srg
