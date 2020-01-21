@@ -44,11 +44,13 @@ private:
     uint32_t textureSize = 60;
     float scaleFactor = 0;
     float scaledSpriteSize = 0;
+    float camOffsetX;
+    float camOffsetY;
+    float mousePosOldX;
+    float mousePosOldY;
     float zoomFactor = 0.9;
-    float mousePosOldX = 0;
-    float mousePosOldY = 0;
-    float camOffsetX = 0;
-    float camOffsetY = 0;
+    bool dragging = false;
+
 
     sf::Sprite sprites[static_cast<int>(viz::SpriteType::Last)];
 

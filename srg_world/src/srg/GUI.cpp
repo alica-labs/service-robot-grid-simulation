@@ -191,16 +191,26 @@ void GUI::handleSFMLEvents(const World* world)
         } else if (event.type == sf::Event::MouseWheelMoved) {
             this->zoomFactor -= event.mouseWheel.delta * 0.01;
             this->updateView(world, this->window->getSize().x, this->window->getSize().y);
-        } else if (event.type == sf::Event::MouseMoved) {
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)){
-                this->camOffsetX = (this->mousePosOldX - event.mouseMove.x);
-                this->camOffsetY = (this->mousePosOldY - event.mouseMove.y);
-                this->updateView(world, this->window->getSize().x, this->window->getSize().y);
-            }
         } else if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == sf::Mouse::Button::Right) {
-                mousePosOldX = event.mouseButton.x;
-                mousePosOldY = event.mouseButton.y;
+                mousePosOldX = sf::Mouse::getPosition().x;
+                mousePosOldY = sf::Mouse::getPosition().y;
+                this->dragging = true;
+                this->updateView(world, this->window->getSize().x, this->window->getSize().y);
+            }
+        } else if (event.type == sf::Event::MouseButtonReleased){
+            if (event.mouseButton.button == sf::Mouse::Button::Right) {
+                this->dragging = false;
+            }
+        } else if (event.type == sf::Event::MouseMoved) {
+            if (this->dragging){
+                float mouseCurPosX = sf::Mouse::getPosition().x;
+                float mouseCurPosY = sf::Mouse::getPosition().y;
+                this->camOffsetX += (this->mousePosOldX - mouseCurPosX) * this->zoomFactor;
+                this->camOffsetY += (this->mousePosOldY - mouseCurPosY) * this->zoomFactor;
+                this->mousePosOldX = sf::Mouse::getPosition().x;
+                this->mousePosOldY = sf::Mouse::getPosition().y;
+                this->updateView(world, this->window->getSize().x, this->window->getSize().y);
             }
         }
     }
@@ -273,7 +283,8 @@ sf::Sprite GUI::getSprite(const world::Object* object)
     void GUI::updateView(const World* world, int width, int height) {
         sf::View tmp = sf::View(sf::FloatRect(0, 0, width, height));
         tmp.zoom(std::max(0.25f, std::min(this->zoomFactor, 2.0f)));
-        tmp.move(this->camOffsetX / this->zoomFactor, this->camOffsetY / this->zoomFactor);
+//        tmp.move(this->camOffsetX, this->camOffsetY);
+        tmp.setCenter(this->camOffsetX, this->camOffsetY);
         window->setView(tmp);
         scaleSprite(world);
     }
