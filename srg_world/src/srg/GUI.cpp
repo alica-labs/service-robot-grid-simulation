@@ -187,8 +187,21 @@ void GUI::handleSFMLEvents(const World* world)
         if (event.type == sf::Event::Closed) {
             window->close();
         } else if (event.type == sf::Event::Resized) {
-            window->setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
-            scaleSprite(world);
+            this->updateView(world, event.size.width, event.size.height);
+        } else if (event.type == sf::Event::MouseWheelMoved) {
+            this->zoomFactor -= event.mouseWheel.delta * 0.01;
+            this->updateView(world, this->window->getSize().x, this->window->getSize().y);
+        } else if (event.type == sf::Event::MouseMoved) {
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)){
+                this->camOffsetX = (this->mousePosOldX - event.mouseMove.x);
+                this->camOffsetY = (this->mousePosOldY - event.mouseMove.y);
+                this->updateView(world, this->window->getSize().x, this->window->getSize().y);
+            }
+        } else if (event.type == sf::Event::MouseButtonPressed) {
+            if (event.mouseButton.button == sf::Mouse::Button::Right) {
+                mousePosOldX = event.mouseButton.x;
+                mousePosOldY = event.mouseButton.y;
+            }
         }
     }
 }
@@ -256,4 +269,12 @@ sf::Sprite GUI::getSprite(const world::Object* object)
         return getSprite(viz::SpriteType::Unknown);
     }
 }
+
+    void GUI::updateView(const World* world, int width, int height) {
+        sf::View tmp = sf::View(sf::FloatRect(0, 0, width, height));
+        tmp.zoom(std::max(0.25f, std::min(this->zoomFactor, 2.0f)));
+        tmp.move(this->camOffsetX / this->zoomFactor, this->camOffsetY / this->zoomFactor);
+        window->setView(tmp);
+        scaleSprite(world);
+    }
 } // namespace srg

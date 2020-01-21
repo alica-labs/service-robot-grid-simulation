@@ -35,6 +35,7 @@ private:
     void handleSFMLEvents(const World* world);
     void calculateScale();
     void calculateSpriteSize(const World* world);
+    void updateView(const World* world, int width, int height);
 
     essentials::Configuration* windowConfig;
     static const std::string configFolder;
@@ -43,6 +44,11 @@ private:
     uint32_t textureSize = 60;
     float scaleFactor = 0;
     float scaledSpriteSize = 0;
+    float zoomFactor = 0.9;
+    float mousePosOldX = 0;
+    float mousePosOldY = 0;
+    float camOffsetX = 0;
+    float camOffsetY = 0;
 
     sf::Sprite sprites[static_cast<int>(viz::SpriteType::Last)];
 
