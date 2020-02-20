@@ -28,6 +28,8 @@ Coordinate Object::getCoordinate() const {
     } else {
         object = dynamic_cast<const srg::world::Object*>(parentContainer);
         if (object) {
+            // recursive call, because objects can be contained in other objects
+            // example: a robot holds and object
             return object->getCoordinate();
         }
     }

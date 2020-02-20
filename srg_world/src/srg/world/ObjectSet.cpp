@@ -48,9 +48,7 @@ std::unordered_map<essentials::IdentifierConstPtr, srg::world::Object*>::iterato
         std::unordered_map<essentials::IdentifierConstPtr, srg::world::Object*>::iterator iter)
 {
     std::unordered_map<essentials::IdentifierConstPtr, srg::world::Object*>::iterator iterator = this->containingObjects.erase(iter);
-    if (iterator != this->containingObjects.end()) {
-        iter->second->deleteParentContainer();
-    }
+    iter->second->deleteParentContainer();
     return iterator;
 }
 
