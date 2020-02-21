@@ -304,6 +304,15 @@ void World::removeUnknownObjects()
     }
 }
 
+void World::removeObjectIfUnknown(essentials::IdentifierConstPtr objectID)
+{
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    std::shared_ptr<const world::Object> object = this->getObject(objectID);
+    if (object && object->getCoordinate().x < 0) {
+        this->objects.erase(object->getID());
+    }
+}
+
 void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direction)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
