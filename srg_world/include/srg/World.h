@@ -50,14 +50,13 @@ public:
     const std::map<world::Coordinate, world::Cell*>& getGrid();
     std::recursive_mutex& getDataMutex();
 
-    //    std::vector<world::Object*> updateCell(srgsim::CellPerceptions cellPerceptions);
-
     // objects
     std::shared_ptr<const world::Object> getObject(world::ObjectType type) const;
     std::shared_ptr<const world::Object> getObject(essentials::IdentifierConstPtr id) const;
     std::shared_ptr<world::Object> editObject(essentials::IdentifierConstPtr id);
     void updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr<world::Object>> objects);
     std::shared_ptr<world::Object> createOrUpdateObject(std::shared_ptr<world::Object> tmpObject);
+    void removeUnknownObjects();
     bool placeObject(std::shared_ptr<world::Object> object, world::Coordinate coordinate);
     void moveObject(essentials::IdentifierConstPtr id, world::Direction direction);
 

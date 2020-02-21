@@ -284,6 +284,26 @@ void World::updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr
     cellEntry->second->update(objects);
 }
 
+/**
+ * Removes all objects that don't have coordinates, because
+ * then they are unknown objects. For example, once recognized
+ * but then vanished from the map (due to manipulation of another
+ * robot).
+ */
+void World::removeUnknownObjects()
+{
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    std::vector<essentials::IdentifierConstPtr> unknownObjects;
+    for (auto& objectEntry : this->objects) {
+        if (objectEntry.second->getCoordinate().x < 0) {
+            unknownObjects.push_back(objectEntry.first);
+        }
+    }
+    for (essentials::IdentifierConstPtr objectID : unknownObjects) {
+        this->objects.erase(objectID);
+    }
+}
+
 void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direction)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
