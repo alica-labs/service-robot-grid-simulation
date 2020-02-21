@@ -7,7 +7,7 @@ namespace srg
 {
 namespace sim
 {
-SimulatedAgent::SimulatedAgent(world::Agent* agent)
+SimulatedAgent::SimulatedAgent(std::shared_ptr<world::Agent> agent)
         : agent(agent)
 {
     this->manipulation = new Arm(this);
@@ -19,7 +19,7 @@ world::Coordinate SimulatedAgent::getCoordinate()
     return dynamic_cast<const world::Cell*>(this->agent->getParentContainer())->coordinate;
 }
 
-world::Object* SimulatedAgent::getCarriedObject()
+std::shared_ptr<world::Object> SimulatedAgent::getCarriedObject()
 {
     if(this->agent->getObjects().size() > 0) {
         return this->agent->getObjects().begin()->second;
@@ -28,7 +28,7 @@ world::Object* SimulatedAgent::getCarriedObject()
     }
 }
 
-void SimulatedAgent::setCarriedObject(world::Object* object)
+void SimulatedAgent::setCarriedObject(std::shared_ptr<world::Object> object)
 {
     this->agent->addObject(object);
 }

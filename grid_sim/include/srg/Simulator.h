@@ -52,7 +52,7 @@ public:
     void run();
     void addMarker(viz::Marker marker);
     srg::World* getWorld();
-    void addSimulatedAgent(world::Agent* agent);
+    void addSimulatedAgent(std::shared_ptr<world::Agent> agent);
     sim::SimulatedAgent* getAgent(essentials::IdentifierConstPtr id);
     static bool isRunning();
     static void simSigintHandler(int sig);

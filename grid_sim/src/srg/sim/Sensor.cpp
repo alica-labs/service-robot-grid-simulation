@@ -98,7 +98,7 @@ std::vector<const world::Cell*> Sensor::collectCells(world::Coordinate start, wo
         }
         bool sightBlocked = false;
         for (auto& objectEntry : cell->getObjects()) {
-            if (const srg::world::Door* door = dynamic_cast<const srg::world::Door*>(objectEntry.second)) {
+            if (std::shared_ptr<const srg::world::Door> door = std::dynamic_pointer_cast<const srg::world::Door>(objectEntry.second)) {
                 sightBlocked = !door->isOpen();
             }
         }

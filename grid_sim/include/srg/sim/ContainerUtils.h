@@ -27,8 +27,8 @@ public:
 
 private:
     ContainerUtils() = delete;
-    static void toObjectListMsg(std::vector<srg::world::Object*>& objects, ::capnp::List<::srg::sim::SimPerceptionMsg::Object>::Builder& objectsListBuilder);
-    static srg::world::Object* createObject(srg::sim::SimPerceptionMsg::Object::Reader& objectReader, essentials::IDManager* idManager);
+    static void toObjectListMsg(std::vector<std::shared_ptr<srg::world::Object>>& objects, ::capnp::List<::srg::sim::SimPerceptionMsg::Object>::Builder& objectsListBuilder);
+    static std::shared_ptr<srg::world::Object> createObject(srg::sim::SimPerceptionMsg::Object::Reader& objectReader, essentials::IDManager* idManager);
 };
 } // namespace sim
 } // namespace srg

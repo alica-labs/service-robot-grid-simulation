@@ -148,7 +148,7 @@ void GUI::draw(World* world)
                 this->window->draw(sprite);
 
                 cell = nullptr;
-                if (world::Agent* robot = dynamic_cast<world::Agent*>(objectEntry.second)) {
+                if (std::shared_ptr<world::Agent> robot = std::dynamic_pointer_cast<world::Agent>(objectEntry.second)) {
                     if (robot->getObjects().size() > 0) {
                         sprite = getSprite(robot->getObjects().begin()->second);
                         cell = dynamic_cast<const world::Cell*>(robot->getParentContainer());
@@ -232,11 +232,11 @@ sf::Sprite GUI::getSprite(world::RoomType type)
     return getSprite(viz::SpriteType::Floor);
 }
 
-sf::Sprite GUI::getSprite(const world::Object* object)
+sf::Sprite GUI::getSprite(std::shared_ptr<const world::Object> object)
 {
     switch (object->getType()) {
     case world::ObjectType::Door:
-        if (dynamic_cast<const world::Door*>(object)->isOpen()) {
+        if (std::dynamic_pointer_cast<const world::Door>(object)->isOpen()) {
             return getSprite(viz::SpriteType::DoorOpen);
         } else {
             return getSprite(viz::SpriteType::DoorClosed);

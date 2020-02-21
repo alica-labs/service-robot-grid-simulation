@@ -31,7 +31,7 @@ bool Cell::isBlocked() const
         return true;
     }
     for (auto& objectEntry : this->containingObjects) {
-        if (const Door* door = dynamic_cast<const Door*>(objectEntry.second)) {
+        if (std::shared_ptr<const world::Door> door = std::dynamic_pointer_cast<const Door>(objectEntry.second)) {
             return !door->isOpen();
         }
     }

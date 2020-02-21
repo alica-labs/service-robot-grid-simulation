@@ -128,7 +128,7 @@ containers::SimPerceptions ContainerUtils::toSimPerceptions(::capnp::FlatArrayMe
     return sps;
 }
 
-srg::world::Object* ContainerUtils::createObject(srg::sim::SimPerceptionMsg::Object::Reader& objectReader, essentials::IDManager* idManager)
+std::shared_ptr<srg::world::Object> ContainerUtils::createObject(srg::sim::SimPerceptionMsg::Object::Reader& objectReader, essentials::IDManager* idManager)
 {
     // ID
     essentials::IdentifierConstPtr id = idManager->getIDFromBytes(
@@ -175,7 +175,7 @@ srg::world::Object* ContainerUtils::createObject(srg::sim::SimPerceptionMsg::Obj
         std::cerr << "[ContainterUtils] Unknown object type in capnp message found!" << std::endl;
         break;
     }
-    srg::world::Object* object = new srg::world::Object(id, type, state);
+    std::shared_ptr<srg::world::Object> object = std::make_shared<srg::world::Object>(id, type, state);
     for (srg::sim::SimPerceptionMsg::Object::Reader childObjectReader : objectReader.getObjects()) {
         object->addObject(ContainerUtils::createObject(childObjectReader, idManager));
     }
@@ -202,13 +202,13 @@ void ContainerUtils::toMsg(srg::sim::containers::SimPerceptions sp, ::capnp::Mal
 }
 
 void ContainerUtils::toObjectListMsg(
-        std::vector<srg::world::Object*>& objects, ::capnp::List<::srg::sim::SimPerceptionMsg::Object>::Builder& objectsListBuilder)
+        std::vector<std::shared_ptr<srg::world::Object>>& objects, ::capnp::List<::srg::sim::SimPerceptionMsg::Object>::Builder& objectsListBuilder)
 {
     for (unsigned int j = 0; j < objects.size(); j++) {
         srg::sim::SimPerceptionMsg::Object::Builder objectBuilder = objectsListBuilder[j];
         ::capnp::List<::srg::sim::SimPerceptionMsg::Object>::Builder childObjectsListBuilder = objectBuilder.initObjects(objects[j]->getObjects().size());
         if (objects[j]->getObjects().size() > 0) {
-            std::vector<srg::world::Object*> childObject;
+            std::vector<std::shared_ptr<srg::world::Object>> childObject;
             for (auto& objectEntry : objects[j]->getObjects()) {
                 childObject.push_back(objectEntry.second);
             }

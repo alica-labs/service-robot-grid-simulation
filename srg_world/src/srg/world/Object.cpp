@@ -44,7 +44,7 @@ void Object::deleteParentContainer()
     }
     ObjectSet* tmpContainer = this->parentContainer;
     this->parentContainer = nullptr;
-    tmpContainer->removeObject(this);
+    tmpContainer->removeObject(this->shared_from_this());
 }
 
 void Object::setParentContainer(ObjectSet* parentContainer)
@@ -54,7 +54,7 @@ void Object::setParentContainer(ObjectSet* parentContainer)
     }
     this->deleteParentContainer();
     this->parentContainer = parentContainer;
-    this->parentContainer->addObject(this);
+    this->parentContainer->addObject(this->shared_from_this());
 }
 
 const ObjectSet* Object::getParentContainer() const

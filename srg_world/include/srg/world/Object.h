@@ -12,7 +12,7 @@ namespace srg
 {
 namespace world
 {
-class Object : public ObjectSet
+class Object : public ObjectSet, std::enable_shared_from_this<Object>
 {
 public:
     Object(essentials::IdentifierConstPtr id, ObjectType type, ObjectState state = ObjectState::Undefined, int32_t capacity = INT32_MAX);

@@ -57,9 +57,6 @@ World::~World()
     for (auto pair : cellGrid) {
         delete pair.second;
     }
-    for (auto& object : objects) {
-        delete object.second;
-    }
     for (auto& room : rooms) {
         delete room.second;
     }
@@ -122,7 +119,7 @@ world::Cell* World::addCell(uint32_t x, uint32_t y, world::Room* room)
     return cell;
 }
 
-const world::Object* World::getObject(world::ObjectType type) const
+std::shared_ptr<const world::Object> World::getObject(world::ObjectType type) const
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     for (auto& object : this->objects) {
@@ -142,7 +139,7 @@ const world::Cell* World::getCell(const world::Coordinate& coordinate) const
     return nullptr;
 }
 
-bool World::placeObject(world::Object* object, world::Coordinate coordinate)
+bool World::placeObject(std::shared_ptr<world::Object> object, world::Coordinate coordinate)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto cellIter = this->cellGrid.find(coordinate);
@@ -158,7 +155,7 @@ bool World::placeObject(world::Object* object, world::Coordinate coordinate)
     return true;
 }
 
-const world::Object* World::getObject(essentials::IdentifierConstPtr id) const
+std::shared_ptr<const world::Object> World::getObject(essentials::IdentifierConstPtr id) const
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto objectEntry = this->objects.find(id);
@@ -169,7 +166,7 @@ const world::Object* World::getObject(essentials::IdentifierConstPtr id) const
     }
 }
 
-world::Object* World::editObject(essentials::IdentifierConstPtr id)
+std::shared_ptr<world::Object> World::editObject(essentials::IdentifierConstPtr id)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto objectEntry = this->objects.find(id);
@@ -180,7 +177,7 @@ world::Object* World::editObject(essentials::IdentifierConstPtr id)
     }
 }
 
-const world::Agent* World::getAgent(essentials::IdentifierConstPtr id) const
+std::shared_ptr<const world::Agent> World::getAgent(essentials::IdentifierConstPtr id) const
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto agentEntry = this->agents.find(id);
@@ -191,7 +188,7 @@ const world::Agent* World::getAgent(essentials::IdentifierConstPtr id) const
     }
 }
 
-world::Agent* World::editAgent(essentials::IdentifierConstPtr id)
+std::shared_ptr<world::Agent> World::editAgent(essentials::IdentifierConstPtr id)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto agentEntry = this->agents.find(id);
@@ -217,14 +214,14 @@ uint32_t World::getSizeY() const
     return sizeY;
 }
 
-world::Agent* World::spawnAgent(essentials::IdentifierConstPtr id, world::ObjectType agentType)
+std::shared_ptr<world::Agent> World::spawnAgent(essentials::IdentifierConstPtr id, world::ObjectType agentType)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     // create robot
-    world::Object* object = this->createOrUpdateObject(new srg::world::Object(id, agentType));
+    std::shared_ptr<world::Object> object = this->createOrUpdateObject(std::make_shared<srg::world::Object>(id, agentType));
     if (object->getParentContainer()) {
         // robot is already placed, maybe it was spawned already...
-        return dynamic_cast<world::Agent*>(object);
+        return std::dynamic_pointer_cast<world::Agent>(object);
     }
 
     // search for cell with valid spawn coordinates
@@ -238,7 +235,7 @@ world::Agent* World::spawnAgent(essentials::IdentifierConstPtr id, world::Object
     // place robot
     if (this->placeObject(object, cell->coordinate)) {
         // only add robot into list, if it was placed correctly
-        world::Agent* robot = dynamic_cast<world::Agent*>(object);
+        std::shared_ptr<world::Agent> robot = std::dynamic_pointer_cast<world::Agent>(object);
         this->addAgent(robot);
         return robot;
     } else {
@@ -246,23 +243,23 @@ world::Agent* World::spawnAgent(essentials::IdentifierConstPtr id, world::Object
     }
 }
 
-world::Object* World::createOrUpdateObject(world::Object* tmpObject)
+std::shared_ptr<world::Object> World::createOrUpdateObject(std::shared_ptr<world::Object> tmpObject)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    world::Object* object = editObject(tmpObject->getID());
+    std::shared_ptr<world::Object> object = editObject(tmpObject->getID());
     if (!object) {
         switch (tmpObject->getType()) {
         case world::ObjectType::Robot:
         case world::ObjectType::Human:
-            object = new world::Agent(tmpObject->getID(), tmpObject->getType());
+            object = std::make_shared<world::Agent>(tmpObject->getID(), tmpObject->getType());
             break;
         case world::ObjectType::Door:
-            object = new class world::Door(tmpObject->getID(), tmpObject->getState());
+            object = std::make_shared<world::Door>(tmpObject->getID(), tmpObject->getState());
             break;
         default:
-            object = new world::Object(tmpObject->getID(), tmpObject->getType(), tmpObject->getState());
+            object = std::make_shared<world::Object>(tmpObject->getID(), tmpObject->getType(), tmpObject->getState());
         }
-//        std::cout << "[World] Created " << *object;
+        //        std::cout << "[World] Created " << *object;
         this->objects.emplace(object->getID(), object);
     }
 
@@ -273,11 +270,10 @@ world::Object* World::createOrUpdateObject(world::Object* tmpObject)
         object->addObject(createOrUpdateObject(childMsgObjectEntry.second));
     }
 
-    delete tmpObject; /**< because tmpObject is temporary (life time e.g. from 'receiving msg' until 'integration into world'*/
     return object;
 }
 
-void World::updateCell(world::Coordinate coordinate, std::vector<world::Object*> objects)
+void World::updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr<world::Object>> objects)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto cellEntry = this->cellGrid.find(coordinate);
@@ -291,7 +287,7 @@ void World::updateCell(world::Coordinate coordinate, std::vector<world::Object*>
 void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direction)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    world::Object* object = editObject(id);
+    std::shared_ptr<world::Object> object = editObject(id);
     if (!object) {
         return;
     }
@@ -307,7 +303,7 @@ void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direc
     goalCell->addObject(object);
 }
 
-bool World::addAgent(world::Agent* agent)
+bool World::addAgent(std::shared_ptr<world::Agent> agent)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto agentEntry = this->agents.find(agent->getID());
@@ -322,7 +318,7 @@ bool World::addAgent(world::Agent* agent)
 void World::openDoor(essentials::IdentifierConstPtr id)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    class world::Door* door = dynamic_cast<class world::Door*>(editObject(id));
+    std::shared_ptr<world::Door> door = std::dynamic_pointer_cast<world::Door>(editObject(id));
     if (door) {
         door->setState(world::ObjectState::Open);
     } else {
@@ -333,7 +329,7 @@ void World::openDoor(essentials::IdentifierConstPtr id)
 void World::closeDoor(essentials::IdentifierConstPtr id)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    class world::Door* door = dynamic_cast<class world::Door*>(editObject(id));
+    std::shared_ptr<world::Door> door = std::dynamic_pointer_cast<world::Door>(editObject(id));
     if (door) {
         door->setState(world::ObjectState::Closed);
     } else {
@@ -341,15 +337,17 @@ void World::closeDoor(essentials::IdentifierConstPtr id)
     }
 }
 
-const std::unordered_map<essentials::IdentifierConstPtr, world::Room*> World::getRooms() const {
+const std::unordered_map<essentials::IdentifierConstPtr, world::Room*> World::getRooms() const
+{
     return this->rooms;
 }
 
-const std::vector<world::Room*> World::getRooms(world::RoomType type) const {
+const std::vector<world::Room*> World::getRooms(world::RoomType type) const
+{
     std::vector<world::Room*> rooms;
     for (auto& room : this->rooms) {
         if (room.second->getType() == type) {
-            rooms.push_back((world::Room *const) room.second);
+            rooms.push_back((world::Room* const) room.second);
         }
     }
     return rooms;
@@ -357,7 +355,7 @@ const std::vector<world::Room*> World::getRooms(world::RoomType type) const {
 
 // INTERNAL METHODS
 
-world::Cell* World::getNeighbourCell(const world::Direction& direction, world::Object* object)
+world::Cell* World::getNeighbourCell(const world::Direction& direction, std::shared_ptr<world::Object> object)
 {
     const world::Cell* cell = dynamic_cast<const world::Cell*>(object->getParentContainer());
     switch (direction) {
