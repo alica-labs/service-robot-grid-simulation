@@ -12,6 +12,8 @@
 #include <SystemConfig.h>
 #include <cnc_geometry/Calculator.h>
 
+#include <chrono>
+
 namespace srg
 {
 namespace sim
@@ -27,19 +29,15 @@ std::vector<containers::CellPerception> Sensor::createPerceptions(srg::Simulator
 {
     // collect cells in vision
     world::Coordinate from = this->robot->getCoordinate();
-    std::map<world::Coordinate, const world::Cell*> cellsInVision;
+    std::map<world::Coordinate, std::shared_ptr<const world::Cell>> cellsInVision;
     double increment = atan2(1, sightLimit + 1);
     for (double currentDegree = -M_PI; currentDegree < M_PI; currentDegree += increment) { // PI/90 <=> 2 degree resolution
         int32_t xDelta = round(sin(currentDegree) * sightLimit);
         int32_t yDelta = round(cos(currentDegree) * sightLimit);
         world::Coordinate to = world::Coordinate(from.x + xDelta, from.y + yDelta);
-        // for debug purpose
-//        viz::Marker marker(to);
-//        marker.type = viz::SpriteType::Default;
-//        simulator->addMarker(marker);
 
-        std::vector<const world::Cell*> currentCells = this->collectCells(from, to, simulator->getWorld());
-        for (const world::Cell* cell : currentCells) {
+        std::vector<std::shared_ptr<const world::Cell>> currentCells = this->collectCells(from, to, simulator->getWorld());
+        for (std::shared_ptr<const world::Cell> cell : currentCells) {
             // add only cells that are not already collected
             if (cellsInVision.find(cell->coordinate) == cellsInVision.end()) {
                 cellsInVision.emplace(cell->coordinate, cell);
@@ -50,11 +48,6 @@ std::vector<containers::CellPerception> Sensor::createPerceptions(srg::Simulator
     // collect objects as perceptions
     std::vector<containers::CellPerception> cellPerceptionsList;
     for (auto& entry : cellsInVision) {
-        // for debug purpose
-//        viz::Marker marker(entry.second->coordinate);
-//        marker.type = viz::SpriteType::Unknown;
-//        simulator->addMarker(marker);
-
         auto& objects = entry.second->getObjects();
         containers::CellPerception cellPerceptions;
         cellPerceptions.x = entry.second->coordinate.x;
@@ -62,15 +55,16 @@ std::vector<containers::CellPerception> Sensor::createPerceptions(srg::Simulator
         for (auto& objectEntry : objects) {
             cellPerceptions.objects.push_back(objectEntry.second);
         }
+        cellPerceptions.time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
         cellPerceptionsList.push_back(cellPerceptions);
     }
 
     return cellPerceptionsList;
 }
 
-std::vector<const world::Cell*> Sensor::collectCells(world::Coordinate start, world::Coordinate end, srg::World* world)
+std::vector<std::shared_ptr<const world::Cell>> Sensor::collectCells(world::Coordinate start, world::Coordinate end, srg::World* world)
 {
-    std::vector<const world::Cell*> cells;
+    std::vector<std::shared_ptr<const world::Cell>> cells;
     cells.push_back(world->getCell(start));
 
     int32_t sign_x = ((int32_t) end.x - (int32_t) start.x) > 0 ? 1 : -1;
@@ -92,7 +86,7 @@ std::vector<const world::Cell*> Sensor::collectCells(world::Coordinate start, wo
         }
 
         // check if sight is blocked in this cell
-        const world::Cell* cell = world->getCell(currentPoint);
+        std::shared_ptr<const world::Cell> cell = world->getCell(currentPoint);
         if (!cell || cell->getType() == world::RoomType::Wall) {
             break;
         }

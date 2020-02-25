@@ -12,7 +12,7 @@ namespace srg
 {
 namespace world
 {
-class Object : public ObjectSet, std::enable_shared_from_this<Object>
+class Object : public ObjectSet
 {
 public:
     Object(essentials::IdentifierConstPtr id, ObjectType type, ObjectState state = ObjectState::Undefined, int32_t capacity = INT32_MAX);
@@ -28,13 +28,13 @@ public:
 
     Coordinate getCoordinate() const;
 
-    const ObjectSet* getParentContainer() const;
-    void setParentContainer(ObjectSet* parentContainer);
+    std::shared_ptr<const ObjectSet> getParentContainer() const;
+    void setParentContainer(std::shared_ptr<ObjectSet> parentContainer);
     void deleteParentContainer();
 
     friend std::ostream& operator<<(std::ostream& os, const Object& obj);
 protected:
-    ObjectSet* parentContainer; /**< ServiceRobot, Cell, etc.*/
+    std::shared_ptr<ObjectSet> parentContainer; /**< ServiceRobot, Cell, etc.*/
     ObjectType type;
     ObjectState state;
     essentials::IdentifierConstPtr id;

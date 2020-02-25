@@ -16,7 +16,7 @@ SimulatedAgent::SimulatedAgent(std::shared_ptr<world::Agent> agent)
 
 world::Coordinate SimulatedAgent::getCoordinate()
 {
-    return dynamic_cast<const world::Cell*>(this->agent->getParentContainer())->coordinate;
+    return std::dynamic_pointer_cast<const world::Cell>(this->agent->getParentContainer())->coordinate;
 }
 
 std::shared_ptr<world::Object> SimulatedAgent::getCarriedObject()
@@ -38,9 +38,9 @@ essentials::IdentifierConstPtr SimulatedAgent::getID()
     return this->agent->getID();
 }
 
-containers::SimPerceptions SimulatedAgent::createSimPerceptions(Simulator* simulator)
+containers::Perceptions SimulatedAgent::createSimPerceptions(Simulator* simulator)
 {
-    containers::SimPerceptions sps;
+    containers::Perceptions sps;
     sps.receiverID = this->getID();
 
     // objects

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "srg/sim/containers/SimPerceptions.h"
+#include "srg/sim/containers/Perceptions.h"
 
 #include <capnp/serialize-packed.h>
 
@@ -32,7 +32,7 @@ public:
     Communication(essentials::IDManager* idManager, Simulator* simulator);
     ~Communication();
 
-    void sendSimPerceptions(srg::sim::containers::SimPerceptions sp);
+    void sendSimPerceptions(srg::sim::containers::Perceptions sp);
 
 private:
     void onSimCommand(::capnp::FlatArrayMessageReader& msg);

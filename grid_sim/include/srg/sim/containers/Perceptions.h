@@ -12,7 +12,7 @@ namespace sim
 {
 namespace containers
 {
-struct SimPerceptions
+struct Perceptions
 {
     essentials::IdentifierConstPtr receiverID;
     std::vector<CellPerception> cellPerceptions;

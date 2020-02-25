@@ -32,7 +32,7 @@ bool ObjectSet::addObject(std::shared_ptr<world::Object> object)
 {
     if (this->containingObjects.size() < capacity) {
         if (this->containingObjects.insert({object->getID(), object}).second) {
-            object->setParentContainer(this);
+            object->setParentContainer(this->shared_from_this());
         }
     }
 }

@@ -2,7 +2,7 @@
 
 #include "srg/sim/Arm.h"
 #include "srg/sim/Sensor.h"
-#include "srg/sim/containers/SimPerceptions.h"
+#include "srg/sim/containers/Perceptions.h"
 
 namespace srg
 {
@@ -21,7 +21,7 @@ public:
     std::shared_ptr<world::Object> getCarriedObject();
     void setCarriedObject(std::shared_ptr<world::Object> object);
     essentials::IdentifierConstPtr getID();
-    containers::SimPerceptions createSimPerceptions(Simulator* simulator);
+    containers::Perceptions createSimPerceptions(Simulator* simulator);
     void executeAction(containers::SimCommand sc, srg::World* world);
 
 private:

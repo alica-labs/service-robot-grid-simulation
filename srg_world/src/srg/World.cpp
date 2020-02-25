@@ -40,7 +40,7 @@ World::World(std::string tmxMapFile, essentials::IDManager* idManager)
             for (int y = 0; y < layer->GetHeight(); y++) {
                 if (layer->GetTile(x, y).gid > 0) {
                     roomType = layer->GetTile(x, y).gid - 17;
-                    world::Cell* cell = this->addCell(x, y, room);
+                    std::shared_ptr<const world::Cell> cell = this->addCell(x, y, room);
                 }
             }
         }
@@ -54,9 +54,6 @@ World::World(std::string tmxMapFile, essentials::IDManager* idManager)
 
 World::~World()
 {
-    for (auto pair : cellGrid) {
-        delete pair.second;
-    }
     for (auto& room : rooms) {
         delete room.second;
     }
@@ -70,7 +67,7 @@ world::Room* World::addRoom(std::string name, essentials::IdentifierConstPtr id)
     return room;
 }
 
-world::Cell* World::addCell(uint32_t x, uint32_t y, world::Room* room)
+std::shared_ptr<world::Cell> World::addCell(uint32_t x, uint32_t y, world::Room* room)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     world::Coordinate cellCoordinate = world::Coordinate(x, y);
@@ -79,7 +76,7 @@ world::Cell* World::addCell(uint32_t x, uint32_t y, world::Room* room)
         return this->cellGrid.at(cellCoordinate);
     }
 
-    world::Cell* cell = new world::Cell(x, y);
+    std::shared_ptr<world::Cell> cell = std::shared_ptr<world::Cell>(new world::Cell(x, y));
     this->cellGrid.emplace(cell->coordinate, cell);
 
     // Left
@@ -130,7 +127,7 @@ std::shared_ptr<const world::Object> World::getObject(world::ObjectType type) co
     return nullptr;
 }
 
-const world::Cell* World::getCell(const world::Coordinate& coordinate) const
+std::shared_ptr<const world::Cell> World::getCell(const world::Coordinate& coordinate) const
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     if (this->cellGrid.find(coordinate) != this->cellGrid.end()) {
@@ -199,7 +196,7 @@ std::shared_ptr<world::Agent> World::editAgent(essentials::IdentifierConstPtr id
     }
 }
 
-const std::map<world::Coordinate, world::Cell*>& World::getGrid()
+const std::map<world::Coordinate, std::shared_ptr<world::Cell>>& World::getGrid()
 {
     return this->cellGrid;
 }
@@ -226,7 +223,7 @@ std::shared_ptr<world::Agent> World::spawnAgent(essentials::IdentifierConstPtr i
 
     // search for cell with valid spawn coordinates
     srand(time(NULL));
-    const world::Cell* cell = nullptr;
+    std::shared_ptr<const world::Cell> cell = nullptr;
     while (!cell || !isPlacementAllowed(cell, agentType)) {
         cell = this->getCell(world::Coordinate(5, 5));
         //        cell = this->getCell(Coordinate(rand() % this->sizeX, rand() % this->sizeY));
@@ -273,7 +270,7 @@ std::shared_ptr<world::Object> World::createOrUpdateObject(std::shared_ptr<world
     return object;
 }
 
-void World::updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr<world::Object>> objects)
+void World::updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr<world::Object>> objects, int64_t time)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto cellEntry = this->cellGrid.find(coordinate);
@@ -281,6 +278,7 @@ void World::updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr
         return;
     }
     //    std::cout << "[World]" << *cellEntry->second << std::endl;
+    cellEntry->second->timeOfLastUpdate = time;
     cellEntry->second->update(objects);
 }
 
@@ -320,7 +318,7 @@ void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direc
     if (!object) {
         return;
     }
-    world::Cell* goalCell = getNeighbourCell(direction, object);
+    std::shared_ptr<world::Cell> goalCell = getNeighbourCell(direction, object);
     if (!goalCell) {
         std::cerr << "[World] Cell does not exist! " << std::endl;
         return;
@@ -384,9 +382,9 @@ const std::vector<world::Room*> World::getRooms(world::RoomType type) const
 
 // INTERNAL METHODS
 
-world::Cell* World::getNeighbourCell(const world::Direction& direction, std::shared_ptr<world::Object> object)
+std::shared_ptr<world::Cell> World::getNeighbourCell(const world::Direction& direction, std::shared_ptr<world::Object> object)
 {
-    const world::Cell* cell = dynamic_cast<const world::Cell*>(object->getParentContainer());
+    std::shared_ptr<const world::Cell> cell = std::dynamic_pointer_cast<const world::Cell>(object->getParentContainer());
     switch (direction) {
     case world::Direction::Left:
         return cell->left;
@@ -402,7 +400,7 @@ world::Cell* World::getNeighbourCell(const world::Direction& direction, std::sha
     }
 }
 
-bool World::isPlacementAllowed(const world::Cell* cell, world::ObjectType objectType) const
+bool World::isPlacementAllowed(std::shared_ptr<const world::Cell> cell, world::ObjectType objectType) const
 {
     if (cell->getType() == world::RoomType::Wall) {
         return false;

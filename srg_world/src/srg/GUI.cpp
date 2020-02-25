@@ -143,7 +143,7 @@ void GUI::draw(World* world)
             for (auto& objectEntry : pair.second->getObjects()) {
                 sf::Sprite sprite;
                 sprite = getSprite(objectEntry.second);
-                const world::Cell* cell = dynamic_cast<const world::Cell*>(objectEntry.second->getParentContainer());
+                std::shared_ptr<const world::Cell> cell = std::dynamic_pointer_cast<const world::Cell>(objectEntry.second->getParentContainer());
                 sprite.setPosition(cell->coordinate.x * scaledSpriteSize, cell->coordinate.y * scaledSpriteSize);
                 this->window->draw(sprite);
 
@@ -151,7 +151,7 @@ void GUI::draw(World* world)
                 if (std::shared_ptr<world::Agent> robot = std::dynamic_pointer_cast<world::Agent>(objectEntry.second)) {
                     if (robot->getObjects().size() > 0) {
                         sprite = getSprite(robot->getObjects().begin()->second);
-                        cell = dynamic_cast<const world::Cell*>(robot->getParentContainer());
+                        cell = std::dynamic_pointer_cast<const world::Cell>(robot->getParentContainer());
                         sprite.setPosition(
                                 (cell->coordinate.x * scaledSpriteSize) + scaledSpriteSize / 2, (cell->coordinate.y * scaledSpriteSize) + scaledSpriteSize / 2);
                         sprite.setScale(0.25, 0.25);

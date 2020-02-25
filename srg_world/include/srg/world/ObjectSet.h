@@ -11,7 +11,7 @@ class World;
 namespace world
 {
 class Object;
-class ObjectSet
+class ObjectSet : public std::enable_shared_from_this<ObjectSet>
 {
 public:
     virtual ~ObjectSet();

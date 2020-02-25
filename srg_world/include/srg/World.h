@@ -42,19 +42,19 @@ public:
     World(std::string tmxMapFile, essentials::IDManager* idManager);
     ~World();
 
-    world::Cell* addCell(uint32_t x, uint32_t y, world::Room* room);
-    const world::Cell* getCell(const world::Coordinate& coordinate) const;
+    std::shared_ptr<world::Cell> addCell(uint32_t x, uint32_t y, world::Room* room);
+    std::shared_ptr<const world::Cell> getCell(const world::Coordinate& coordinate) const;
 
     uint32_t getSizeX() const;
     uint32_t getSizeY() const;
-    const std::map<world::Coordinate, world::Cell*>& getGrid();
+    const std::map<world::Coordinate, std::shared_ptr<world::Cell>>& getGrid();
     std::recursive_mutex& getDataMutex();
 
     // objects
     std::shared_ptr<const world::Object> getObject(world::ObjectType type) const;
     std::shared_ptr<const world::Object> getObject(essentials::IdentifierConstPtr id) const;
     std::shared_ptr<world::Object> editObject(essentials::IdentifierConstPtr id);
-    void updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr<world::Object>> objects);
+    void updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr<world::Object>> objects, int64_t time);
     std::shared_ptr<world::Object> createOrUpdateObject(std::shared_ptr<world::Object> tmpObject);
     void removeUnknownObjects();
     void removeObjectIfUnknown(essentials::IdentifierConstPtr objectID);
@@ -74,11 +74,11 @@ public:
     const std::vector<world::Room*> getRooms(world::RoomType type) const;
 
 private:
-    bool isPlacementAllowed(const world::Cell* cell, world::ObjectType objectType) const;
-    world::Cell* getNeighbourCell(const world::Direction& direction, std::shared_ptr<world::Object> object);
+    bool isPlacementAllowed(std::shared_ptr<const world::Cell> cell, world::ObjectType objectType) const;
+    std::shared_ptr<world::Cell> getNeighbourCell(const world::Direction& direction, std::shared_ptr<world::Object> object);
     world::Room* addRoom(std::string name, essentials::IdentifierConstPtr id);
 
-    std::map<world::Coordinate, world::Cell*> cellGrid;
+    std::map<world::Coordinate, std::shared_ptr<world::Cell>> cellGrid;
     /**
      * Current field length
      */

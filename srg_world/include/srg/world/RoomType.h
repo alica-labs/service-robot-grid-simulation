@@ -8,11 +8,11 @@ namespace world
 {
 enum class RoomType
 {
-    Floor,
-    Workroom,
-    Bathroom,
+    Floor,//
+    Office,
+    Bathroom,//
     UtilityRoom,
-    Kitchen,
+    Kitchen,//
     ReceptionRoom,
     ConferenceRoom,
     ServerRoom,

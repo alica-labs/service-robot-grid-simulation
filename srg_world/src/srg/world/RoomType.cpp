@@ -23,28 +23,28 @@ std::ostream& operator<<(std::ostream& os, const RoomType& type)
         os << "bathroom";
         break;
     case RoomType::ConferenceRoom:
-        os << "conferenceRoom";
+        os << "conference_room";
         break;
     case RoomType::Kitchen:
         os << "kitchen";
         break;
     case RoomType::ReceptionRoom:
-        os << "receptionRoom";
+        os << "reception_room";
         break;
     case RoomType::ServerRoom:
-        os << "serverRoom";
+        os << "server_room";
         break;
     case RoomType::Storeroom:
         os << "storeroom";
         break;
     case RoomType::UtilityRoom:
-        os << "utilityRoom";
+        os << "utility_room";
         break;
-    case RoomType::Workroom:
-        os << "workroom";
+    case RoomType::Office:
+        os << "office";
         break;
     case RoomType::WorkshopRoom:
-        os << "workshopRoom";
+        os << "workshop_room";
         break;
     case RoomType::Wall:
         os << "wall";

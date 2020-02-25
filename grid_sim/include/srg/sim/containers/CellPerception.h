@@ -13,6 +13,7 @@ struct CellPerception
     uint32_t x;
     uint32_t y;
     std::vector<std::shared_ptr<srg::world::Object>> objects;
+    int64_t time; /**< Time of creation. */
     friend std::ostream& operator<<(std::ostream& os, const CellPerception& obj)
     {
         os << "[CellPerception] At (" << obj.x << ", " << obj.y << ")" << std::endl;

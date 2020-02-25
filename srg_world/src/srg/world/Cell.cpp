@@ -38,22 +38,22 @@ bool Cell::isBlocked() const
     return false;
 }
 
-bool Cell::operator<(const Cell* other)
+bool Cell::operator<(std::shared_ptr<const Cell> other)
 {
     return this->coordinate < other->coordinate;
 }
 
-bool operator==(Cell const& first, Cell const& second)
+bool operator==(std::shared_ptr<const Cell> first, std::shared_ptr<const Cell> second)
 {
-    return first.coordinate == second.coordinate;
+    return first->coordinate == second->coordinate;
 }
 
-bool Cell::operator==(Cell const* other)
+bool Cell::operator==(std::shared_ptr<const Cell> other)
 {
     return this->coordinate == other->coordinate;
 }
 
-bool operator!=(Cell const& first, Cell const& second)
+bool operator!=(std::shared_ptr<const Cell> first, std::shared_ptr<const Cell> second)
 {
     return !(first == second);
 }

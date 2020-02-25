@@ -49,7 +49,7 @@ void Communication::onSimCommand(::capnp::FlatArrayMessageReader& msg)
     this->simulator->processSimCommand(ContainerUtils::toSimCommand(msg, this->idManager));
 }
 
-void Communication::sendSimPerceptions(srg::sim::containers::SimPerceptions sp)
+void Communication::sendSimPerceptions(srg::sim::containers::Perceptions sp)
 {
     ::capnp::MallocMessageBuilder msgBuilder;
     ContainerUtils::toMsg(sp, msgBuilder);

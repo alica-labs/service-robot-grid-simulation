@@ -3,7 +3,7 @@ using Cxx = import "/capnp/c++.capnp";
 $Cxx.namespace("srg::sim");
 using IDMsg = import "/capnzero/ID.capnp";
 
-struct SimPerceptionMsg {
+struct PerceptionMsg {
   receiverID @0 :IDMsg.ID;
   cellPerceptions @1 :List(CellPerception);
 
@@ -11,6 +11,7 @@ struct SimPerceptionMsg {
       x @0: UInt32;
       y @1: UInt32;
       objects @2 :List(Object);
+      time @3 :Int64;
   }
 
   struct Object {
