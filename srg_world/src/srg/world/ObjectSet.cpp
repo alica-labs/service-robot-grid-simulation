@@ -18,48 +18,46 @@ bool ObjectSet::contains(essentials::IdentifierConstPtr objectID) const
     return this->containingObjects.find(objectID) != this->containingObjects.end();
 }
 
-bool ObjectSet::contains(const Object* object) const
+bool ObjectSet::contains(std::shared_ptr<const world::Object> object) const
 {
     return this->contains(object->getID());
 }
 
-const std::unordered_map<essentials::IdentifierConstPtr, Object*>& ObjectSet::getObjects() const
+const std::unordered_map<essentials::IdentifierConstPtr, std::shared_ptr<world::Object>>& ObjectSet::getObjects() const
 {
     return containingObjects;
 }
 
-bool ObjectSet::addObject(Object* object)
+bool ObjectSet::addObject(std::shared_ptr<world::Object> object)
 {
     if (this->containingObjects.size() < capacity) {
         if (this->containingObjects.insert({object->getID(), object}).second) {
-            object->setParentContainer(this);
+            object->setParentContainer(this->shared_from_this());
         }
     }
 }
 
-void ObjectSet::removeObject(Object* object)
+void ObjectSet::removeObject(std::shared_ptr<world::Object> object)
 {
     if (this->containingObjects.erase(object->getID()) > 0) {
         object->deleteParentContainer();
     }
 }
 
-std::unordered_map<essentials::IdentifierConstPtr, srg::world::Object*>::iterator ObjectSet::removeObject(
-        std::unordered_map<essentials::IdentifierConstPtr, srg::world::Object*>::iterator iter)
+std::unordered_map<essentials::IdentifierConstPtr, std::shared_ptr<world::Object>>::iterator ObjectSet::removeObject(
+        std::unordered_map<essentials::IdentifierConstPtr, std::shared_ptr<world::Object>>::iterator iter)
 {
-    std::unordered_map<essentials::IdentifierConstPtr, srg::world::Object*>::iterator iterator = this->containingObjects.erase(iter);
-    if (iterator != this->containingObjects.end()) {
-        iter->second->deleteParentContainer();
-    }
+    std::unordered_map<essentials::IdentifierConstPtr, std::shared_ptr<world::Object>>::iterator iterator = this->containingObjects.erase(iter);
+    iter->second->deleteParentContainer();
     return iterator;
 }
 
-void ObjectSet::update(std::vector<Object*> updateObjects)
+void ObjectSet::update(std::vector<std::shared_ptr<world::Object>> updateObjects)
 {
     // remove unseen objects
     for (auto it = this->containingObjects.begin(); it != this->containingObjects.end();) {
         bool found = false;
-        for (Object* updateObject : updateObjects) {
+        for (std::shared_ptr<world::Object> updateObject : updateObjects) {
             if (updateObject->getID() == it->second->getID()) {
                 found = true;
                 break;
@@ -73,7 +71,7 @@ void ObjectSet::update(std::vector<Object*> updateObjects)
     }
 
     // add new objects
-    for (Object* updateObject : updateObjects) {
+    for (std::shared_ptr<world::Object> updateObject : updateObjects) {
         this->addObject(updateObject);
     }
 }

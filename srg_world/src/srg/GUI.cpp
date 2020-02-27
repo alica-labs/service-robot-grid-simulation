@@ -1,9 +1,9 @@
 #include "srg/GUI.h"
 
+#include "srg/world/Agent.h"
 #include "srg/world/Cell.h"
 #include "srg/world/Door.h"
 #include "srg/world/Object.h"
-#include "srg/world/Agent.h"
 
 #include <FileSystem.h>
 #include <SystemConfig.h>
@@ -143,15 +143,15 @@ void GUI::draw(World* world)
             for (auto& objectEntry : pair.second->getObjects()) {
                 sf::Sprite sprite;
                 sprite = getSprite(objectEntry.second);
-                const world::Cell* cell = dynamic_cast<const world::Cell*>(objectEntry.second->getParentContainer());
+                std::shared_ptr<const world::Cell> cell = std::dynamic_pointer_cast<const world::Cell>(objectEntry.second->getParentContainer());
                 sprite.setPosition(cell->coordinate.x * scaledSpriteSize, cell->coordinate.y * scaledSpriteSize);
                 this->window->draw(sprite);
 
                 cell = nullptr;
-                if (world::Agent* robot = dynamic_cast<world::Agent*>(objectEntry.second)) {
+                if (std::shared_ptr<world::Agent> robot = std::dynamic_pointer_cast<world::Agent>(objectEntry.second)) {
                     if (robot->getObjects().size() > 0) {
                         sprite = getSprite(robot->getObjects().begin()->second);
-                        cell = dynamic_cast<const world::Cell*>(robot->getParentContainer());
+                        cell = std::dynamic_pointer_cast<const world::Cell>(robot->getParentContainer());
                         sprite.setPosition(
                                 (cell->coordinate.x * scaledSpriteSize) + scaledSpriteSize / 2, (cell->coordinate.y * scaledSpriteSize) + scaledSpriteSize / 2);
                         sprite.setScale(0.25, 0.25);
@@ -198,12 +198,12 @@ void GUI::handleSFMLEvents(const World* world)
                 this->dragging = true;
                 this->updateView(world, this->window->getSize().x, this->window->getSize().y);
             }
-        } else if (event.type == sf::Event::MouseButtonReleased){
+        } else if (event.type == sf::Event::MouseButtonReleased) {
             if (event.mouseButton.button == sf::Mouse::Button::Right) {
                 this->dragging = false;
             }
         } else if (event.type == sf::Event::MouseMoved) {
-            if (this->dragging){
+            if (this->dragging) {
                 float mouseCurPosX = sf::Mouse::getPosition().x;
                 float mouseCurPosY = sf::Mouse::getPosition().y;
                 this->camOffsetX += (this->mousePosOldX - mouseCurPosX) * this->zoomFactor;
@@ -255,11 +255,11 @@ sf::Sprite GUI::getSprite(world::RoomType type)
     return getSprite(viz::SpriteType::Floor);
 }
 
-sf::Sprite GUI::getSprite(const world::Object* object)
+sf::Sprite GUI::getSprite(std::shared_ptr<const world::Object> object)
 {
     switch (object->getType()) {
     case world::ObjectType::Door:
-        if (dynamic_cast<const world::Door*>(object)->isOpen()) {
+        if (std::dynamic_pointer_cast<const world::Door>(object)->isOpen()) {
             return getSprite(viz::SpriteType::DoorOpen);
         } else {
             return getSprite(viz::SpriteType::DoorClosed);
@@ -279,13 +279,13 @@ sf::Sprite GUI::getSprite(const world::Object* object)
         return getSprite(viz::SpriteType::Unknown);
     }
 }
-
-    void GUI::updateView(const World* world, int width, int height) {
-        sf::View tmp = sf::View(sf::FloatRect(0, 0, width, height));
-        tmp.zoom(std::max(0.25f, std::min(this->zoomFactor, 2.0f)));
-//        tmp.move(this->camOffsetX, this->camOffsetY);
-        tmp.setCenter(this->camOffsetX, this->camOffsetY);
-        window->setView(tmp);
-        scaleSprite(world);
-    }
+void GUI::updateView(const World* world, int width, int height)
+{
+    sf::View tmp = sf::View(sf::FloatRect(0, 0, width, height));
+    tmp.zoom(std::max(0.25f, std::min(this->zoomFactor, 2.0f)));
+    //        tmp.move(this->camOffsetX, this->camOffsetY);
+    tmp.setCenter(this->camOffsetX, this->camOffsetY);
+    window->setView(tmp);
+    scaleSprite(world);
+}
 } // namespace srg

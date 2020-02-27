@@ -58,6 +58,7 @@ void Simulator::placeObjectsFromConf()
             continue;
         }
 
+<<<<<<< HEAD:grid_sim/src/srg/Simulator.cpp
         world::Object* object;
         if (type == world::ObjectType::Door) {
             if ((*sc)["Objects"]->get<bool>("Objects", objectSection.c_str(), "open", NULL)) {
@@ -67,6 +68,17 @@ void Simulator::placeObjectsFromConf()
             }
         } else {
             object = this->world->createOrUpdateObject(new srg::world::Object(id, type));
+=======
+        std::shared_ptr<world::Object> object;
+        if (type == world::ObjectType::Door) {
+            if ((*sc)["Objects"]->get<bool>("Objects", objectSection.c_str(), "open", NULL)) {
+                object = this->world->createOrUpdateObject(std::make_shared<world::Object>( id, type, world::ObjectState::Open));
+            } else {
+                object = this->world->createOrUpdateObject(std::make_shared<world::Object>(id, type, world::ObjectState::Closed));
+            }
+        } else {
+            object = this->world->createOrUpdateObject(std::make_shared<world::Object>(id, type));
+>>>>>>> master:grid_sim/src/srg/Simulator.cpp
         }
 
         if (object->getParentContainer()) {
@@ -99,7 +111,7 @@ srg::World* Simulator::getWorld()
     return this->world;
 }
 
-void Simulator::addSimulatedAgent(world::Agent* agent)
+void Simulator::addSimulatedAgent(std::shared_ptr<world::Agent> agent)
 {
     if (!agent)
         return;

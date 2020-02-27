@@ -30,7 +30,7 @@ private:
     void storeWindowConfig();
     sf::Sprite getSprite(viz::SpriteType type);
     sf::Sprite getSprite(world::RoomType type);
-    sf::Sprite getSprite(const world::Object* object);
+    sf::Sprite getSprite(std::shared_ptr<const world::Object> object);
     void scaleSprite(const World* world);
     void handleSFMLEvents(const World* world);
     void calculateScale();
@@ -50,7 +50,6 @@ private:
     float mousePosOldY;
     float zoomFactor = 0.9;
     bool dragging = false;
-
 
     sf::Sprite sprites[static_cast<int>(viz::SpriteType::Last)];
 

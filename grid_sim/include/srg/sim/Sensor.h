@@ -33,7 +33,7 @@ public:
     std::vector<containers::CellPerception> createPerceptions(srg::Simulator* simulator);
 
 private:
-    std::vector<const world::Cell*>collectCells(world::Coordinate start, world::Coordinate end, srg::World* world);
+    std::vector<std::shared_ptr<const world::Cell>>collectCells(world::Coordinate start, world::Coordinate end, srg::World* world);
 
     SimulatedAgent* robot;
     essentials::SystemConfig* sc;

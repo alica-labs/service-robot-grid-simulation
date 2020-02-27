@@ -17,37 +17,37 @@ std::ostream& operator<<(std::ostream& os, const RoomType& type)
 {
     switch (type) {
     case RoomType::Floor:
-        os << "Floor";
+        os << "floor";
         break;
     case RoomType::Bathroom:
-        os << "Bathroom";
+        os << "bathroom";
         break;
     case RoomType::ConferenceRoom:
-        os << "ConferenceRoom";
+        os << "conference_room";
         break;
     case RoomType::Kitchen:
-        os << "Kitchen";
+        os << "kitchen";
         break;
     case RoomType::ReceptionRoom:
-        os << "ReceptionRoom";
+        os << "reception_room";
         break;
     case RoomType::ServerRoom:
-        os << "ServerRoom";
+        os << "server_room";
         break;
     case RoomType::Storeroom:
-        os << "Storeroom";
+        os << "storeroom";
         break;
     case RoomType::UtilityRoom:
-        os << "UtilityRoom";
+        os << "utility_room";
         break;
-    case RoomType::Workroom:
-        os << "Workroom";
+    case RoomType::Office:
+        os << "office";
         break;
     case RoomType::WorkshopRoom:
-        os << "WorkshopRoom";
+        os << "workshop_room";
         break;
     case RoomType::Wall:
-        os << "Wall";
+        os << "wall";
         break;
     default:
         os.setstate(std::ios_base::failbit);

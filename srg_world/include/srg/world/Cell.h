@@ -9,6 +9,7 @@
 #include <iosfwd>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace srg
 {
@@ -24,8 +25,8 @@ public:
     RoomType getType() const;
     bool isBlocked() const;
 
-    bool operator<(const Cell* other);
-    bool operator==(Cell const* other);
+    bool operator<(std::shared_ptr<const Cell> other);
+    bool operator==(std::shared_ptr<const Cell> other);
 
     // friend declaration
     friend ::srg::World;
@@ -33,18 +34,19 @@ public:
 
     Coordinate coordinate;
     Room* room;
-    Cell* up;
-    Cell* down;
-    Cell* left;
-    Cell* right;
+    std::shared_ptr<Cell> up;
+    std::shared_ptr<Cell> down;
+    std::shared_ptr<Cell> left;
+    std::shared_ptr<Cell> right;
+    int64_t timeOfLastUpdate;
 
 private:
     Cell(uint32_t x, uint32_t y);
 };
 
-bool operator==(const Cell& first, const Cell& second);
-bool operator!=(const Cell& first, const Cell& second);
-bool operator<(const Cell& first, const Cell& second);
+bool operator==(std::shared_ptr<const Cell> first, std::shared_ptr<const Cell> second);
+bool operator!=(std::shared_ptr<const Cell> first, std::shared_ptr<const Cell> second);
+//bool operator<(const Cell& first, const Cell& second);
 
 } // namespace world
 } // namespace srg

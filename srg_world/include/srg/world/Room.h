@@ -18,9 +18,9 @@ class Room
 {
 public:
     Room(std::string name, essentials::IdentifierConstPtr id);
-    void addCell(Cell* cell);
-    const Cell* getCell(const Coordinate& coord) const;
-    const std::map<Coordinate, Cell*>& getCells() const;
+    void addCell(std::shared_ptr<Cell> cell);
+    std::shared_ptr<const Cell> getCell(const Coordinate& coord) const;
+    const std::map<Coordinate, std::shared_ptr<Cell>>& getCells() const;
     RoomType getType() const;
     essentials::IdentifierConstPtr getID() const;
 
@@ -32,7 +32,7 @@ private:
     essentials::IdentifierConstPtr id;
     RoomType type;
     std::string name;
-    std::map<Coordinate, Cell*> cells;
+    std::map<Coordinate, std::shared_ptr<Cell>> cells;
 };
 } // namespace world
 } // namespace srg

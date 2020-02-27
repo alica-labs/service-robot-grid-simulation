@@ -22,7 +22,7 @@ essentials::IdentifierConstPtr Room::getID() const
     return this->id;
 }
 
-void Room::addCell(Cell* cell)
+void Room::addCell(std::shared_ptr<Cell> cell)
 {
     cell->room = this;
 
@@ -32,7 +32,7 @@ void Room::addCell(Cell* cell)
     }
 }
 
-const Cell* Room::getCell(const Coordinate& coordinate) const
+std::shared_ptr<const Cell> Room::getCell(const Coordinate& coordinate) const
 {
     if (this->cells.find(coordinate) != this->cells.end()) {
         return this->cells.at(coordinate);
@@ -40,7 +40,7 @@ const Cell* Room::getCell(const Coordinate& coordinate) const
     return nullptr;
 }
 
-const std::map<Coordinate, Cell*>& Room::getCells() const
+const std::map<Coordinate, std::shared_ptr<Cell>>& Room::getCells() const
 {
     return this->cells;
 }

@@ -17,17 +17,21 @@ Object::Object(essentials::IdentifierConstPtr id, ObjectType type, ObjectState s
 
 Object::~Object() {}
 
-Coordinate Object::getCoordinate() const {
-    const ObjectSet* parentContainer = this->parentContainer;
-    const srg::world::Cell* cell = nullptr;
-    const srg::world::Object* object = nullptr;
 
-    cell = dynamic_cast<const srg::world::Cell*>(parentContainer);
-    if (cell){
+Coordinate Object::getCoordinate() const
+{
+    std::shared_ptr<const ObjectSet> parentContainer = this->parentContainer;
+    std::shared_ptr<const Cell> cell = nullptr;
+    std::shared_ptr<const Object> object = nullptr;
+
+    cell = std::dynamic_pointer_cast<const srg::world::Cell>(parentContainer);
+    if (cell) {
         return cell->coordinate;
     } else {
-        object = dynamic_cast<const srg::world::Object*>(parentContainer);
+        object = std::dynamic_pointer_cast<const srg::world::Object>(parentContainer);
         if (object) {
+            // recursive call, because objects can be contained in other objects
+            // example: a robot holds and object
             return object->getCoordinate();
         }
     }
@@ -40,22 +44,22 @@ void Object::deleteParentContainer()
     if (this->parentContainer == nullptr) {
         return;
     }
-    ObjectSet* tmpContainer = this->parentContainer;
+    std::shared_ptr<ObjectSet> tmpContainer = this->parentContainer;
     this->parentContainer = nullptr;
-    tmpContainer->removeObject(this);
+    tmpContainer->removeObject(std::dynamic_pointer_cast<world::Object>(this->shared_from_this()));
 }
 
-void Object::setParentContainer(ObjectSet* parentContainer)
+void Object::setParentContainer(std::shared_ptr<ObjectSet> parentContainer)
 {
     if (parentContainer == nullptr || this->parentContainer == parentContainer) {
         return;
     }
     this->deleteParentContainer();
     this->parentContainer = parentContainer;
-    this->parentContainer->addObject(this);
+    this->parentContainer->addObject(std::dynamic_pointer_cast<world::Object>(this->shared_from_this()));
 }
 
-const ObjectSet* Object::getParentContainer() const
+std::shared_ptr<const ObjectSet> Object::getParentContainer() const
 {
     return this->parentContainer;
 }

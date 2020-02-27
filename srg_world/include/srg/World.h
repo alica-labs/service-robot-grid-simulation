@@ -1,19 +1,21 @@
 #pragma once
 
 #include "srg/world/Coordinate.h"
-#include "srg/world/ObjectType.h"
+
 #include "srg/world/Direction.h"
 #include "srg/world/ObjectState.h"
+#include "srg/world/ObjectType.h"
+#include "srg/world/RoomType.h"
 
 #include <srg/viz/Marker.h>
 
 #include <essentials/IdentifierConstPtr.h>
 
 #include <map>
+#include <memory>
 #include <mutex>
 #include <unordered_map>
 #include <vector>
-#include <srg/world/RoomType.h>
 
 namespace essentials
 {
@@ -41,30 +43,30 @@ public:
     World(std::string tmxMapFile, essentials::IDManager* idManager);
     ~World();
 
-    world::Cell* addCell(uint32_t x, uint32_t y, world::Room* room);
-    const world::Cell* getCell(const world::Coordinate& coordinate) const;
+    std::shared_ptr<world::Cell> addCell(uint32_t x, uint32_t y, world::Room* room);
+    std::shared_ptr<const world::Cell> getCell(const world::Coordinate& coordinate) const;
 
     uint32_t getSizeX() const;
     uint32_t getSizeY() const;
-    const std::map<world::Coordinate, world::Cell*>& getGrid();
+    const std::map<world::Coordinate, std::shared_ptr<world::Cell>>& getGrid();
     std::recursive_mutex& getDataMutex();
 
-//    std::vector<world::Object*> updateCell(srgsim::CellPerceptions cellPerceptions);
-
     // objects
-    const world::Object* getObject(world::ObjectType type) const;
-    const world::Object* getObject(essentials::IdentifierConstPtr id) const;
-    world::Object* editObject(essentials::IdentifierConstPtr id);
-    void updateCell(world::Coordinate coordinate, std::vector<world::Object*> objects);
-    world::Object* createOrUpdateObject(world::Object* tmpObject);
-    bool placeObject(world::Object* object, world::Coordinate coordinate);
+    std::shared_ptr<const world::Object> getObject(world::ObjectType type) const;
+    std::shared_ptr<const world::Object> getObject(essentials::IdentifierConstPtr id) const;
+    std::shared_ptr<world::Object> editObject(essentials::IdentifierConstPtr id);
+    void updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr<world::Object>> objects, int64_t time);
+    std::shared_ptr<world::Object> createOrUpdateObject(std::shared_ptr<world::Object> tmpObject);
+    void removeUnknownObjects();
+    void removeObjectIfUnknown(essentials::IdentifierConstPtr objectID);
+    bool placeObject(std::shared_ptr<world::Object> object, world::Coordinate coordinate);
     void moveObject(essentials::IdentifierConstPtr id, world::Direction direction);
 
     // agents
-    world::Agent* spawnAgent(essentials::IdentifierConstPtr id,  world::ObjectType agentType);
-    const world::Agent* getAgent(essentials::IdentifierConstPtr id) const;
-    world::Agent* editAgent(essentials::IdentifierConstPtr id);
-    bool addAgent(world::Agent* agent);
+    std::shared_ptr<world::Agent> spawnAgent(essentials::IdentifierConstPtr id, world::ObjectType agentType);
+    std::shared_ptr<const world::Agent> getAgent(essentials::IdentifierConstPtr id) const;
+    std::shared_ptr<world::Agent> editAgent(essentials::IdentifierConstPtr id);
+    bool addAgent(std::shared_ptr<world::Agent> agent);
 
     // other
     void openDoor(essentials::IdentifierConstPtr id);
@@ -73,11 +75,11 @@ public:
     const std::vector<world::Room*> getRooms(world::RoomType type) const;
 
 private:
-    bool isPlacementAllowed(const world::Cell* cell, world::ObjectType objectType) const;
-    world::Cell* getNeighbourCell(const world::Direction& direction, world::Object* object);
+    bool isPlacementAllowed(std::shared_ptr<const world::Cell> cell, world::ObjectType objectType) const;
+    std::shared_ptr<world::Cell> getNeighbourCell(const world::Direction& direction, std::shared_ptr<world::Object> object);
     world::Room* addRoom(std::string name, essentials::IdentifierConstPtr id);
 
-    std::map<world::Coordinate, world::Cell*> cellGrid;
+    std::map<world::Coordinate, std::shared_ptr<world::Cell>> cellGrid;
     /**
      * Current field length
      */
@@ -88,8 +90,8 @@ private:
     uint32_t sizeY;
 
     mutable std::recursive_mutex dataMutex;
-    std::unordered_map<essentials::IdentifierConstPtr, world::Object*> objects;
-    std::unordered_map<essentials::IdentifierConstPtr, world::Agent*> agents;
+    std::unordered_map<essentials::IdentifierConstPtr, std::shared_ptr<world::Object>> objects;
+    std::unordered_map<essentials::IdentifierConstPtr, std::shared_ptr<world::Agent>> agents;
     std::unordered_map<essentials::IdentifierConstPtr, world::Room*> rooms;
 };
 } // namespace srg

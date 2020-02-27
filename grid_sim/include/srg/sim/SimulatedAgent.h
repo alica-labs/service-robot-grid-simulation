@@ -2,7 +2,7 @@
 
 #include "srg/sim/Arm.h"
 #include "srg/sim/Sensor.h"
-#include "srg/sim/containers/SimPerceptions.h"
+#include "srg/sim/containers/Perceptions.h"
 
 namespace srg
 {
@@ -16,18 +16,18 @@ namespace sim
 class SimulatedAgent
 {
 public:
-    SimulatedAgent(srg::world::Agent* agent);
+    SimulatedAgent(std::shared_ptr<srg::world::Agent> agent);
     world::Coordinate getCoordinate();
-    world::Object* getCarriedObject();
-    void setCarriedObject(world::Object* object);
+    std::shared_ptr<world::Object> getCarriedObject();
+    void setCarriedObject(std::shared_ptr<world::Object> object);
     essentials::IdentifierConstPtr getID();
-    containers::SimPerceptions createSimPerceptions(Simulator* simulator);
+    containers::Perceptions createSimPerceptions(Simulator* simulator);
     void executeAction(containers::SimCommand sc, srg::World* world);
 
 private:
     Sensor* objectDetection;
     Arm* manipulation;
-    srg::world::Agent* agent;
+    std::shared_ptr<srg::world::Agent> agent;
 };
 
 } // namespace sim

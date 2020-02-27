@@ -109,26 +109,32 @@ void ContainerUtils::toMsg(srg::sim::containers::SimCommand sc, ::capnp::MallocM
     msg.setY(sc.y);
 }
 
-containers::SimPerceptions ContainerUtils::toSimPerceptions(::capnp::FlatArrayMessageReader& msg, essentials::IDManager* idManager)
+containers::Perceptions ContainerUtils::toPerceptions(::capnp::FlatArrayMessageReader& msg, essentials::IDManager* idManager)
 {
-    containers::SimPerceptions sps;
-    srg::sim::SimPerceptionMsg::Reader reader = msg.getRoot<srg::sim::SimPerceptionMsg>();
-    sps.receiverID = idManager->getIDFromBytes(
-            reader.getReceiverID().getValue().asBytes().begin(), reader.getReceiverID().getValue().size(), reader.getReceiverID().getType());
-    for (srg::sim::SimPerceptionMsg::CellPerception::Reader cellPerceptionMsg : reader.getCellPerceptions()) {
+    srg::sim::PerceptionMsg::Reader reader = msg.getRoot<srg::sim::PerceptionMsg>();
+    return ContainerUtils::createPerceptions(reader, idManager);
+}
+
+containers::Perceptions ContainerUtils::createPerceptions(srg::sim::PerceptionMsg::Reader perceptionsReader, essentials::IDManager* idManager) {
+    containers::Perceptions ps;
+
+    ps.receiverID = idManager->getIDFromBytes(
+            perceptionsReader.getReceiverID().getValue().asBytes().begin(), perceptionsReader.getReceiverID().getValue().size(), perceptionsReader.getReceiverID().getType());
+    for (srg::sim::PerceptionMsg::CellPerception::Reader cellPerceptionMsg : perceptionsReader.getCellPerceptions()) {
         srg::sim::containers::CellPerception cellPerception;
         cellPerception.x = cellPerceptionMsg.getX();
         cellPerception.y = cellPerceptionMsg.getY();
 
-        for (srg::sim::SimPerceptionMsg::Object::Reader perceptionMsg : cellPerceptionMsg.getObjects()) {
+        for (srg::sim::PerceptionMsg::Object::Reader perceptionMsg : cellPerceptionMsg.getObjects()) {
             cellPerception.objects.push_back(ContainerUtils::createObject(perceptionMsg, idManager));
         }
-        sps.cellPerceptions.push_back(cellPerception);
+        cellPerception.time = cellPerceptionMsg.getTime();
+        ps.cellPerceptions.push_back(cellPerception);
     }
-    return sps;
+    return ps;
 }
 
-srg::world::Object* ContainerUtils::createObject(srg::sim::SimPerceptionMsg::Object::Reader& objectReader, essentials::IDManager* idManager)
+std::shared_ptr<srg::world::Object> ContainerUtils::createObject(srg::sim::PerceptionMsg::Object::Reader& objectReader, essentials::IDManager* idManager)
 {
     // ID
     essentials::IdentifierConstPtr id = idManager->getIDFromBytes(
@@ -136,22 +142,22 @@ srg::world::Object* ContainerUtils::createObject(srg::sim::SimPerceptionMsg::Obj
     // TYPE
     srg::world::ObjectType type;
     switch (objectReader.getType()) {
-    case srg::sim::SimPerceptionMsg::Object::Type::ROBOT:
+    case srg::sim::PerceptionMsg::Object::Type::ROBOT:
         type = srg::world::ObjectType::Robot;
         break;
-    case srg::sim::SimPerceptionMsg::Object::Type::HUMAN:
+    case srg::sim::PerceptionMsg::Object::Type::HUMAN:
         type = srg::world::ObjectType::Human;
         break;
-    case srg::sim::SimPerceptionMsg::Object::Type::DOOR:
+    case srg::sim::PerceptionMsg::Object::Type::DOOR:
         type = srg::world::ObjectType::Door;
         break;
-    case srg::sim::SimPerceptionMsg::Object::Type::CUPRED:
+    case srg::sim::PerceptionMsg::Object::Type::CUPRED:
         type = srg::world::ObjectType::CupRed;
         break;
-    case srg::sim::SimPerceptionMsg::Object::Type::CUPBLUE:
+    case srg::sim::PerceptionMsg::Object::Type::CUPBLUE:
         type = srg::world::ObjectType::CupBlue;
         break;
-    case srg::sim::SimPerceptionMsg::Object::Type::CUPYELLOW:
+    case srg::sim::PerceptionMsg::Object::Type::CUPYELLOW:
         type = srg::world::ObjectType::CupYellow;
         break;
     default:
@@ -162,53 +168,55 @@ srg::world::Object* ContainerUtils::createObject(srg::sim::SimPerceptionMsg::Obj
     // STATE
     srg::world::ObjectState state;
     switch (objectReader.getState()) {
-    case srg::sim::SimPerceptionMsg::Object::State::OPEN:
+    case srg::sim::PerceptionMsg::Object::State::OPEN:
         state = srg::world::ObjectState::Open;
         break;
-    case srg::sim::SimPerceptionMsg::Object::State::CLOSED:
+    case srg::sim::PerceptionMsg::Object::State::CLOSED:
         state = srg::world::ObjectState::Closed;
         break;
-    case srg::sim::SimPerceptionMsg::Object::State::UNDEFINED:
+    case srg::sim::PerceptionMsg::Object::State::UNDEFINED:
         state = srg::world::ObjectState::Undefined;
         break;
     default:
         std::cerr << "[ContainterUtils] Unknown object type in capnp message found!" << std::endl;
         break;
     }
-    srg::world::Object* object = new srg::world::Object(id, type, state);
-    for (srg::sim::SimPerceptionMsg::Object::Reader childObjectReader : objectReader.getObjects()) {
+    std::shared_ptr<srg::world::Object> object = std::make_shared<srg::world::Object>(id, type, state);
+    for (srg::sim::PerceptionMsg::Object::Reader childObjectReader : objectReader.getObjects()) {
         object->addObject(ContainerUtils::createObject(childObjectReader, idManager));
     }
     return object;
 }
 
-void ContainerUtils::toMsg(srg::sim::containers::SimPerceptions sp, ::capnp::MallocMessageBuilder& builder)
+void ContainerUtils::toMsg(srg::sim::containers::Perceptions sp, ::capnp::MallocMessageBuilder& builder)
 {
-    SimPerceptionMsg::Builder msg = builder.getRoot<SimPerceptionMsg>();
+    PerceptionMsg::Builder msg = builder.getRoot<PerceptionMsg>();
 
     capnzero::ID::Builder receiverID = msg.initReceiverID();
     receiverID.setValue(kj::arrayPtr(sp.receiverID->getRaw(), (unsigned int) sp.receiverID->getSize()));
     receiverID.setType(sp.receiverID->getType());
 
-    ::capnp::List<::srg::sim::SimPerceptionMsg::CellPerception>::Builder cellPerceptionsListBuilder = msg.initCellPerceptions(sp.cellPerceptions.size());
+    ::capnp::List<::srg::sim::PerceptionMsg::CellPerception>::Builder cellPerceptionsListBuilder = msg.initCellPerceptions(sp.cellPerceptions.size());
     for (unsigned int i = 0; i < sp.cellPerceptions.size(); i++) {
-        srg::sim::SimPerceptionMsg::CellPerception::Builder cellPerceptionBuilder = cellPerceptionsListBuilder[i];
+        srg::sim::PerceptionMsg::CellPerception::Builder cellPerceptionBuilder = cellPerceptionsListBuilder[i];
         cellPerceptionBuilder.setX(sp.cellPerceptions[i].x);
         cellPerceptionBuilder.setY(sp.cellPerceptions[i].y);
-        ::capnp::List<::srg::sim::SimPerceptionMsg::Object>::Builder objectsListBuilder =
+        ::capnp::List<::srg::sim::PerceptionMsg::Object>::Builder objectsListBuilder =
                 cellPerceptionBuilder.initObjects(sp.cellPerceptions[i].objects.size());
         ContainerUtils::toObjectListMsg(sp.cellPerceptions[i].objects, objectsListBuilder);
+        cellPerceptionBuilder.setTime(sp.cellPerceptions[i].time);
+
     }
 }
 
 void ContainerUtils::toObjectListMsg(
-        std::vector<srg::world::Object*>& objects, ::capnp::List<::srg::sim::SimPerceptionMsg::Object>::Builder& objectsListBuilder)
+        std::vector<std::shared_ptr<srg::world::Object>>& objects, ::capnp::List<::srg::sim::PerceptionMsg::Object>::Builder& objectsListBuilder)
 {
     for (unsigned int j = 0; j < objects.size(); j++) {
-        srg::sim::SimPerceptionMsg::Object::Builder objectBuilder = objectsListBuilder[j];
-        ::capnp::List<::srg::sim::SimPerceptionMsg::Object>::Builder childObjectsListBuilder = objectBuilder.initObjects(objects[j]->getObjects().size());
+        srg::sim::PerceptionMsg::Object::Builder objectBuilder = objectsListBuilder[j];
+        ::capnp::List<::srg::sim::PerceptionMsg::Object>::Builder childObjectsListBuilder = objectBuilder.initObjects(objects[j]->getObjects().size());
         if (objects[j]->getObjects().size() > 0) {
-            std::vector<srg::world::Object*> childObject;
+            std::vector<std::shared_ptr<srg::world::Object>> childObject;
             for (auto& objectEntry : objects[j]->getObjects()) {
                 childObject.push_back(objectEntry.second);
             }
@@ -217,22 +225,22 @@ void ContainerUtils::toObjectListMsg(
 
         switch (objects[j]->getType()) {
         case srg::world::ObjectType::Robot:
-            objectBuilder.setType(srg::sim::SimPerceptionMsg::Object::Type::ROBOT);
+            objectBuilder.setType(srg::sim::PerceptionMsg::Object::Type::ROBOT);
             break;
         case srg::world::ObjectType::Human:
-            objectBuilder.setType(srg::sim::SimPerceptionMsg::Object::Type::HUMAN);
+            objectBuilder.setType(srg::sim::PerceptionMsg::Object::Type::HUMAN);
             break;
         case srg::world::ObjectType::CupRed:
-            objectBuilder.setType(srg::sim::SimPerceptionMsg::Object::Type::CUPRED);
+            objectBuilder.setType(srg::sim::PerceptionMsg::Object::Type::CUPRED);
             break;
         case srg::world::ObjectType::CupBlue:
-            objectBuilder.setType(srg::sim::SimPerceptionMsg::Object::Type::CUPBLUE);
+            objectBuilder.setType(srg::sim::PerceptionMsg::Object::Type::CUPBLUE);
             break;
         case srg::world::ObjectType::CupYellow:
-            objectBuilder.setType(srg::sim::SimPerceptionMsg::Object::Type::CUPYELLOW);
+            objectBuilder.setType(srg::sim::PerceptionMsg::Object::Type::CUPYELLOW);
             break;
         case srg::world::ObjectType::Door:
-            objectBuilder.setType(srg::sim::SimPerceptionMsg::Object::Type::DOOR);
+            objectBuilder.setType(srg::sim::PerceptionMsg::Object::Type::DOOR);
             break;
         default:
             std::cerr << "[ContainterUtils] Unknown object type perceived: " << objects[j]->getType() << std::endl;
@@ -240,13 +248,13 @@ void ContainerUtils::toObjectListMsg(
         }
         switch (objects[j]->getState()) {
         case srg::world::ObjectState::Open:
-            objectBuilder.setState(srg::sim::SimPerceptionMsg::Object::State::OPEN);
+            objectBuilder.setState(srg::sim::PerceptionMsg::Object::State::OPEN);
             break;
         case srg::world::ObjectState::Closed:
-            objectBuilder.setState(srg::sim::SimPerceptionMsg::Object::State::CLOSED);
+            objectBuilder.setState(srg::sim::PerceptionMsg::Object::State::CLOSED);
             break;
         case srg::world::ObjectState::Undefined:
-            objectBuilder.setState(srg::sim::SimPerceptionMsg::Object::State::UNDEFINED);
+            objectBuilder.setState(srg::sim::PerceptionMsg::Object::State::UNDEFINED);
             break;
         default:
             std::cerr << "[ContainterUtils] Unknown object state perceived: " << objects[j]->getState() << std::endl;

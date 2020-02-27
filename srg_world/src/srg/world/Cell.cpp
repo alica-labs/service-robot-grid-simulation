@@ -31,29 +31,30 @@ bool Cell::isBlocked() const
         return true;
     }
     for (auto& objectEntry : this->containingObjects) {
-        if (const Door* door = dynamic_cast<const Door*>(objectEntry.second)) {
+        if (std::shared_ptr<const world::Door> door = std::dynamic_pointer_cast<const Door>(objectEntry.second)) {
             return !door->isOpen();
         }
     }
     return false;
 }
 
-bool Cell::operator<(const Cell* other)
+bool Cell::operator<(std::shared_ptr<const Cell> other)
+
 {
     return this->coordinate < other->coordinate;
 }
 
-bool operator==(Cell const& first, Cell const& second)
+bool operator==(std::shared_ptr<const Cell> first, std::shared_ptr<const Cell> second)
 {
-    return first.coordinate == second.coordinate;
+    return first->coordinate == second->coordinate;
 }
 
-bool Cell::operator==(Cell const* other)
+bool Cell::operator==(std::shared_ptr<const Cell> other)
 {
     return this->coordinate == other->coordinate;
 }
 
-bool operator!=(Cell const& first, Cell const& second)
+bool operator!=(std::shared_ptr<const Cell> first, std::shared_ptr<const Cell> second)
 {
     return !(first == second);
 }
