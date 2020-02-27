@@ -57,7 +57,7 @@ public:
     std::shared_ptr<world::Object> editObject(essentials::IdentifierConstPtr id);
     void updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr<world::Object>> objects, int64_t time);
     std::shared_ptr<world::Object> createOrUpdateObject(std::shared_ptr<world::Object> tmpObject);
-    void removeUnknownObjects();
+    std::vector<std::shared_ptr<world::Object>> removeUnknownObjects();
     void removeObjectIfUnknown(essentials::IdentifierConstPtr objectID);
     bool placeObject(std::shared_ptr<world::Object> object, world::Coordinate coordinate);
     void moveObject(essentials::IdentifierConstPtr id, world::Direction direction);

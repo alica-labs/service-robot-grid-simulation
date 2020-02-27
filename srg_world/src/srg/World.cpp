@@ -288,18 +288,19 @@ void World::updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr
  * but then vanished from the map (due to manipulation of another
  * robot).
  */
-void World::removeUnknownObjects()
+std::vector<std::shared_ptr<world::Object>> World::removeUnknownObjects()
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    std::vector<essentials::IdentifierConstPtr> unknownObjects;
+    std::vector<std::shared_ptr<world::Object>> unknownObjects;
     for (auto& objectEntry : this->objects) {
         if (objectEntry.second->getCoordinate().x < 0) {
-            unknownObjects.push_back(objectEntry.first);
+            unknownObjects.push_back(objectEntry.second);
         }
     }
-    for (essentials::IdentifierConstPtr objectID : unknownObjects) {
-        this->objects.erase(objectID);
+    for (auto object : unknownObjects) {
+        this->objects.erase(object->getID());
     }
+    return unknownObjects;
 }
 
 void World::removeObjectIfUnknown(essentials::IdentifierConstPtr objectID)
