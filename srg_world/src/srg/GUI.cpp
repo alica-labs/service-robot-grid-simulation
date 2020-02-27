@@ -28,8 +28,11 @@ GUI::GUI(std::string windowName)
     }
     this->texture->setSmooth(true);
     this->texture->setRepeated(true);
+    this->zoomFactor = this->windowConfig->tryGet<float>(1.0, "zoomFactor", NULL);
+    this->camOffsetX = this->windowConfig->tryGet<float>(1.0, "camOffsetX", NULL);
+    this->camOffsetY = this->windowConfig->tryGet<float>(1.0, "camOffsetY", NULL);
     this->window = new sf::RenderWindow(
-            sf::VideoMode(this->windowConfig->tryGet<uint32_t>(800, "xSize", NULL), this->windowConfig->tryGet<uint32_t>(800, "ySize", NULL)), windowName);
+            sf::VideoMode(this->windowConfig->tryGet<uint32_t>(800, "xSize", NULL), this->windowConfig->tryGet<uint32_t>(800, "ySize", NULL)), windowName, sf::Style::Default);
     this->window->setPosition(
             sf::Vector2i(this->windowConfig->tryGet<uint32_t>(20, "xPosition", NULL), this->windowConfig->tryGet<uint32_t>(20, "yPosition", NULL)));
     this->window->setActive(false);
@@ -92,6 +95,9 @@ void GUI::storeWindowConfig()
     auto size = this->window->getSize();
     this->windowConfig->setCreateIfNotExistent<uint32_t>(size.x, "xSize", NULL);
     this->windowConfig->setCreateIfNotExistent<uint32_t>(size.y, "ySize", NULL);
+    this->windowConfig->setCreateIfNotExistent<float>(this->zoomFactor, "zoomFactor", NULL);
+    this->windowConfig->setCreateIfNotExistent<float>(this->camOffsetX, "camOffsetX", NULL);
+    this->windowConfig->setCreateIfNotExistent<float>(this->camOffsetY, "camOffsetY", NULL);
     this->windowConfig->store();
 }
 
@@ -189,7 +195,7 @@ void GUI::handleSFMLEvents(const World* world)
         } else if (event.type == sf::Event::Resized) {
             this->updateView(world, event.size.width, event.size.height);
         } else if (event.type == sf::Event::MouseWheelMoved) {
-            this->zoomFactor -= event.mouseWheel.delta * 0.01;
+            this->zoomFactor -= event.mouseWheel.delta * 0.02;
             this->updateView(world, this->window->getSize().x, this->window->getSize().y);
         } else if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == sf::Mouse::Button::Right) {

@@ -12,11 +12,8 @@
 #include <SystemConfig.h>
 #include <cnc_geometry/Calculator.h>
 
-<<<<<<< HEAD
-=======
 #include <chrono>
 
->>>>>>> master
 namespace srg
 {
 namespace sim

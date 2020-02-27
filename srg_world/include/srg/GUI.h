@@ -48,7 +48,7 @@ private:
     float camOffsetY;
     float mousePosOldX;
     float mousePosOldY;
-    float zoomFactor = 0.9;
+    float zoomFactor;
     bool dragging = false;
 
     sf::Sprite sprites[static_cast<int>(viz::SpriteType::Last)];
