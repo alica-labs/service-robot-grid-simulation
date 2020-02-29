@@ -331,6 +331,25 @@ void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direc
     goalCell->addObject(object);
 }
 
+void World::displaceObject()
+{
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+
+    std::unordered_map<essentials::IdentifierConstPtr, std::shared_ptr<world::Object>>::const_iterator objectIter;
+    while (true) {
+        objectIter = this->objects.begin();
+        std::advance(objectIter, rand() % this->objects.size());
+        if (objectIter->second->getType() == world::ObjectType::CupBlue || objectIter->second->getType() == world::ObjectType::CupYellow ||
+                objectIter->second->getType() == world::ObjectType::CupRed) {
+            if (std::dynamic_pointer_cast<const world::Cell>(objectIter->second->getParentContainer())) {
+                world::Coordinate randomCoordinate = this->getRandomCoordinate();
+                this->placeObject(objectIter->second, randomCoordinate);
+                return;
+            }
+        }
+    }
+}
+
 bool World::addAgent(std::shared_ptr<world::Agent> agent)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
@@ -418,6 +437,42 @@ bool World::isPlacementAllowed(std::shared_ptr<const world::Cell> cell, world::O
     }
 
     return true;
+}
+
+srg::world::Coordinate World::getRandomCoordinate()
+{
+    // statistic evaluation of room
+    int randRoomValue = rand() % 100;
+    std::vector<srg::world::Room*> rooms;
+    if (randRoomValue < 30) {
+        // kitchen
+        rooms = this->getRooms(srg::world::RoomType::Kitchen);
+    } else if (randRoomValue < 80) {
+        // office
+        rooms = this->getRooms(srg::world::RoomType::Office);
+    } else {
+        // other room types
+        for (auto& roomEntry : this->getRooms()) {
+            switch (roomEntry.second->getType()) {
+            case srg::world::RoomType::Kitchen:
+            case srg::world::RoomType::Office:
+            case srg::world::RoomType::Wall:
+                continue;
+            default:
+                rooms.push_back(roomEntry.second);
+            }
+        }
+    }
+
+    // random coordinate in a random room
+    randRoomValue = rand() % rooms.size();
+    srg::world::Room* room = rooms[randRoomValue];
+
+    auto& cells = room->getCells();
+    std::map<srg::world::Coordinate, std::shared_ptr<srg::world::Cell>>::const_iterator cellIter;
+    cellIter = cells.begin();
+    std::advance(cellIter, rand() % cells.size());
+    return cellIter->first;
 }
 
 std::recursive_mutex& World::getDataMutex()

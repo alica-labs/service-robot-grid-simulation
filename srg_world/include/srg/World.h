@@ -61,6 +61,7 @@ public:
     void removeObjectIfUnknown(essentials::IdentifierConstPtr objectID);
     bool placeObject(std::shared_ptr<world::Object> object, world::Coordinate coordinate);
     void moveObject(essentials::IdentifierConstPtr id, world::Direction direction);
+    void displaceObject();
 
     // agents
     std::shared_ptr<world::Agent> spawnAgent(essentials::IdentifierConstPtr id, world::ObjectType agentType);
@@ -74,10 +75,12 @@ public:
     const std::unordered_map<essentials::IdentifierConstPtr, world::Room*> getRooms() const;
     const std::vector<world::Room*> getRooms(world::RoomType type) const;
 
+
 private:
     bool isPlacementAllowed(std::shared_ptr<const world::Cell> cell, world::ObjectType objectType) const;
     std::shared_ptr<world::Cell> getNeighbourCell(const world::Direction& direction, std::shared_ptr<world::Object> object);
     world::Room* addRoom(std::string name, essentials::IdentifierConstPtr id);
+    srg::world::Coordinate getRandomCoordinate();
 
     std::map<world::Coordinate, std::shared_ptr<world::Cell>> cellGrid;
     /**

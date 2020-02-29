@@ -141,7 +141,7 @@ void Simulator::run()
 #endif
         auto start = std::chrono::system_clock::now();
 
-        // 1. Update GUI
+        // Update GUI
         if (!this->headless) {
             this->gui->draw(this->world);
         }
@@ -149,7 +149,7 @@ void Simulator::run()
 #ifdef SIM_DEBUG
         std::cout << "[Simulator] Handle commands..." << std::endl;
 #endif
-        // 2. Handle Commands
+        // Handle Commands
         {
             std::lock_guard<std::recursive_mutex> guard(commandMutex);
             while (this->commandQueue.size() > 0) {
@@ -163,15 +163,20 @@ void Simulator::run()
             }
         }
 
+        // Displace some object (almost) randomly
+        if (rand()%200 < 2) { // 1% chance of displacing an object
+            this->world->displaceObject();
+        }
+
 #ifdef SIM_DEBUG
         std::cout << "[Simulator] Create and send perceptions..." << std::endl;
 #endif
-        // 3. Produce and send perceptions for each robot
+        // Produce and send perceptions for each robot
         for (auto& simulatedAgent : this->simulatedAgents) {
             this->communication->sendSimPerceptions(simulatedAgent->createSimPerceptions(this));
         }
 
-        // 4. Sleep in order to keep the cpu effort low
+        // Sleep in order to keep the cpu effort low
         auto timePassed = std::chrono::system_clock::now() - start;
         std::chrono::milliseconds millisecondsPassed = std::chrono::duration_cast<std::chrono::milliseconds>(timePassed);
 
