@@ -35,7 +35,7 @@ Coordinate Object::getCoordinate() const
             return object->getCoordinate();
         }
     }
-    std::cerr << "[Object] Object has no coordinates! " << *this << std::endl;
+//    std::cerr << "[Object] Object has no coordinates! " << *this << std::endl;
     return Coordinate(-1,-1);
 }
 
