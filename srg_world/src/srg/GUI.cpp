@@ -195,7 +195,7 @@ void GUI::handleSFMLEvents(const World* world)
         } else if (event.type == sf::Event::Resized) {
             this->updateView(world, event.size.width, event.size.height);
         } else if (event.type == sf::Event::MouseWheelMoved) {
-            this->zoomFactor -= event.mouseWheel.delta * 0.02;
+            this->zoomFactor = std::max(0.25f, std::min(this->zoomFactor - event.mouseWheel.delta * 0.02f, 2.0f));
             this->updateView(world, this->window->getSize().x, this->window->getSize().y);
         } else if (event.type == sf::Event::MouseButtonPressed) {
             if (event.mouseButton.button == sf::Mouse::Button::Right) {

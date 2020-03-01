@@ -34,6 +34,8 @@ public:
     void setParentContainer(std::shared_ptr<ObjectSet> parentContainer);
     void deleteParentContainer();
 
+    bool canBePickedUp() const;
+
     friend std::ostream& operator<<(std::ostream& os, const Object& obj);
 protected:
     std::shared_ptr<ObjectSet> parentContainer; /**< ServiceRobot, Cell, etc.*/

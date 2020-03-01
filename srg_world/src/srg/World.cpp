@@ -116,13 +116,19 @@ std::shared_ptr<world::Cell> World::addCell(uint32_t x, uint32_t y, world::Room*
     return cell;
 }
 
-std::shared_ptr<const world::Object> World::getObject(world::ObjectType type) const
+std::shared_ptr<const world::Object> World::getObject(world::ObjectType type, bool canBePickedUp) const
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     for (auto& object : this->objects) {
-        if (object.second->getType() == type) {
-            return object.second;
+        if (object.second->getType() != type) {
+            continue; // wrong type
         }
+
+        if (canBePickedUp && !object.second->canBePickedUp()) {
+            continue; // should be "pickable", but isn't
+        }
+
+        return object.second;
     }
     return nullptr;
 }
@@ -341,7 +347,7 @@ void World::displaceObject()
         std::advance(objectIter, rand() % this->objects.size());
         if (objectIter->second->getType() == world::ObjectType::CupBlue || objectIter->second->getType() == world::ObjectType::CupYellow ||
                 objectIter->second->getType() == world::ObjectType::CupRed) {
-            if (std::dynamic_pointer_cast<const world::Cell>(objectIter->second->getParentContainer())) {
+            if (objectIter->second->canBePickedUp()) {
                 world::Coordinate randomCoordinate = this->getRandomCoordinate();
                 this->placeObject(objectIter->second, randomCoordinate);
                 return;

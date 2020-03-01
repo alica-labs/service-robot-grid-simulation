@@ -17,7 +17,6 @@ Object::Object(essentials::IdentifierConstPtr id, ObjectType type, ObjectState s
 
 Object::~Object() {}
 
-
 Coordinate Object::getCoordinate() const
 {
     std::shared_ptr<const ObjectSet> parentContainer = this->parentContainer;
@@ -35,8 +34,8 @@ Coordinate Object::getCoordinate() const
             return object->getCoordinate();
         }
     }
-//    std::cerr << "[Object] Object has no coordinates! " << *this << std::endl;
-    return Coordinate(-1,-1);
+    //    std::cerr << "[Object] Object has no coordinates! " << *this << std::endl;
+    return Coordinate(-1, -1);
 }
 
 void Object::deleteParentContainer()
@@ -62,6 +61,27 @@ void Object::setParentContainer(std::shared_ptr<ObjectSet> parentContainer)
 std::shared_ptr<const ObjectSet> Object::getParentContainer() const
 {
     return this->parentContainer;
+}
+
+bool Object::canBePickedUp() const
+{
+    switch (type) {
+    case ObjectType::Human:
+    case ObjectType::Robot:
+    case ObjectType::Door:
+    case ObjectType::Unknown:
+        return false;
+    case ObjectType::CupBlue:
+    case ObjectType::CupYellow:
+    case ObjectType::CupRed:
+        if (std::dynamic_pointer_cast<Cell>(this->parentContainer)) {
+            // The object is layed down
+            return true;
+        } else {
+            // The object is carried already
+            return false;
+        }
+    }
 }
 
 ObjectType Object::getType() const
