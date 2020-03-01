@@ -59,6 +59,13 @@ bool Arm::pickUp(essentials::IdentifierConstPtr objectID, World* world)
         std::cout << "[Arm] Object does not exist! ID: " << *objectID << std::endl;
         return false;
     }
+
+    srg::world::Coordinate diff = (robot->getCoordinate()- object->getCoordinate()).abs();
+    if ( diff.x > 1 || diff.y > 1) {
+        // too far away for grasping
+        return false;
+    }
+
     robot->setCarriedObject(object);
     return true;
 }
@@ -67,6 +74,12 @@ bool Arm::putDown(srg::sim::containers::SimCommand sc, World* world)
 {
     if (!robot->getCarriedObject()) {
         std::cout << "[Arm] Nothing to put down!" << std::endl;
+        return false;
+    }
+
+    srg::world::Coordinate diff = (robot->getCoordinate()- world::Coordinate(sc.x, sc.y)).abs();
+    if ( diff.x > 1 || diff.y > 1) {
+        // too far away for putDown
         return false;
     }
 
