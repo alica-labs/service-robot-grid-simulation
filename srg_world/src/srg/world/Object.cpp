@@ -1,3 +1,4 @@
+#include <srg/world/Agent.h>
 #include "srg/world/Object.h"
 
 #include "srg/world/Cell.h"
@@ -63,7 +64,7 @@ std::shared_ptr<const ObjectSet> Object::getParentContainer() const
     return this->parentContainer;
 }
 
-bool Object::canBePickedUp() const
+bool Object::canBePickedUp(essentials::IdentifierConstPtr agentID) const
 {
     switch (type) {
     case ObjectType::Human:
@@ -74,8 +75,9 @@ bool Object::canBePickedUp() const
     case ObjectType::CupBlue:
     case ObjectType::CupYellow:
     case ObjectType::CupRed:
-        if (std::dynamic_pointer_cast<Cell>(this->parentContainer)) {
-            // The object is layed down
+        if (std::dynamic_pointer_cast<Cell>(this->parentContainer)
+                || std::dynamic_pointer_cast<Agent>(this->parentContainer)->getID() == agentID) {
+            // The object is layed down, or is picked by the given agent already
             return true;
         } else {
             // The object is carried already

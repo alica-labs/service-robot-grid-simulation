@@ -116,23 +116,6 @@ std::shared_ptr<world::Cell> World::addCell(uint32_t x, uint32_t y, world::Room*
     return cell;
 }
 
-std::shared_ptr<const world::Object> World::getObject(world::ObjectType type, bool canBePickedUp) const
-{
-    std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    for (auto& object : this->objects) {
-        if (object.second->getType() != type) {
-            continue; // wrong type
-        }
-
-        if (canBePickedUp && !object.second->canBePickedUp()) {
-            continue; // should be "pickable", but isn't
-        }
-
-        return object.second;
-    }
-    return nullptr;
-}
-
 std::shared_ptr<const world::Cell> World::getCell(const world::Coordinate& coordinate) const
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
@@ -158,15 +141,28 @@ bool World::placeObject(std::shared_ptr<world::Object> object, world::Coordinate
     return true;
 }
 
+std::shared_ptr<const world::Object> World::getObject(world::ObjectType type) const
+{
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    for (auto& object : this->objects) {
+        if (object.second->getType() != type) {
+            continue; // wrong type
+        }
+
+        return object.second;
+    }
+    return nullptr;
+}
+
 std::shared_ptr<const world::Object> World::getObject(essentials::IdentifierConstPtr id) const
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
     auto objectEntry = this->objects.find(id);
-    if (objectEntry != this->objects.end()) {
-        return objectEntry->second;
-    } else {
+    if (objectEntry == this->objects.end()) {
         return nullptr;
     }
+
+    return objectEntry->second;
 }
 
 std::shared_ptr<world::Object> World::editObject(essentials::IdentifierConstPtr id)
@@ -347,7 +343,7 @@ void World::displaceObject()
         std::advance(objectIter, rand() % this->objects.size());
         if (objectIter->second->getType() == world::ObjectType::CupBlue || objectIter->second->getType() == world::ObjectType::CupYellow ||
                 objectIter->second->getType() == world::ObjectType::CupRed) {
-            if (objectIter->second->canBePickedUp()) {
+            if (objectIter->second->canBePickedUp(nullptr)) { // not sure, whether nullptr is ok
                 world::Coordinate randomCoordinate = this->getRandomCoordinate();
                 this->placeObject(objectIter->second, randomCoordinate);
                 return;

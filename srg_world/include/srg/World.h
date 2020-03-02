@@ -52,7 +52,7 @@ public:
     std::recursive_mutex& getDataMutex();
 
     // objects
-    std::shared_ptr<const world::Object> getObject(world::ObjectType type, bool canBePickedUp = true) const;
+    std::shared_ptr<const world::Object> getObject(world::ObjectType type) const;
     std::shared_ptr<const world::Object> getObject(essentials::IdentifierConstPtr id) const;
     std::shared_ptr<world::Object> editObject(essentials::IdentifierConstPtr id);
     void updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr<world::Object>> objects, int64_t time);

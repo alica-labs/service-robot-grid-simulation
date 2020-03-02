@@ -34,7 +34,7 @@ public:
     void setParentContainer(std::shared_ptr<ObjectSet> parentContainer);
     void deleteParentContainer();
 
-    bool canBePickedUp() const;
+    bool canBePickedUp(essentials::IdentifierConstPtr agentID) const;
 
     friend std::ostream& operator<<(std::ostream& os, const Object& obj);
 protected:
