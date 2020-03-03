@@ -430,11 +430,7 @@ bool World::isPlacementAllowed(std::shared_ptr<const world::Cell> cell, world::O
 
     for (auto& objectEntry : cell->getObjects()) {
         if (objectEntry.second->getType() == world::ObjectType::Door) {
-            if (objectType == world::ObjectType::Robot || objectType == world::ObjectType::Human) {
-                return objectEntry.second->getState() == world::ObjectState::Open;
-            } else {
-                return false;
-            }
+            return objectEntry.second->getState() == world::ObjectState::Open;
         }
     }
 
