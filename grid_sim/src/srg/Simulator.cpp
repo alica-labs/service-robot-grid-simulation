@@ -10,10 +10,12 @@
 
 #include <srg/GUI.h>
 #include <srg/World.h>
+#include <srg/world/Agent.h>
 
 #include <SystemConfig.h>
 #include <essentials/IDManager.h>
 
+#include <cassert>
 #include <iostream>
 #include <signal.h>
 #include <string>
@@ -61,7 +63,7 @@ void Simulator::placeObjectsFromConf()
         std::shared_ptr<world::Object> object;
         if (type == world::ObjectType::Door) {
             if ((*sc)["Objects"]->get<bool>("Objects", objectSection.c_str(), "open", NULL)) {
-                object = this->world->createOrUpdateObject(std::make_shared<world::Object>( id, type, world::ObjectState::Open));
+                object = this->world->createOrUpdateObject(std::make_shared<world::Object>(id, type, world::ObjectState::Open));
             } else {
                 object = this->world->createOrUpdateObject(std::make_shared<world::Object>(id, type, world::ObjectState::Closed));
             }
@@ -103,6 +105,12 @@ void Simulator::addSimulatedAgent(std::shared_ptr<world::Agent> agent)
 {
     if (!agent)
         return;
+
+    if (std::find_if(simulatedAgents.begin(), simulatedAgents.end(), [agent](sim::SimulatedAgent* a) { return a->getID() == agent->getID(); }) !=
+            simulatedAgents.end())
+        return;
+
+    std::cout << "[Simulator] Adding " << *agent << std::endl;
     this->simulatedAgents.push_back(new sim::SimulatedAgent(agent));
 }
 
@@ -164,7 +172,7 @@ void Simulator::run()
         }
 
         // Displace some object (almost) randomly
-        if (rand()%200 < 2) { // 1% chance of displacing an object
+        if (rand() % 200 < 2) { // 1% chance of displacing an object
             this->world->displaceObject();
         }
 
@@ -172,6 +180,7 @@ void Simulator::run()
         std::cout << "[Simulator] Create and send perceptions..." << std::endl;
 #endif
         // Produce and send perceptions for each robot
+        assert(this->simulatedAgents.size() < 4);
         for (auto& simulatedAgent : this->simulatedAgents) {
             this->communication->sendSimPerceptions(simulatedAgent->createSimPerceptions(this));
         }
@@ -181,10 +190,11 @@ void Simulator::run()
         std::chrono::milliseconds millisecondsPassed = std::chrono::duration_cast<std::chrono::milliseconds>(timePassed);
 
 #ifdef SIM_DEBUG
-        std::cout << "[Simulator] Sleep " << millisecondsPassed.count() << "ms to keep frequency..." << std::endl;
+        std::cout << "[Simulator] Iteration took " << millisecondsPassed.count() << " ms. Sleep " << 20 - millisecondsPassed.count()
+                  << "ms to keep frequency..." << std::endl;
 #endif
-        if (millisecondsPassed.count() < 33) { // Simulator frequency is 30 times per seconds!
-            std::this_thread::sleep_for(std::chrono::milliseconds(33 - millisecondsPassed.count()));
+        if (millisecondsPassed.count() < 20) { // Simulator frequency is 50 times per seconds!
+            std::this_thread::sleep_for(std::chrono::milliseconds(20 - millisecondsPassed.count()));
         }
 #ifdef SIM_DEBUG
         std::cout << "[Simulator] ...iteration end!\n------------------------------" << std::endl;

@@ -13,6 +13,7 @@ public:
     explicit Agent(essentials::IdentifierConstPtr id, ObjectType type);
     // friend declarations
     friend World;
+
     friend std::ostream& operator<<(std::ostream& os, const Agent& obj);
 
 private:
