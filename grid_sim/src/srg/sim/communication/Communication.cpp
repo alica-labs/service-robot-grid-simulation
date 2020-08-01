@@ -21,7 +21,6 @@ Communication::Communication(essentials::IDManager* idManager, Simulator* simula
         : simulator(simulator)
         , idManager(idManager)
 {
-
     this->sc = essentials::SystemConfig::getInstance();
     this->ctx = zmq_ctx_new();
     this->address = (*sc)["SRGSim"]->get<std::string>("SRGSim.Communication.address", NULL);
