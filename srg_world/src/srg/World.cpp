@@ -125,6 +125,14 @@ std::shared_ptr<const world::Cell> World::getCell(const world::Coordinate& coord
     return nullptr;
 }
 
+std::vector<std::shared_ptr<const world::Object>> World::editObjects() {
+    std::vector<std::shared_ptr<const world::Object>> objectList;
+    for (auto& object : this->objects) {
+        objectList.push_back(object.second);
+    }
+    return objectList;
+}
+
 bool World::placeObject(std::shared_ptr<world::Object> object, world::Coordinate coordinate)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);

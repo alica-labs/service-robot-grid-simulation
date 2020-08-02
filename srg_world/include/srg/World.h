@@ -52,6 +52,7 @@ public:
     std::recursive_mutex& getDataMutex();
 
     // objects
+    std::vector<std::shared_ptr<const world::Object>> editObjects();
     std::shared_ptr<const world::Object> getObject(world::ObjectType type) const;
     std::shared_ptr<const world::Object> getObject(essentials::IdentifierConstPtr id) const;
     std::shared_ptr<world::Object> editObject(essentials::IdentifierConstPtr id);
