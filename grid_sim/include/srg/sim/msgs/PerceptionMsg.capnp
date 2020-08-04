@@ -27,6 +27,7 @@ struct PerceptionMsg {
       cupyellow @3;
       robot @4;
       human @5;
+      unknown @6;
     }
 
     enum State {

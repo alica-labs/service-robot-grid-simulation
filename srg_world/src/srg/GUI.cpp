@@ -24,7 +24,7 @@ GUI::GUI(std::string windowName)
     std::cout << "[GUI] Info: loading textureFile '" << textureFile << "'" << std::endl;
     this->texture = new sf::Texture();
     if (!this->texture->loadFromFile(textureFile)) {
-        std::cerr << "[GUI] Coudn't load the texture file " << textureFile << std::endl;
+        std::cerr << "[GUI] Couldn't load the texture file " << textureFile << std::endl;
     }
     this->texture->setSmooth(true);
     this->texture->setRepeated(true);
@@ -129,6 +129,7 @@ void GUI::addMarker(viz::Marker marker)
 
 void GUI::draw(World* world)
 {
+    std::lock_guard<std::recursive_mutex> lockGuard(_mtx);
     this->window->setActive(true);
 
     handleSFMLEvents(world);
@@ -183,6 +184,7 @@ void GUI::draw(World* world)
     }
 
     this->window->display();
+    this->window->setActive(false);
 }
 
 void GUI::handleSFMLEvents(const World* world)

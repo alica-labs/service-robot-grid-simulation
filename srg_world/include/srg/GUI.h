@@ -12,6 +12,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <mutex>
 
 namespace srg
 {
@@ -56,5 +57,7 @@ private:
     sf::Texture* texture;
     sf::RenderWindow* window;
     std::vector<viz::Marker> markers;
+
+    std::recursive_mutex _mtx;
 };
 } // namespace srg

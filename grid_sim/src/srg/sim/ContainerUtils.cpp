@@ -115,11 +115,12 @@ containers::Perceptions ContainerUtils::toPerceptions(::capnp::FlatArrayMessageR
     return ContainerUtils::createPerceptions(reader, idManager);
 }
 
-containers::Perceptions ContainerUtils::createPerceptions(srg::sim::PerceptionMsg::Reader perceptionsReader, essentials::IDManager* idManager) {
+containers::Perceptions ContainerUtils::createPerceptions(srg::sim::PerceptionMsg::Reader perceptionsReader, essentials::IDManager* idManager)
+{
     containers::Perceptions ps;
 
-    ps.receiverID = idManager->getIDFromBytes(
-            perceptionsReader.getReceiverID().getValue().asBytes().begin(), perceptionsReader.getReceiverID().getValue().size(), perceptionsReader.getReceiverID().getType());
+    ps.receiverID = idManager->getIDFromBytes(perceptionsReader.getReceiverID().getValue().asBytes().begin(),
+            perceptionsReader.getReceiverID().getValue().size(), perceptionsReader.getReceiverID().getType());
     for (srg::sim::PerceptionMsg::CellPerception::Reader cellPerceptionMsg : perceptionsReader.getCellPerceptions()) {
         srg::sim::containers::CellPerception cellPerception;
         cellPerception.x = cellPerceptionMsg.getX();
@@ -132,6 +133,24 @@ containers::Perceptions ContainerUtils::createPerceptions(srg::sim::PerceptionMs
         ps.cellPerceptions.push_back(cellPerception);
     }
     return ps;
+}
+
+void ContainerUtils::toMsg(containers::Perceptions perceptions, ::srg::sim::PerceptionMsg::Builder& builder)
+{
+    capnzero::ID::Builder receiverID = builder.initReceiverID();
+    receiverID.setValue(kj::arrayPtr(perceptions.receiverID->getRaw(), (unsigned int) perceptions.receiverID->getSize()));
+    receiverID.setType(perceptions.receiverID->getType());
+
+    ::capnp::List<::srg::sim::PerceptionMsg::CellPerception>::Builder cellPerceptionsListBuilder =
+            builder.initCellPerceptions(perceptions.cellPerceptions.size());
+    for (unsigned int i = 0; i < perceptions.cellPerceptions.size(); i++) {
+        ::srg::sim::PerceptionMsg::CellPerception::Builder cellPerceptionBuilder = cellPerceptionsListBuilder[i];
+        cellPerceptionBuilder.setTime(perceptions.cellPerceptions[i].time);
+        cellPerceptionBuilder.setX(perceptions.cellPerceptions[i].x);
+        cellPerceptionBuilder.setY(perceptions.cellPerceptions[i].y);
+        ::capnp::List<::srg::sim::PerceptionMsg::Object>::Builder objectListBuilder = cellPerceptionBuilder.initObjects(perceptions.cellPerceptions[i].objects.size());
+        srg::sim::ContainerUtils::toObjectListMsg(perceptions.cellPerceptions[i].objects,objectListBuilder);
+    }
 }
 
 std::shared_ptr<srg::world::Object> ContainerUtils::createObject(srg::sim::PerceptionMsg::Object::Reader& objectReader, essentials::IDManager* idManager)
@@ -201,11 +220,9 @@ void ContainerUtils::toMsg(srg::sim::containers::Perceptions sp, ::capnp::Malloc
         srg::sim::PerceptionMsg::CellPerception::Builder cellPerceptionBuilder = cellPerceptionsListBuilder[i];
         cellPerceptionBuilder.setX(sp.cellPerceptions[i].x);
         cellPerceptionBuilder.setY(sp.cellPerceptions[i].y);
-        ::capnp::List<::srg::sim::PerceptionMsg::Object>::Builder objectsListBuilder =
-                cellPerceptionBuilder.initObjects(sp.cellPerceptions[i].objects.size());
+        ::capnp::List<::srg::sim::PerceptionMsg::Object>::Builder objectsListBuilder = cellPerceptionBuilder.initObjects(sp.cellPerceptions[i].objects.size());
         ContainerUtils::toObjectListMsg(sp.cellPerceptions[i].objects, objectsListBuilder);
         cellPerceptionBuilder.setTime(sp.cellPerceptions[i].time);
-
     }
 }
 

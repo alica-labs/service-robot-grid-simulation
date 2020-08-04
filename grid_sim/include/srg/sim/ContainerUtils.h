@@ -25,6 +25,7 @@ public:
     static void toMsg(containers::Perceptions simPerceptions, ::capnp::MallocMessageBuilder& builder);
     static containers::Perceptions toPerceptions(::capnp::FlatArrayMessageReader& msg, essentials::IDManager* idManager);
     static containers::Perceptions createPerceptions(srg::sim::PerceptionMsg::Reader perceptionsReader, essentials::IDManager* idManager);
+    static void toMsg(containers::Perceptions perceptions, ::srg::sim::PerceptionMsg::Builder& builder);
 
 private:
     ContainerUtils() = delete;
