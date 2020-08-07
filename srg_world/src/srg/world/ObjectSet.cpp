@@ -33,8 +33,10 @@ bool ObjectSet::addObject(std::shared_ptr<world::Object> object)
     if (this->containingObjects.size() < capacity) {
         if (this->containingObjects.insert({object->getID(), object}).second) {
             object->setParentContainer(this->shared_from_this());
+            return true;
         }
     }
+    return false;
 }
 
 void ObjectSet::removeObject(std::shared_ptr<world::Object> object)
@@ -81,6 +83,7 @@ std::ostream& operator<<(std::ostream& os, const ObjectSet& objectSet)
     for (auto& objectEntry : objectSet.containingObjects) {
         os << *objectEntry.second << std::endl;
     }
+    return os;
 }
 } // namespace world
 } // namespace srg

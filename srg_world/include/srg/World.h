@@ -39,8 +39,8 @@ class Room;
 class World
 {
 public:
-    World(essentials::IDManager* idManager);
-    World(std::string tmxMapFile, essentials::IDManager* idManager);
+    World(essentials::IDManager& idManager);
+    World(std::string tmxMapFile, essentials::IDManager& idManager);
     ~World();
 
     std::shared_ptr<world::Cell> addCell(uint32_t x, uint32_t y, world::Room* room);

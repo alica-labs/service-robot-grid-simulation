@@ -8,13 +8,13 @@ namespace srg
 {
 namespace sim
 {
-containers::SimCommand ContainerUtils::toSimCommand(::capnp::FlatArrayMessageReader& msg, essentials::IDManager* idManager)
+containers::SimCommand ContainerUtils::toSimCommand(::capnp::FlatArrayMessageReader& msg, essentials::IDManager& idManager)
 {
     containers::SimCommand sc;
     srg::sim::SimCommandMsg::Reader reader = msg.getRoot<srg::sim::SimCommandMsg>();
-    sc.senderID = idManager->getIDFromBytes(
+    sc.senderID = idManager.getIDFromBytes(
             reader.getSenderID().getValue().asBytes().begin(), reader.getSenderID().getValue().size(), reader.getSenderID().getType());
-    sc.objectID = idManager->getIDFromBytes(
+    sc.objectID = idManager.getIDFromBytes(
             reader.getObjectID().getValue().asBytes().begin(), reader.getObjectID().getValue().size(), reader.getObjectID().getType());
 
     switch (reader.getAction()) {
@@ -109,17 +109,17 @@ void ContainerUtils::toMsg(srg::sim::containers::SimCommand sc, ::capnp::MallocM
     msg.setY(sc.y);
 }
 
-containers::Perceptions ContainerUtils::toPerceptions(::capnp::FlatArrayMessageReader& msg, essentials::IDManager* idManager)
+containers::Perceptions ContainerUtils::toPerceptions(::capnp::FlatArrayMessageReader& msg, essentials::IDManager& idManager)
 {
     srg::sim::PerceptionMsg::Reader reader = msg.getRoot<srg::sim::PerceptionMsg>();
     return ContainerUtils::createPerceptions(reader, idManager);
 }
 
-containers::Perceptions ContainerUtils::createPerceptions(srg::sim::PerceptionMsg::Reader perceptionsReader, essentials::IDManager* idManager)
+containers::Perceptions ContainerUtils::createPerceptions(srg::sim::PerceptionMsg::Reader perceptionsReader, essentials::IDManager& idManager)
 {
     containers::Perceptions ps;
 
-    ps.receiverID = idManager->getIDFromBytes(perceptionsReader.getReceiverID().getValue().asBytes().begin(),
+    ps.receiverID = idManager.getIDFromBytes(perceptionsReader.getReceiverID().getValue().asBytes().begin(),
             perceptionsReader.getReceiverID().getValue().size(), perceptionsReader.getReceiverID().getType());
     for (srg::sim::PerceptionMsg::CellPerception::Reader cellPerceptionMsg : perceptionsReader.getCellPerceptions()) {
         srg::sim::containers::CellPerception cellPerception;
@@ -153,10 +153,10 @@ void ContainerUtils::toMsg(containers::Perceptions perceptions, ::srg::sim::Perc
     }
 }
 
-std::shared_ptr<srg::world::Object> ContainerUtils::createObject(srg::sim::PerceptionMsg::Object::Reader& objectReader, essentials::IDManager* idManager)
+std::shared_ptr<srg::world::Object> ContainerUtils::createObject(srg::sim::PerceptionMsg::Object::Reader& objectReader, essentials::IDManager& idManager)
 {
     // ID
-    essentials::IdentifierConstPtr id = idManager->getIDFromBytes(
+    essentials::IdentifierConstPtr id = idManager.getIDFromBytes(
             objectReader.getId().getValue().asBytes().begin(), objectReader.getId().getValue().size(), objectReader.getId().getType());
     // TYPE
     srg::world::ObjectType type;

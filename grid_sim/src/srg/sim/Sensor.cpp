@@ -9,7 +9,7 @@
 #include <srg/world/Door.h>
 #include <srg/world/Coordinate.h>
 
-#include <SystemConfig.h>
+#include <essentials/SystemConfig.h>
 #include <cnc_geometry/Calculator.h>
 
 #include <chrono>
@@ -20,9 +20,9 @@ namespace sim
 {
 Sensor::Sensor(srg::sim::SimulatedAgent* robot)
         : robot(robot)
+        , sc(essentials::SystemConfig::getInstance())
 {
-    this->sc = essentials::SystemConfig::getInstance();
-    this->sightLimit = (*sc)["ObjectDetection"]->get<uint32_t>("sightLimit", NULL);
+    this->sightLimit = sc["ObjectDetection"]->get<uint32_t>("sightLimit", NULL);
 }
 
 std::vector<containers::CellPerception> Sensor::createPerceptions(srg::Simulator* simulator)

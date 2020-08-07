@@ -11,12 +11,12 @@ find_package(SFML 2.4 COMPONENTS graphics window system REQUIRED)
 
 find_package(tmxparser REQUIRED)
 
-find_package(catkin REQUIRED id_manager system_config)
+find_package(catkin REQUIRED alica_engine system_config)
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES srg_world srg_viz
-  CATKIN_DEPENDS id_manager system_config
+  CATKIN_DEPENDS alica_engine system_config
   DEPENDS SFML
 )
 
@@ -33,13 +33,16 @@ add_library(${PROJECT_NAME}
   src/srg/world/Coordinate.cpp
   src/srg/world/Object.cpp
   src/srg/world/Door.cpp
-        src/srg/world/Agent.cpp
+  src/srg/world/Agent.cpp
   src/srg/world/ObjectState.cpp
   src/srg/world/Room.cpp
   src/srg/world/ObjectType.cpp
   src/srg/world/RoomType.cpp
   src/srg/world/Direction.cpp
-        src/srg/world/ObjectSet.cpp include/srg/world/ObjectSet.h)
+  src/srg/world/ObjectSet.cpp
+  include/srg/world/ObjectSet.h
+)
+
 target_link_libraries(${PROJECT_NAME}
   tmxparser
   ${catkin_LIBRARIES}

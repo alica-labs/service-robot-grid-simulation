@@ -6,22 +6,22 @@
 #include "srg/world/Object.h"
 #include "srg/world/Room.h"
 
-#include <SystemConfig.h>
+#include <essentials/SystemConfig.h>
 #include <essentials/IDManager.h>
 
-#include <FileSystem.h>
+#include <essentials/FileSystem.h>
 #include <Tmx.h>
 
 #include <iostream>
 
 namespace srg
 {
-World::World(essentials::IDManager* idManager)
-        : World(essentials::SystemConfig::getInstance()->getConfigPath() + "textures/Department.tmx", idManager)
+World::World(essentials::IDManager& idManager)
+        : World(essentials::SystemConfig::getInstance().getConfigPath() + "textures/Department.tmx", idManager)
 {
 }
 
-World::World(std::string tmxMapFile, essentials::IDManager* idManager)
+World::World(std::string tmxMapFile, essentials::IDManager& idManager)
         : sizeX(0)
         , sizeY(0)
 {
@@ -32,7 +32,7 @@ World::World(std::string tmxMapFile, essentials::IDManager* idManager)
         // create room
         std::string roomName = layer->GetName();
         uint32_t roomIDInt = layer->GetProperties().GetIntProperty("ID");
-        world::Room* room = this->addRoom(roomName, idManager->getID(roomIDInt));
+        world::Room* room = this->addRoom(roomName, idManager.getID(roomIDInt));
 
         // create cells
         int roomType = 0;
@@ -234,9 +234,11 @@ std::shared_ptr<world::Agent> World::spawnAgent(essentials::IdentifierConstPtr i
     // search for cell with valid spawn coordinates
     srand(time(NULL));
     std::shared_ptr<const world::Cell> cell = nullptr;
+    int x = 72;
+    int y = 20;
     while (!cell || !isPlacementAllowed(cell, agentType)) {
-        cell = this->getCell(world::Coordinate(5, 5));
-        //        cell = this->getCell(Coordinate(rand() % this->sizeX, rand() % this->sizeY));
+        cell = this->getCell(world::Coordinate(x++, y));
+//          cell = this->getCell(world::Coordinate(rand() % this->sizeX, rand() % this->sizeY));
     }
 
     // place robot

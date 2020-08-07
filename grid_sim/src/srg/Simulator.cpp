@@ -12,8 +12,8 @@
 #include <srg/World.h>
 #include <srg/world/Agent.h>
 
-#include <SystemConfig.h>
 #include <essentials/IDManager.h>
+#include <essentials/SystemConfig.h>
 
 #include <cassert>
 #include <iostream>
@@ -30,8 +30,9 @@ bool Simulator::running = false;
 Simulator::Simulator(bool headless)
         : headless(headless)
         , idManager(new essentials::IDManager())
+        , sc(essentials::SystemConfig::getInstance())
 {
-    this->world = new World(this->idManager);
+    this->world = new World(*this->idManager);
     this->placeObjectsFromConf();
     this->communicationHandlers.push_back(new sim::commands::MoveCommandHandler(this));
     this->communicationHandlers.push_back(new sim::commands::ManipulationHandler(this));
@@ -41,12 +42,11 @@ Simulator::Simulator(bool headless)
 
 void Simulator::placeObjectsFromConf()
 {
-    this->sc = essentials::SystemConfig::getInstance();
-    std::shared_ptr<std::vector<std::string>> objectSections = (*sc)["Objects"]->getSections("Objects", NULL);
+    std::shared_ptr<std::vector<std::string>> objectSections = sc["Objects"]->getSections("Objects", NULL);
     for (std::string objectSection : *objectSections) {
         int32_t intObjectID = std::stoi(objectSection);
         essentials::IdentifierConstPtr id = essentials::IdentifierConstPtr(this->idManager->getID<int32_t>(intObjectID));
-        std::string stringObjectType = (*sc)["Objects"]->get<std::string>("Objects", objectSection.c_str(), "type", NULL);
+        std::string stringObjectType = sc["Objects"]->get<std::string>("Objects", objectSection.c_str(), "type", NULL);
         world::ObjectType type;
         if (stringObjectType.compare("cup_blue") == 0) {
             type = world::ObjectType::CupBlue;
@@ -62,7 +62,7 @@ void Simulator::placeObjectsFromConf()
 
         std::shared_ptr<world::Object> object;
         if (type == world::ObjectType::Door) {
-            if ((*sc)["Objects"]->get<bool>("Objects", objectSection.c_str(), "open", NULL)) {
+            if (sc["Objects"]->get<bool>("Objects", objectSection.c_str(), "open", NULL)) {
                 object = this->world->createOrUpdateObject(std::make_shared<world::Object>(id, type, world::ObjectState::Open));
             } else {
                 object = this->world->createOrUpdateObject(std::make_shared<world::Object>(id, type, world::ObjectState::Closed));
@@ -76,8 +76,8 @@ void Simulator::placeObjectsFromConf()
             continue;
         }
 
-        world::Coordinate coord((*sc)["Objects"]->get<uint32_t>("Objects", objectSection.c_str(), "x", NULL),
-                (*sc)["Objects"]->get<uint32_t>("Objects", objectSection.c_str(), "y", NULL));
+        world::Coordinate coord(sc["Objects"]->get<uint32_t>("Objects", objectSection.c_str(), "x", NULL),
+                sc["Objects"]->get<uint32_t>("Objects", objectSection.c_str(), "y", NULL));
         if (!this->world->placeObject(object, coord)) {
             std::cout << "[Simulator] Placement of " << type << " to " << coord << " not allowed!" << std::endl;
         }
@@ -110,7 +110,7 @@ void Simulator::addSimulatedAgent(std::shared_ptr<world::Agent> agent)
             simulatedAgents.end())
         return;
 
-    std::cout << "[Simulator] Adding " << *agent << std::endl;
+    std::cout << "[Simulator] Adding " << *agent << " at " << agent->getCoordinate() << std::endl;
     this->simulatedAgents.push_back(new sim::SimulatedAgent(agent));
 }
 

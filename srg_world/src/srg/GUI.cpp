@@ -5,8 +5,8 @@
 #include "srg/world/Door.h"
 #include "srg/world/Object.h"
 
-#include <FileSystem.h>
-#include <SystemConfig.h>
+#include <essentials/FileSystem.h>
+#include <essentials/SystemConfig.h>
 
 #include <iostream>
 
@@ -20,7 +20,7 @@ const std::string GUI::windowConfigFile = "Window.conf";
 GUI::GUI(std::string windowName)
 {
     this->readWindowConfig();
-    std::string textureFile = essentials::SystemConfig::getInstance()->getConfigPath() + "/textures/textures.png";
+    std::string textureFile = essentials::SystemConfig::getInstance().getConfigPath() + "/textures/textures.png";
     std::cout << "[GUI] Info: loading textureFile '" << textureFile << "'" << std::endl;
     this->texture = new sf::Texture();
     if (!this->texture->loadFromFile(textureFile)) {

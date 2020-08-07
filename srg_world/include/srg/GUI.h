@@ -6,7 +6,7 @@
 #include <srg/World.h>
 #include <srg/world/RoomType.h>
 
-#include <SystemConfig.h>
+#include <essentials/SystemConfig.h>
 
 #include <SFML/Graphics.hpp>
 

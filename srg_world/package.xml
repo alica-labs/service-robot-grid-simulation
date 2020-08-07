@@ -8,7 +8,7 @@
 
   <license>MIT</license>
 
-  <depend>id_manager</depend>
+  <depend>alica_engine</depend>
   <depend>system_config</depend>
 
   <buildtool_depend>catkin</buildtool_depend>

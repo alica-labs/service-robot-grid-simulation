@@ -61,7 +61,7 @@ public:
 private:
     void placeObjectsFromConf();
 
-    essentials::SystemConfig* sc;
+    essentials::SystemConfig& sc;
     static bool running;
     bool headless;
     World* world;

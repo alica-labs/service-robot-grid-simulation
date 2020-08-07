@@ -83,6 +83,8 @@ bool Object::canBePickedUp(essentials::IdentifierConstPtr agentID) const
             // The object is carried already
             return false;
         }
+    default:
+        return false;
     }
 }
 

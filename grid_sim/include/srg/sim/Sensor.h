@@ -5,7 +5,7 @@
 
 #include <srg/world/Coordinate.h>
 
-#include <SystemConfig.h>
+#include <essentials/SystemConfig.h>
 #include <vector>
 
 namespace essentials
@@ -36,7 +36,7 @@ private:
     std::vector<std::shared_ptr<const world::Cell>>collectCells(world::Coordinate start, world::Coordinate end, srg::World* world);
 
     SimulatedAgent* robot;
-    essentials::SystemConfig* sc;
+    essentials::SystemConfig& sc;
     uint32_t sightLimit;
 };
 } // namespace sim

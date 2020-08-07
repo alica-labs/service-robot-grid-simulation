@@ -37,7 +37,7 @@ public:
 private:
     void onSimCommand(::capnp::FlatArrayMessageReader& msg);
 
-    essentials::SystemConfig* sc;
+    essentials::SystemConfig& sc;
     void* ctx;
     std::string simCommandTopic;
     std::string simPerceptionsTopic;
