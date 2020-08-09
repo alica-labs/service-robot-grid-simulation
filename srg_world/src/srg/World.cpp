@@ -6,11 +6,11 @@
 #include "srg/world/Object.h"
 #include "srg/world/Room.h"
 
-#include <essentials/SystemConfig.h>
 #include <essentials/IDManager.h>
+#include <essentials/SystemConfig.h>
 
-#include <essentials/FileSystem.h>
 #include <Tmx.h>
+#include <essentials/FileSystem.h>
 
 #include <iostream>
 
@@ -125,7 +125,8 @@ std::shared_ptr<const world::Cell> World::getCell(const world::Coordinate& coord
     return nullptr;
 }
 
-std::vector<std::shared_ptr<const world::Object>> World::editObjects() {
+std::vector<std::shared_ptr<const world::Object>> World::editObjects()
+{
     std::vector<std::shared_ptr<const world::Object>> objectList;
     for (auto& object : this->objects) {
         objectList.push_back(object.second);
@@ -184,6 +185,18 @@ std::shared_ptr<world::Object> World::editObject(essentials::IdentifierConstPtr 
     }
 }
 
+bool World::setAsKnownObject(essentials::IdentifierConstPtr id)
+{
+    std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    auto objectEntry = this->objectCache.find(id);
+    if (objectEntry != this->objects.end()) {
+        objects.emplace(objectEntry->second->getID(), objectEntry->second);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 std::shared_ptr<const world::Agent> World::getAgent(essentials::IdentifierConstPtr id) const
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
@@ -238,7 +251,7 @@ std::shared_ptr<world::Agent> World::spawnAgent(essentials::IdentifierConstPtr i
     int y = 20;
     while (!cell || !isPlacementAllowed(cell, agentType)) {
         cell = this->getCell(world::Coordinate(x++, y));
-//          cell = this->getCell(world::Coordinate(rand() % this->sizeX, rand() % this->sizeY));
+        //          cell = this->getCell(world::Coordinate(rand() % this->sizeX, rand() % this->sizeY));
     }
 
     // place robot
@@ -255,6 +268,7 @@ std::shared_ptr<world::Agent> World::spawnAgent(essentials::IdentifierConstPtr i
 std::shared_ptr<world::Object> World::createOrUpdateObject(std::shared_ptr<world::Object> tmpObject)
 {
     std::lock_guard<std::recursive_mutex> guard(dataMutex);
+    setAsKnownObject(tmpObject->getID());
     std::shared_ptr<world::Object> object = editObject(tmpObject->getID());
     if (!object) {
         switch (tmpObject->getType()) {
@@ -268,7 +282,8 @@ std::shared_ptr<world::Object> World::createOrUpdateObject(std::shared_ptr<world
         default:
             object = std::make_shared<world::Object>(tmpObject->getID(), tmpObject->getType(), tmpObject->getState());
         }
-        //        std::cout << "[World] Created " << *object;
+//        std::cout << "[World] Created " << *object;
+        this->objectCache.emplace(object->getID(), object);
         this->objects.emplace(object->getID(), object);
     }
 
@@ -313,15 +328,6 @@ std::vector<std::shared_ptr<world::Object>> World::removeUnknownObjects()
         this->objects.erase(object->getID());
     }
     return unknownObjects;
-}
-
-void World::removeObjectIfUnknown(essentials::IdentifierConstPtr objectID)
-{
-    std::lock_guard<std::recursive_mutex> guard(dataMutex);
-    std::shared_ptr<const world::Object> object = this->getObject(objectID);
-    if (object && object->getCoordinate().x < 0) {
-        this->objects.erase(object->getID());
-    }
 }
 
 void World::moveObject(essentials::IdentifierConstPtr id, world::Direction direction)

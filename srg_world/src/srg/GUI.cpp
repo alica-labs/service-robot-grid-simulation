@@ -139,15 +139,15 @@ void GUI::draw(World* world)
     {
         std::recursive_mutex& dataMutex = world->getDataMutex();
         std::lock_guard<std::recursive_mutex> guard(dataMutex);
-        for (auto& pair : world->getGrid()) {
+        for (auto& coordinateCellPair : world->getGrid()) {
             // background sprite
-            sf::Sprite sprite = getSprite(pair.second->getType());
-            sprite.setPosition(pair.second->coordinate.x * scaledSpriteSize, pair.second->coordinate.y * scaledSpriteSize);
+            sf::Sprite sprite = getSprite(coordinateCellPair.second->getType());
+            sprite.setPosition(coordinateCellPair.second->coordinate.x * scaledSpriteSize, coordinateCellPair.second->coordinate.y * scaledSpriteSize);
             this->window->draw(sprite);
             //            std::cout << "GUI: Background Sprite: " << pair.second->getType() << " at " << pair.second->coordinate << std::endl;
 
             // object sprites
-            for (auto& objectEntry : pair.second->getObjects()) {
+            for (auto& objectEntry : coordinateCellPair.second->getObjects()) {
                 sf::Sprite sprite;
                 sprite = getSprite(objectEntry.second);
                 std::shared_ptr<const world::Cell> cell = std::dynamic_pointer_cast<const world::Cell>(objectEntry.second->getParentContainer());

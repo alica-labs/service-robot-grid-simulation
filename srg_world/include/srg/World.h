@@ -52,6 +52,7 @@ public:
     std::recursive_mutex& getDataMutex();
 
     // objects
+    bool setAsKnownObject(essentials::IdentifierConstPtr id);
     std::vector<std::shared_ptr<const world::Object>> editObjects();
     std::shared_ptr<const world::Object> getObject(world::ObjectType type) const;
     std::shared_ptr<const world::Object> getObject(essentials::IdentifierConstPtr id) const;
@@ -59,7 +60,6 @@ public:
     void updateCell(world::Coordinate coordinate, std::vector<std::shared_ptr<world::Object>> objects, int64_t time);
     std::shared_ptr<world::Object> createOrUpdateObject(std::shared_ptr<world::Object> tmpObject);
     std::vector<std::shared_ptr<world::Object>> removeUnknownObjects();
-    void removeObjectIfUnknown(essentials::IdentifierConstPtr objectID);
     bool placeObject(std::shared_ptr<world::Object> object, world::Coordinate coordinate);
     void moveObject(essentials::IdentifierConstPtr id, world::Direction direction);
     void displaceObject();
@@ -95,6 +95,7 @@ private:
 
     mutable std::recursive_mutex dataMutex;
     std::unordered_map<essentials::IdentifierConstPtr, std::shared_ptr<world::Object>> objects;
+    std::unordered_map<essentials::IdentifierConstPtr, std::shared_ptr<world::Object>> objectCache;
     std::unordered_map<essentials::IdentifierConstPtr, std::shared_ptr<world::Agent>> agents;
     std::unordered_map<essentials::IdentifierConstPtr, world::Room*> rooms;
 };
