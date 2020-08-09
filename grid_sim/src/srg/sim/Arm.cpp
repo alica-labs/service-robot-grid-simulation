@@ -62,11 +62,13 @@ bool Arm::pickUp(essentials::IdentifierConstPtr objectID, World* world)
 
     srg::world::Coordinate diff = (robot->getCoordinate()- object->getCoordinate()).abs();
     if ( diff.x > 1 || diff.y > 1) {
+        std::cout << "[Arm] Object too far away for picking! Distance: (" << diff.x << ", " << diff.y << ")" <<  std::endl;
         // too far away for grasping
         return false;
     }
 
     robot->setCarriedObject(object);
+    std::cout << "[Arm] Object picked up: " << *object << std::endl;
     return true;
 }
 
@@ -80,6 +82,7 @@ bool Arm::putDown(srg::sim::containers::SimCommand sc, World* world)
     srg::world::Coordinate diff = (robot->getCoordinate()- world::Coordinate(sc.x, sc.y)).abs();
     if ( diff.x > 1 || diff.y > 1) {
         // too far away for putDown
+        std::cout << "[Arm] Target for placing the object too far away! Distance: (" << diff.x << ", " << diff.y << ")" << std::endl;
         return false;
     }
 
