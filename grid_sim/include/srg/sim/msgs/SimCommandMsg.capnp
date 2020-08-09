@@ -9,6 +9,7 @@ struct SimCommandMsg {
   objectID @2 :IDMsg.ID;
   x @3: UInt32;
   y @4: UInt32;
+  timestamp @5: Int64;
 
   enum Action {
       spawnrobot @0;

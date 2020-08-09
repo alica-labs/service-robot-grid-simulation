@@ -3,6 +3,7 @@
 #include <essentials/IdentifierConstPtr.h>
 
 #include <cstdint>
+#include <chrono>
 
 namespace srg
 {
@@ -26,6 +27,7 @@ struct SimCommand
         CLOSE
     };
 
+    std::chrono::system_clock::duration timestamp;
     essentials::IdentifierConstPtr senderID;
     Action action;
     essentials::IdentifierConstPtr objectID;

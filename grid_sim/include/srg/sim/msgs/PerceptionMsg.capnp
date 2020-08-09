@@ -6,6 +6,7 @@ using IDMsg = import "/capnzero/ID.capnp";
 struct PerceptionMsg {
   receiverID @0 :IDMsg.ID;
   cellPerceptions @1 :List(CellPerception);
+  timestamp @2: Int64;
 
   struct CellPerception {
       x @0: UInt32;

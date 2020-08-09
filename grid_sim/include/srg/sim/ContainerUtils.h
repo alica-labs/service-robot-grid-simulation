@@ -22,10 +22,13 @@ public:
     static containers::SimCommand toSimCommand(::capnp::FlatArrayMessageReader& msg, essentials::IDManager& idManager);
     static void toMsg(containers::SimCommand simCommand, ::capnp::MallocMessageBuilder& builder);
 
+    // for sending as standalone message
     static void toMsg(containers::Perceptions simPerceptions, ::capnp::MallocMessageBuilder& builder);
     static containers::Perceptions toPerceptions(::capnp::FlatArrayMessageReader& msg, essentials::IDManager& idManager);
-    static containers::Perceptions createPerceptions(srg::sim::PerceptionMsg::Reader perceptionsReader, essentials::IDManager& idManager);
+
+    // for sending as part of a message
     static void toMsg(containers::Perceptions perceptions, ::srg::sim::PerceptionMsg::Builder& builder);
+    static containers::Perceptions createPerceptions(srg::sim::PerceptionMsg::Reader perceptionsReader, essentials::IDManager& idManager);
 
 private:
     ContainerUtils() = delete;

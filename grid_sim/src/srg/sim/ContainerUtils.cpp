@@ -16,6 +16,7 @@ containers::SimCommand ContainerUtils::toSimCommand(::capnp::FlatArrayMessageRea
             reader.getSenderID().getValue().asBytes().begin(), reader.getSenderID().getValue().size(), reader.getSenderID().getType());
     sc.objectID = idManager.getIDFromBytes(
             reader.getObjectID().getValue().asBytes().begin(), reader.getObjectID().getValue().size(), reader.getObjectID().getType());
+    sc.timestamp = std::chrono::nanoseconds (reader.getTimestamp());
 
     switch (reader.getAction()) {
     case srg::sim::SimCommandMsg::Action::SPAWNROBOT:
@@ -70,6 +71,8 @@ void ContainerUtils::toMsg(srg::sim::containers::SimCommand sc, ::capnp::MallocM
     objectID.setValue(kj::arrayPtr(sc.objectID->getRaw(), (unsigned int) sc.objectID->getSize()));
     objectID.setType(sc.objectID->getType());
 
+    msg.setTimestamp(sc.timestamp.count());
+
     switch (sc.action) {
     case containers::SimCommand::SPAWNROBOT:
         msg.setAction(srg::sim::SimCommandMsg::Action::SPAWNROBOT);
@@ -121,6 +124,7 @@ containers::Perceptions ContainerUtils::createPerceptions(srg::sim::PerceptionMs
 
     ps.receiverID = idManager.getIDFromBytes(perceptionsReader.getReceiverID().getValue().asBytes().begin(),
             perceptionsReader.getReceiverID().getValue().size(), perceptionsReader.getReceiverID().getType());
+    ps.timestamp = std::chrono::nanoseconds(perceptionsReader.getTimestamp());
     for (srg::sim::PerceptionMsg::CellPerception::Reader cellPerceptionMsg : perceptionsReader.getCellPerceptions()) {
         srg::sim::containers::CellPerception cellPerception;
         cellPerception.x = cellPerceptionMsg.getX();
@@ -140,6 +144,8 @@ void ContainerUtils::toMsg(containers::Perceptions perceptions, ::srg::sim::Perc
     capnzero::ID::Builder receiverID = builder.initReceiverID();
     receiverID.setValue(kj::arrayPtr(perceptions.receiverID->getRaw(), (unsigned int) perceptions.receiverID->getSize()));
     receiverID.setType(perceptions.receiverID->getType());
+
+    builder.setTimestamp(perceptions.timestamp.count());
 
     ::capnp::List<::srg::sim::PerceptionMsg::CellPerception>::Builder cellPerceptionsListBuilder =
             builder.initCellPerceptions(perceptions.cellPerceptions.size());
@@ -214,6 +220,8 @@ void ContainerUtils::toMsg(srg::sim::containers::Perceptions sp, ::capnp::Malloc
     capnzero::ID::Builder receiverID = msg.initReceiverID();
     receiverID.setValue(kj::arrayPtr(sp.receiverID->getRaw(), (unsigned int) sp.receiverID->getSize()));
     receiverID.setType(sp.receiverID->getType());
+
+    msg.setTimestamp(sp.timestamp.count());
 
     ::capnp::List<::srg::sim::PerceptionMsg::CellPerception>::Builder cellPerceptionsListBuilder = msg.initCellPerceptions(sp.cellPerceptions.size());
     for (unsigned int i = 0; i < sp.cellPerceptions.size(); i++) {
