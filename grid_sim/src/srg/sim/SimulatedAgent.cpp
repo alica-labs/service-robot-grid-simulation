@@ -42,6 +42,7 @@ containers::Perceptions SimulatedAgent::createSimPerceptions(Simulator* simulato
 {
     containers::Perceptions sps;
     sps.receiverID = this->getID();
+    sps.timestamp = std::chrono::system_clock::now().time_since_epoch();
 
     // objects
     std::vector<containers::CellPerception> objectPerceptions = this->objectDetection->createPerceptions(simulator);
