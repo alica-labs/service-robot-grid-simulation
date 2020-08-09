@@ -6,7 +6,7 @@
 #include <essentials/IdentifierConstPtr.h>
 
 #include <mutex>
-#include <queue>
+#include <deque>
 #include <srg/viz/Marker.h>
 
 namespace std
@@ -73,7 +73,7 @@ private:
     std::thread* mainThread;
 
     mutable std::recursive_mutex commandMutex;
-    std::queue<sim::containers::SimCommand> commandQueue;
+    std::deque<sim::containers::SimCommand> commandQueue;
     std::vector<sim::commands::CommandHandler*> communicationHandlers;
 };
 } // namespace srg

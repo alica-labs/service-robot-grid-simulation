@@ -162,7 +162,7 @@ void Simulator::run()
             std::lock_guard<std::recursive_mutex> guard(commandMutex);
             while (this->commandQueue.size() > 0) {
                 srg::sim::containers::SimCommand sc = this->commandQueue.front();
-                this->commandQueue.pop();
+                this->commandQueue.pop_front();
                 for (sim::commands::CommandHandler* handler : this->communicationHandlers) {
                     if (handler->handle(sc)) {
                         break;
@@ -193,8 +193,10 @@ void Simulator::run()
         std::cout << "[Simulator] Iteration took " << millisecondsPassed.count() << " ms. Sleep " << 20 - millisecondsPassed.count()
                   << "ms to keep frequency..." << std::endl;
 #endif
-        if (millisecondsPassed.count() < 20) { // Simulator frequency is 50 times per seconds!
-            std::this_thread::sleep_for(std::chrono::milliseconds(20 - millisecondsPassed.count()));
+        if (millisecondsPassed.count() < 30) { // Simulator frequency is 33 times per seconds!
+            std::this_thread::sleep_for(std::chrono::milliseconds(30 - millisecondsPassed.count()));
+        } else {
+            std::cerr << "[Simulator] ...iteration overshoot!\n------------------------------" << std::endl;
         }
 #ifdef SIM_DEBUG
         std::cout << "[Simulator] ...iteration end!\n------------------------------" << std::endl;
@@ -205,7 +207,12 @@ void Simulator::run()
 void Simulator::processSimCommand(srg::sim::containers::SimCommand sc)
 {
     std::lock_guard<std::recursive_mutex> guard(commandMutex);
-    this->commandQueue.push(sc);
+    for (auto& existingSc : this->commandQueue) {
+        if (sc.senderID == existingSc.senderID) {
+            return;
+        }
+    }
+    this->commandQueue.push_back(sc);
 }
 
 bool Simulator::isRunning()
