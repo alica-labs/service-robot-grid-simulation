@@ -21,16 +21,16 @@ MoveCommandHandler::MoveCommandHandler(Simulator* simulator)
 bool MoveCommandHandler::handle(containers::SimCommand sc)
 {
     switch (sc.action) {
-    case containers::SimCommand::GOLEFT:
+    case containers::Action::GOLEFT:
         simulator->getWorld()->moveObject(sc.senderID, world::Direction::Left);
         return true;
-    case containers::SimCommand::GOUP:
+    case containers::Action::GOUP:
         simulator->getWorld()->moveObject(sc.senderID, world::Direction::Up);
         return true;
-    case containers::SimCommand::GORIGHT:
+    case containers::Action::GORIGHT:
         simulator->getWorld()->moveObject(sc.senderID, world::Direction::Right);
         return true;
-    case containers::SimCommand::GODOWN:
+    case containers::Action::GODOWN:
         simulator->getWorld()->moveObject(sc.senderID, world::Direction::Down);
         return true;
     default:

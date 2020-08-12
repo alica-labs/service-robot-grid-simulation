@@ -61,6 +61,14 @@ void ObjectSet::update(std::vector<std::shared_ptr<world::Object>> updateObjects
         bool found = false;
         for (std::shared_ptr<world::Object> updateObject : updateObjects) {
             if (updateObject->getID() == it->second->getID()) {
+                // this will update, e.g., that some agent is not carrying an object anymore
+                std::vector<std::shared_ptr<world::Object>> updateList;
+                for (auto& entry : updateObject->getObjects()) {
+                    updateList.push_back(entry.second);
+                }
+                it->second->update(updateList); // recursive call!!!
+
+                // set object to be found
                 found = true;
                 break;
             }

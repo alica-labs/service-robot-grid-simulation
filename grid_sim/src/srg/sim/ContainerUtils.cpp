@@ -20,34 +20,34 @@ containers::SimCommand ContainerUtils::toSimCommand(::capnp::FlatArrayMessageRea
 
     switch (reader.getAction()) {
     case srg::sim::SimCommandMsg::Action::SPAWNROBOT:
-        sc.action = containers::SimCommand::SPAWNROBOT;
+        sc.action = containers::Action::SPAWNROBOT;
         break;
     case srg::sim::SimCommandMsg::Action::SPAWNHUMAN:
-        sc.action = containers::SimCommand::SPAWNHUMAN;
+        sc.action = containers::Action::SPAWNHUMAN;
         break;
     case srg::sim::SimCommandMsg::Action::CLOSE:
-        sc.action = containers::SimCommand::CLOSE;
+        sc.action = containers::Action::CLOSE;
         break;
     case srg::sim::SimCommandMsg::Action::OPEN:
-        sc.action = containers::SimCommand::OPEN;
+        sc.action = containers::Action::OPEN;
         break;
     case srg::sim::SimCommandMsg::Action::PICKUP:
-        sc.action = containers::SimCommand::PICKUP;
+        sc.action = containers::Action::PICKUP;
         break;
     case srg::sim::SimCommandMsg::Action::PUTDOWN:
-        sc.action = containers::SimCommand::PUTDOWN;
+        sc.action = containers::Action::PUTDOWN;
         break;
     case srg::sim::SimCommandMsg::Action::GODOWN:
-        sc.action = containers::SimCommand::GODOWN;
+        sc.action = containers::Action::GODOWN;
         break;
     case srg::sim::SimCommandMsg::Action::GOLEFT:
-        sc.action = containers::SimCommand::GOLEFT;
+        sc.action = containers::Action::GOLEFT;
         break;
     case srg::sim::SimCommandMsg::Action::GORIGHT:
-        sc.action = containers::SimCommand::GORIGHT;
+        sc.action = containers::Action::GORIGHT;
         break;
     case srg::sim::SimCommandMsg::Action::GOUP:
-        sc.action = containers::SimCommand::GOUP;
+        sc.action = containers::Action::GOUP;
         break;
     default:
         std::cerr << "srgsim::ContainerUtils::toSimCommand(): Unknown action!" << std::endl;
@@ -74,34 +74,34 @@ void ContainerUtils::toMsg(srg::sim::containers::SimCommand sc, ::capnp::MallocM
     msg.setTimestamp(sc.timestamp.count());
 
     switch (sc.action) {
-    case containers::SimCommand::SPAWNROBOT:
+    case containers::Action::SPAWNROBOT:
         msg.setAction(srg::sim::SimCommandMsg::Action::SPAWNROBOT);
         break;
-    case containers::SimCommand::SPAWNHUMAN:
+    case containers::Action::SPAWNHUMAN:
         msg.setAction(srg::sim::SimCommandMsg::Action::SPAWNHUMAN);
         break;
-    case containers::SimCommand::CLOSE:
+    case containers::Action::CLOSE:
         msg.setAction(srg::sim::SimCommandMsg::Action::CLOSE);
         break;
-    case containers::SimCommand::OPEN:
+    case containers::Action::OPEN:
         msg.setAction(srg::sim::SimCommandMsg::Action::OPEN);
         break;
-    case containers::SimCommand::PICKUP:
+    case containers::Action::PICKUP:
         msg.setAction(srg::sim::SimCommandMsg::Action::PICKUP);
         break;
-    case containers::SimCommand::PUTDOWN:
+    case containers::Action::PUTDOWN:
         msg.setAction(srg::sim::SimCommandMsg::Action::PUTDOWN);
         break;
-    case containers::SimCommand::GODOWN:
+    case containers::Action::GODOWN:
         msg.setAction(srg::sim::SimCommandMsg::Action::GODOWN);
         break;
-    case containers::SimCommand::GOLEFT:
+    case containers::Action::GOLEFT:
         msg.setAction(srg::sim::SimCommandMsg::Action::GOLEFT);
         break;
-    case containers::SimCommand::GORIGHT:
+    case containers::Action::GORIGHT:
         msg.setAction(srg::sim::SimCommandMsg::Action::GORIGHT);
         break;
-    case containers::SimCommand::GOUP:
+    case containers::Action::GOUP:
         msg.setAction(srg::sim::SimCommandMsg::Action::GOUP);
         break;
     default:

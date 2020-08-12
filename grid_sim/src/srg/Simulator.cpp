@@ -86,7 +86,8 @@ void Simulator::placeObjectsFromConf()
 
 Simulator::~Simulator()
 {
-
+    this->mainThread->join();
+    delete mainThread;
     delete this->communication;
     for (auto& handler : this->communicationHandlers) {
         delete handler;
@@ -180,7 +181,7 @@ void Simulator::run()
         std::cout << "[Simulator] Create and send perceptions..." << std::endl;
 #endif
         // Produce and send perceptions for each robot
-        assert(this->simulatedAgents.size() < 4);
+        assert(this->simulatedAgents.size() < 5);
         for (auto& simulatedAgent : this->simulatedAgents) {
             this->communication->sendSimPerceptions(simulatedAgent->createSimPerceptions(this));
         }

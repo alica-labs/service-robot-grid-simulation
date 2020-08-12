@@ -19,10 +19,10 @@ ManipulationHandler::ManipulationHandler(srg::Simulator* simulator)
 bool ManipulationHandler::handle(containers::SimCommand sc)
 {
     switch (sc.action) {
-    case containers::SimCommand::OPEN:
-    case containers::SimCommand::CLOSE:
-    case containers::SimCommand::PUTDOWN:
-    case containers::SimCommand::PICKUP: {
+    case containers::Action::OPEN:
+    case containers::Action::CLOSE:
+    case containers::Action::PUTDOWN:
+    case containers::Action::PICKUP: {
         srg::sim::SimulatedAgent* robot = simulator->getAgent(sc.senderID);
         if (!robot) {
             return false;

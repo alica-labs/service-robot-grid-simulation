@@ -17,16 +17,16 @@ Arm::Arm(srg::sim::SimulatedAgent* robot)
 bool Arm::execute(srg::sim::containers::SimCommand sc, World* world)
 {
     switch (sc.action) {
-    case srg::sim::containers::SimCommand::OPEN:
+    case srg::sim::containers::Action::OPEN:
         this->open(sc.objectID, world);
         break;
-    case srg::sim::containers::SimCommand::CLOSE:
+    case srg::sim::containers::Action::CLOSE:
         this->close(sc.objectID, world);
         break;
-    case srg::sim::containers::SimCommand::PICKUP:
+    case srg::sim::containers::Action::PICKUP:
         this->pickUp(sc.objectID, world);
         break;
-    case srg::sim::containers::SimCommand::PUTDOWN:
+    case srg::sim::containers::Action::PUTDOWN:
         this->putDown(sc, world);
         break;
     default:

@@ -31,7 +31,7 @@ add_executable(${PROJECT_NAME}
   src/srg/sim/commands/ManipulationHandler.cpp
   src/srg/sim/Arm.cpp
   src/srg/sim/Sensor.cpp
-        src/srg/sim/SimulatedAgent.cpp
+  src/srg/sim/SimulatedAgent.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -51,6 +51,7 @@ capnp_generate_cpp(CAPNP_SRCS CAPNP_HDRS ${capnp_messages})
 
 add_library(${PROJECT_NAME}_msgs
   src/srg/sim/ContainerUtils.cpp
+  src/srg/sim/containers/Action.cpp
   ${CAPNP_SRCS}
 )
 target_link_libraries(${PROJECT_NAME}_msgs
