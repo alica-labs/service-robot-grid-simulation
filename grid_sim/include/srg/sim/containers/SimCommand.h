@@ -24,7 +24,7 @@ struct SimCommand
 
     friend std::ostream& operator<<(std::ostream& os, const SimCommand& obj)
     {
-        os << "[SimCommand] Sender " << obj.senderID << " wants to " << obj.action << "(" << obj.x << ", " << obj.y << ")"
+        os << "[SimCommand] Sender " << obj.senderID << " wants to " << obj.action << " Coordinates: (" << obj.x << ", " << obj.y << ")"
            << " ObjectID: " << obj.objectID << std::endl;
         return os;
     }
